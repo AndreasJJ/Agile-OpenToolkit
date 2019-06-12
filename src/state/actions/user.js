@@ -6,7 +6,8 @@ import { history } from '../helpers/history';
 export const userActions = {
     login,
     logout,
-    register
+    register,
+    refresh
 };
 
 function login(username, password) {
@@ -57,4 +58,25 @@ function register(username, password) {
     function request(user) { return { type: userConstants.REGISTRATION_REQUEST, user } }
     function success(user) { return { type: userConstants.REGISTRATION_SUCCESS, user } }
     function failure(error) { return { type: userConstants.REGISTRATION_FAILURE, error } }
+}
+
+function refresh() {
+        return dispatch => {
+        dispatch(request());
+
+        userService.refresh()
+            .then(
+                user => { 
+                    dispatch(success(user));
+                },
+                error => {
+                    dispatch(failure(error));
+                    dispatch(alertActions.error(error));
+                }
+            );
+    };
+
+    function request(user) { return { type: userConstants.REFRESH_REQUEST, user } }
+    function success(user) { return { type: userConstants.REFRESH_SUCCESS, user } }
+    function failure(error) { return { type: userConstants.REFRESH_FAILURE, error } }
 }

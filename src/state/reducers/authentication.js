@@ -19,7 +19,7 @@ export function authentication(state = initialState, action) {
         return {};
     case userConstants.REGISTRATION_REQUEST:
         return {
-            loggedIn: true,
+            loggingIn: true,
             user: action.user
         };
     case userConstants.REGISTRATION_SUCCESS:
@@ -28,6 +28,18 @@ export function authentication(state = initialState, action) {
             user: action.user
         };
     case userConstants.REGISTRATION_FAILURE:
+        return {};
+    case userConstants.REFRESH_REQUEST:
+        return {
+            loggingIn: true,
+            user: action.user
+        };
+    case userConstants.REFRESH_SUCCESS:
+        return {
+            loggedIn: true,
+            user: action.user
+        };
+    case userConstants.REFRESH_FAILURE:
         return {};
     case userConstants.LOGOUT:
         return {};

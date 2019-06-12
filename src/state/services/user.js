@@ -4,7 +4,8 @@ import { authRefreshHeader } from '../helpers/AuthRefreshHeader';
 export const userService = {
     login,
     logout,
-    register
+    register,
+    refresh
 };
 
 async function login(username, password) {
@@ -88,4 +89,39 @@ async function register(username, password) {
   let user = await res.json()
 
   localStorage.setItem('user', JSON.stringify(user));
+}
+
+async function refresh() {
+  let res = await fetch('http://localhost:5000/refresh', {
+      method: 'POST',
+      body: null,
+      crossDomain: true,
+      credentials: "include",
+      headers: authRefreshHeader(),
+    }).catch(function(err) {
+      console.log(err);
+    });
+
+  if (!res.ok) {
+    console.log(res)
+      if (res.status === 401) {
+          // auto logout if 401 response returned from api
+          logout();
+          location.reload(true);
+      }
+
+      const error = response.statusText;
+      return Promise.reject(error);
+  }
+
+  let access_token_info = await res.json()
+
+  let user = JSON.parse(localStorage.getItem('user'))
+  user.access_token = access_token_info.access_token
+  user.creation_timestamp = access_token_info.creation_timestamp
+  user.expiration_timestamp = access_token_info.expiration_timestamp
+
+  localStorage.setItem('user', JSON.stringify(user));
+
+  location.reload(true);
 }
