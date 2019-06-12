@@ -11,8 +11,8 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, calc(100%/3)));
   grid-template-rows: 100%
-  grid-column-gap: 10px;
-  padding: 5px;
+  grid-column-gap: 15px;
+  padding: 20px;
   box-sizing: border-box;
 `;
 
