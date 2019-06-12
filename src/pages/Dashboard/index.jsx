@@ -34,10 +34,10 @@ export default class Dashboard extends React.PureComponent {
 
     this.state = {
       hidden: false,
-      profilePic: ""
+      user: JSON.parse(localStorage.getItem('user'))
     };
 
-    this.socket = io('http://localhost:5000/' + this.props.namespace, {query: {token: JSON.parse(localStorage.getItem('user')).access_token}});
+    this.socket = io('http://localhost:5000/' + this.props.namespace, {query: {token: this.state.user.access_token}});
 
     this.collapseSideBar = this.collapseSideBar.bind(this)
     this.logout = this.logout.bind(this)
@@ -60,7 +60,7 @@ export default class Dashboard extends React.PureComponent {
     return (
       <Grid hidden={this.state.hidden} >
         <Header onClickCollapse={this.collapseSideBar} onClickLogout={this.logout}></Header>
-        <SideBar hidden={this.state.hidden} profilePic={this.state.profilePic} ></SideBar>
+        <SideBar hidden={this.state.hidden} profilePic={this.state.user.profile_picture} ></SideBar>
         <Content>
           <this.props.content socket={this.socket} />
         </Content>

@@ -201,12 +201,53 @@ export default class DetailsWidget extends React.PureComponent {
     super(props)
 
     this.state = {
+      profilePicture: this.props.profilePicture,
+      gender: this.props.gender,
+      firstname: this.props.firstname ? this.props.firstname : "",
+      lastname: this.props.lastname ? this.props.lastname : "",
+      mobile: this.props.mobile ? this.props.mobile : "",
+      email: this.props.email ? this.props.email : ""
     };
 
+    this.changeGender = this.changeGender.bind(this)
+    this.changeFirstname = this.changeFirstname.bind(this)
+    this.changeLastname = this.changeLastname.bind(this)
+    this.changeMobile = this.changeMobile.bind(this)
+    this.changeEmail = this.changeEmail.bind(this)
   }
 
   componentDidMount() {
 
+  }
+
+  changeGender(e) {
+    console.log(e.target)
+    console.log(e.checked)
+    e.checked = !e.checked
+  }
+
+  changeFirstname(e) {
+    this.setState({
+      firstname: e.target.value
+    });
+  }
+
+  changeLastname(e) {
+    this.setState({
+      lastname: e.target.value
+    });
+  }
+
+  changeMobile(e) {
+    this.setState({
+      mobile: parseInt(e.target.value) ? parseInt(e.target.value) : ""
+    });
+  }
+
+  changeEmail(e) {
+    this.setState({
+      email: e.target.value
+    });
   }
 
   render () {
@@ -219,31 +260,31 @@ export default class DetailsWidget extends React.PureComponent {
           <WidgetBody>
             <Inputs>
               <FirstRow>
-                <ProfilePicture src={this.props.ProfilePicture ? this.props.ProfilePicture : BlankProfilePicture}>
+                <ProfilePicture src={this.state.profilePicture ? this.state.profilePicture : BlankProfilePicture}>
                 </ProfilePicture>
                 <Switch>
-                  <ToggleButton type="checkbox" />
+                  <ToggleButton type="checkbox" checked={this.state.gender} onChange={this.changeGender} />
                   <Slider></Slider>
                 </Switch>
               </FirstRow>
               <Name>
                 <Firstname>
                   <label>Firstname</label>
-                  <Input type="text" />
+                  <Input type="text" value={this.state.firstname} onChange={this.changeFirstname} />
                 </Firstname>
                 <Lastname>
                   <label>Lastname</label>
-                  <Input type="text" />
+                  <Input type="text" value={this.state.lastname} onChange={this.changeLastname} />
                 </Lastname>
               </Name>
               <Contact>
                 <Mobile>
                   <label>Mobile</label>
-                  <Input type="tel" pattern="[0-9]{8}" />
+                  <Input type="tel" pattern="[0-9]{8}" value={this.state.mobile} onChange={this.changeMobile} />
                 </Mobile>
                 <Email>
                   <label>Email</label>
-                  <Input type="email" />
+                  <Input type="email" value={this.state.email} onChange={this.changeEmail} />
                 </Email>
               </Contact>
             </Inputs>

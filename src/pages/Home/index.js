@@ -18,6 +18,10 @@ export default class Home extends React.PureComponent {
 
  constructor(props) {
     super(props)
+
+    this.state = {
+      user: JSON.parse(localStorage.getItem('user'))
+    };
   }
   componentDidMount() {
     
@@ -27,7 +31,7 @@ export default class Home extends React.PureComponent {
       return (
         <Wrapper>
           <TeamWidget />
-          <DetailsWidget />
+          <DetailsWidget profilePicture={this.state.user.profile_picture} gender={this.state.user.gender} firstname={this.state.user.firstname} lastname={this.state.user.lastname} email={this.state.user.email} />
           <PlaceholderWidget />
         </Wrapper>
       );
