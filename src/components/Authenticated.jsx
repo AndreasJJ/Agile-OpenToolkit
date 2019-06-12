@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Loading from './Loading'
+
 import { userActions } from '../state/actions/user';
 
 import PropTypes from 'prop-types'
@@ -20,26 +22,21 @@ class Authenticated extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log(1)
     if(this.state.user) {
-      console.log(2)
       if(JSON.parse(this.state.user).expiration_timestamp < (new Date()).getTime()) {
-        console.log(4)
         const { dispatch } = this.props;
         dispatch(userActions.refresh());
       } else {
-        console.log(5)
         this.setState({authenticated: true, isLoaded: true})
       }
     } else {
-      console.log(3)
       this.setState({authenticated: false, isLoaded: true})
     }
   }
 
   render () {
     if (!this.state.isLoaded) {
-      return ( <div>"Loading"</div> )
+      return ( <Loading /> )
     } else {
       return (this.state.authenticated ? (this.props.is instanceof Function ? this.props.is() : this.props.is) : this.props.not)
     } 
