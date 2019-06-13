@@ -3,8 +3,8 @@ import React from 'react';
 import AddTeam from './AddTeam';
 import CreateNewTeam from './CreateNewTeam';
 
-import Modal from '../../components/Modal';
-import Tabs from '../../components/Tabs';
+import Modal from '../../../sharedComponents/Modal';
+import Tabs from '../../../sharedComponents/Tabs';
 
 import styled from 'styled-components';
 

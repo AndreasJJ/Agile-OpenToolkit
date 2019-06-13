@@ -8,7 +8,7 @@ import {Columns} from 'styled-icons/boxicons-regular/Columns'
 import {Directions} from 'styled-icons/boxicons-regular/Directions'
 import {ViewCarousel} from 'styled-icons/material/ViewCarousel'
 
-import BlankProfilePicture from '../../assets/Blank-profile-image.gif'
+import BlankProfilePicture from '../../../assets/Blank-profile-image.gif'
 
 const SideNav = styled.div`
     display: flex;

@@ -1,9 +1,3 @@
-/*
- * HomePage
- *
- * This is the first thing users see of our App, at the '/' route
- */
-
 import React from 'react';
 import ReactFullpage from '@fullpage/react-fullpage';
 
@@ -32,7 +26,6 @@ const TextBorder = styled.div`
 
 const LICENSEKEY = "***REMOVED***"
 
-/* eslint-disable react/prefer-stateless-function */
 export default class HomePage extends React.PureComponent {
 
   constructor(props) {

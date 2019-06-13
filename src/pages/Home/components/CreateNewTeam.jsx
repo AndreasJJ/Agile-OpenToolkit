@@ -1,6 +1,6 @@
 import React from 'react';
 
-import TagsInput from '../../components/TagsInput';
+import TagsInput from '../../../sharedComponents/TagsInput';
 
 import styled from 'styled-components';
 

@@ -1,30 +1,39 @@
 import React, { useState, useCallback } from 'react';
 
-import styled, {keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
-import Game from './components/Game';
+
+const keyframe = keyframes`
+
+`
 
 const Wrapper = styled.div`
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-export default class Planning extends React.PureComponent {
+
+export default class Game extends React.PureComponent {
 
    constructor(props) {
     super(props)
 
     this.state = {
     };
+
   }
 
   componentDidMount() {
+
   }
 
   render() {
       return (
         <Wrapper>
-          <Game />
+
         </Wrapper>
       );
   }

@@ -149,7 +149,6 @@ const ConfirmPasswordInput = styled.input`
   outline: none;
 `
 
-/* eslint-disable react/prefer-stateless-function */
 class Register extends React.PureComponent {
 
   constructor(props) {

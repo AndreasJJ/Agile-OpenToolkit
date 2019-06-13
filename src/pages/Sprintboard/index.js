@@ -1,13 +1,7 @@
-/*
- * HomePage
- *
- * This is the first thing users see of our App, at the '/' route
- */
-
 import React from 'react';
 
-import BoardList from './../../components/BoardList';
-import NewListButton from './../../components/NewListButton';
+import BoardList from './../../sharedComponents/BoardList';
+import NewListButton from './../../sharedComponents/NewListButton';
 
 import io from 'socket.io-client';
 

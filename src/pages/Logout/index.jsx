@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import { userActions } from '../../state/actions/user';
 
-/* eslint-disable react/prefer-stateless-function */
 class Logout extends React.PureComponent {
 
   constructor(props) {

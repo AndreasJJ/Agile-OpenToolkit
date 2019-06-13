@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Board from './Board'
+import Board from './components/Board'
 
 import styled from 'styled-components';
 

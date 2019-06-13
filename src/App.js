@@ -18,7 +18,7 @@ import Splash from './pages/Splash';
 
 import Error404 from './pages/404';
 
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './sharedComponents/PrivateRoute';
 
 import GlobalStyle from './global-styles';
 

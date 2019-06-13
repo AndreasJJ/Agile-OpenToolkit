@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components';
 
-import BlankProfilePicture from '../../assets/Blank-profile-image.gif'
+import BlankProfilePicture from '../../../assets/Blank-profile-image.gif'
 
 const Widget = styled.div`
   grid-column-start: 2;

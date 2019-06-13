@@ -1,8 +1,8 @@
 import React from 'react';
 
-import TeamWidget from './TeamWidget';
-import DetailsWidget from './DetailsWidget';
-import PlaceholderWidget from './PlaceholderWidget';
+import TeamWidget from './components/TeamWidget';
+import DetailsWidget from './components/DetailsWidget';
+import PlaceholderWidget from './components/PlaceholderWidget';
 
 import styled from 'styled-components';
 

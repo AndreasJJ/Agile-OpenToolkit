@@ -2,8 +2,8 @@ import React from 'react';
 
 import styled from 'styled-components';
 
-import Header from './Header';
-import SideBar from './SideBar';
+import Header from './components/Header';
+import SideBar from './components/SideBar';
 
 import io from 'socket.io-client';
 

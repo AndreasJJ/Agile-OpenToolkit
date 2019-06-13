@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Issue from './Issue'
+import Issue from './components/Issue'
 
 import styled from 'styled-components';
 
