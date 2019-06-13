@@ -1,5 +1,9 @@
 import React, { useState, useCallback } from 'react';
 
+import Poker from './Poker';
+import RoundResult from './RoundResult';
+import FinishScreen from './FinishScreen';
+
 import styled, { keyframes } from 'styled-components';
 
 
@@ -22,6 +26,7 @@ export default class Game extends React.PureComponent {
     super(props)
 
     this.state = {
+      state: 1
     };
 
   }
@@ -31,9 +36,24 @@ export default class Game extends React.PureComponent {
   }
 
   render() {
+      let component;
+
+      switch(this.state.state) {
+        case 0:
+          component = <Poker />
+          break;
+        case 1:
+          component = <RoundResult story={"A Test Story"} people={[{name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5},{name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}]} averageEstimate={5} />
+          break;
+        case 2:
+          component = <FinishScreen />
+          break;
+      }
       return (
         <Wrapper>
-
+          {
+            component
+          }
         </Wrapper>
       );
   }

@@ -23,6 +23,16 @@ const BoardHeader = styled.div`
   padding: 5px;
 `
 
+const HeaderTitle = styled.h3`
+  width: 100%;
+  background-color: ${props => props.color};
+  margin: 0;
+  padding: 1em;
+  box-sizing: border-box;
+  text-align: center;
+  color: white;
+`
+
 const BoardBody = styled.div`
   flex-grow: 1;
   overflow: auto;
@@ -98,7 +108,7 @@ export default class Board extends React.PureComponent {
         <Wrapper>
           <WellBoard data-name={"well"}>
             <BoardHeader> 
-              <h3>Went Well</h3>
+              <HeaderTitle color={"#77dd77"}>Went Well</HeaderTitle>
               <AddButton onClick={this.clickedAddButton}><b>+</b></AddButton>
             </BoardHeader>
             <BoardBody>
@@ -107,7 +117,7 @@ export default class Board extends React.PureComponent {
           </WellBoard>
           <ImprovementsBoard data-name={"improvements"}>
             <BoardHeader>
-              <h3>Could've Been Better</h3>
+              <HeaderTitle color={"#ff6961"}>Could've Been Better</HeaderTitle>
               <AddButton onClick={this.clickedAddButton}><b>+</b></AddButton>
             </BoardHeader>
             <BoardBody>
@@ -116,7 +126,7 @@ export default class Board extends React.PureComponent {
           </ImprovementsBoard>
           <ActionsBoard data-name={"actions"}>
             <BoardHeader>
-              <h3>Actions For Improvements</h3>
+              <HeaderTitle color={"#aec6cf"}>Actions For Improvements</HeaderTitle>
               <AddButton onClick={this.clickedAddButton}><b>+</b></AddButton>
             </BoardHeader>
             <BoardBody>
