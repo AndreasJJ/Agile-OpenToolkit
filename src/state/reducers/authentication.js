@@ -1,9 +1,6 @@
 import { userConstants } from '../constants/user';
 
-let user = JSON.parse(localStorage.getItem('user'));
-const initialState = user ? { loggedIn: true, user } : {};
-
-export function authentication(state = initialState, action) {
+export function authentication(state = {}, action) {
     switch (action.type) {
     case userConstants.LOGIN_REQUEST:
         return {
@@ -43,6 +40,13 @@ export function authentication(state = initialState, action) {
         return {};
     case userConstants.LOGOUT:
         return {};
+    case userConstants.TEAM_ADD_SUCCESS:
+        return {
+            loggedIn: true,
+            user: action.user
+        };
+    case userConstants.TEAM_ADD_FAILURE:
+        return state
     default:
         return state
     }

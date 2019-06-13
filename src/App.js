@@ -5,8 +5,8 @@ import { history } from './state/helpers/history';
 import { connect } from 'react-redux';
 import { alertActions } from './state/actions/alert';
 
-import Dashboard from './pages/Dashboard';
-import Home from './pages/Home';
+import { Dashboard } from './pages/Dashboard';
+import { Home } from './pages/Home';
 import Sprintboard from './pages/Sprintboard';
 import Backlog from './pages/Backlog';
 import Planning from './pages/Planning';

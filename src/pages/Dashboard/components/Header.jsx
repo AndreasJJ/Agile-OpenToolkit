@@ -7,13 +7,14 @@ const HEADER = styled.header`
     display: grid;
     grid-template-columns: fit-content(100%) auto fit-content(100%);
     grid-template-rows: 100%;
-    grid-column-start: 2;
+    grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 1;
     -webkit-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.5);
     -moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.5);
     box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.5);
+    background-color: #ffffff;
 `;
 
 const Collapse = styled.div`

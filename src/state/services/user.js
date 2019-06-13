@@ -5,7 +5,8 @@ export const userService = {
     login,
     logout,
     register,
-    refresh
+    refresh,
+    addTeams
 };
 
 async function login(username, password) {
@@ -35,16 +36,16 @@ async function login(username, password) {
 
     let user = await res.json()
 
-    localStorage.setItem('user', JSON.stringify(user));
+    return user
 }
 
-async function logout() {
+async function logout(user) {
     await fetch('http://localhost:5000/logout/access', {
           method: 'POST',
           body: null,
           crossDomain: true,
           credentials: "include",
-          headers: authAccessHeader(),
+          headers: authAccessHeader(user),
         }).catch(function(err) {
           console.log("error:" + err);
         });
@@ -53,12 +54,10 @@ async function logout() {
           body: null,
           crossDomain: true,
           credentials: "include",
-          headers: authRefreshHeader(),
+          headers: authRefreshHeader(user),
         }).catch(function(err) {
           console.log("error:" + err);
         });
-
-    await localStorage.removeItem('user');
 }
 
 async function register(username, password) {
@@ -88,16 +87,16 @@ async function register(username, password) {
 
   let user = await res.json()
 
-  localStorage.setItem('user', JSON.stringify(user));
+  return user
 }
 
-async function refresh() {
+async function refresh(user) {
   let res = await fetch('http://localhost:5000/refresh', {
       method: 'POST',
       body: null,
       crossDomain: true,
       credentials: "include",
-      headers: authRefreshHeader(),
+      headers: authRefreshHeader(user),
     }).catch(function(err) {
       console.log(err);
     });
@@ -116,12 +115,14 @@ async function refresh() {
 
   let access_token_info = await res.json()
 
-  let user = JSON.parse(localStorage.getItem('user'))
   user.access_token = access_token_info.access_token
   user.creation_timestamp = access_token_info.creation_timestamp
   user.expiration_timestamp = access_token_info.expiration_timestamp
 
-  localStorage.setItem('user', JSON.stringify(user));
+  return user
+}
 
-  location.reload(true);
+async function addTeams(user, teams) {
+  user.teams = teams
+  return user
 }

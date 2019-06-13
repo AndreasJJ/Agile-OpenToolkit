@@ -14,23 +14,21 @@ class Authenticated extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      authenticated: false,
-      user: localStorage.getItem('user'),
       isLoaded: false,
       render: ''
     }
   }
 
   componentDidMount() {
-    if(this.state.user) {
-      if(JSON.parse(this.state.user).expiration_timestamp < (new Date()).getTime()) {
+    if(this.props.loggedIn) {
+      if(this.props.user.expiration_timestamp < (new Date()).getTime()) {
         const { dispatch } = this.props;
-        dispatch(userActions.refresh());
+        dispatch(userActions.refresh(this.props.user));
       } else {
-        this.setState({authenticated: true, isLoaded: true})
+        this.setState({isLoaded: true})
       }
     } else {
-      this.setState({authenticated: false, isLoaded: true})
+      this.setState({isLoaded: true})
     }
   }
 
@@ -38,15 +36,16 @@ class Authenticated extends React.PureComponent {
     if (!this.state.isLoaded) {
       return ( <Loading /> )
     } else {
-      return (this.state.authenticated ? (this.props.is instanceof Function ? this.props.is() : this.props.is) : this.props.not)
+      return (this.props.loggedIn ? (this.props.is instanceof Function ? this.props.is() : this.props.is) : this.props.not)
     } 
   }
 }
 
 function mapStateToProps(state) {
-    const { loggingIn } = state.authentication;
+    const { loggedIn, user } = state.authentication;
     return {
-        loggingIn
+        loggedIn,
+        user
     };
 }
 

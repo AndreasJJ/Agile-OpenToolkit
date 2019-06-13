@@ -7,12 +7,13 @@ export const userActions = {
     login,
     logout,
     register,
-    refresh
+    refresh,
+    addTeams
 };
 
 function login(username, password) {
     return dispatch => {
-        dispatch(request({ username }));
+        dispatch(request({ username, password }));
 
         userService.login(username, password)
             .then(
@@ -32,15 +33,15 @@ function login(username, password) {
     function failure(error) { return { type: userConstants.LOGIN_FAILURE, error } }
 }
 
-function logout() {
-    userService.logout();
+function logout(user) {
+    userService.logout(user);
     history.push('/login');
     return { type: userConstants.LOGOUT };
 }
 
 function register(username, password) {
     return dispatch => {
-        dispatch(request({ username }));
+        dispatch(request({ username, password }));
 
         userService.register(username, password)
             .then(
@@ -60,14 +61,15 @@ function register(username, password) {
     function failure(error) { return { type: userConstants.REGISTRATION_FAILURE, error } }
 }
 
-function refresh() {
+function refresh(user) {
         return dispatch => {
-        dispatch(request());
+        dispatch(request(user));
 
-        userService.refresh()
+        userService.refresh(user)
             .then(
                 user => { 
                     dispatch(success(user));
+                    location.reload();
                 },
                 error => {
                     dispatch(failure(error));
@@ -79,4 +81,22 @@ function refresh() {
     function request(user) { return { type: userConstants.REFRESH_REQUEST, user } }
     function success(user) { return { type: userConstants.REFRESH_SUCCESS, user } }
     function failure(error) { return { type: userConstants.REFRESH_FAILURE, error } }
+}
+
+function addTeams(_user, teams) {
+    return dispatch => {
+        userService.addTeams(_user, teams)
+            .then(
+                user => { 
+                    dispatch(success(user));
+                },
+                error => {
+                    dispatch(failure(error));
+                    dispatch(alertActions.error(error));
+                }
+            );
+    };
+
+    function success(user) { return { type: userConstants.TEAM_ADD_SUCCESS, user } }
+    function failure(error) { return { type: userConstants.TEAM_ADD_FAILURE, error } }
 }

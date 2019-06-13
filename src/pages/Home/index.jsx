@@ -1,4 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
+import { userActions } from '../../state/actions/user';
 
 import TeamWidget from './components/TeamWidget';
 import DetailsWidget from './components/DetailsWidget';
@@ -14,13 +17,12 @@ const Wrapper = styled.div`
   grid-template-rows: 50% 50%;
 `;
 
-export default class Home extends React.PureComponent {
+class Home extends React.PureComponent {
 
  constructor(props) {
     super(props)
 
     this.state = {
-      user: JSON.parse(localStorage.getItem('user')),
       teams: []
     };
 
@@ -31,6 +33,13 @@ export default class Home extends React.PureComponent {
   
   getData = data => {
     this.setState({ teams: JSON.parse(data)});
+
+    let teams = []
+    JSON.parse(data).forEach((currentValue, index, arr) => {
+      teams.push(currentValue.name)
+    })
+    const { dispatch } = this.props;
+    dispatch(userActions.addTeams(this.props.user, teams));
   };
 
   changeData = () => this.props.socket.emit("initial_data");
@@ -61,9 +70,25 @@ export default class Home extends React.PureComponent {
       return (
         <Wrapper>
           <TeamWidget teams={this.state.teams} sendTeam={this.createTeam} />
-          <DetailsWidget profilePicture={this.state.user.profile_picture} gender={this.state.user.gender} firstname={this.state.user.firstname} lastname={this.state.user.lastname} email={this.state.user.email} />
+          <DetailsWidget profilePicture={this.props.profile_picture} gender={this.props.gender} firstname={this.props.firstname} lastname={this.props.lastname} email={this.props.email} />
           <PlaceholderWidget />
         </Wrapper>
       );
   }
 }
+
+function mapStateToProps(state) {
+    const { profile_picture, gender, firstname, lastname, email } = state.authentication.user;
+    const { user } = state.authentication
+    return {
+        user,
+        profile_picture, 
+        gender, 
+        firstname, 
+        lastname, 
+        email
+    };
+}
+
+const connectedHome = connect(mapStateToProps)(Home);
+export { connectedHome as Home }; 

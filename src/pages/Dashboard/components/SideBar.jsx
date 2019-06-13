@@ -82,10 +82,11 @@ const SIDEBAR = styled.aside`
     display: ${props => props.hidden ? "none" : "block"};
     grid-column-start: 1;
     grid-column-end: 1;
-    grid-row-start: 1;
+    grid-row-start: 2;
     grid-row-end: 3;
     background-color: #252634;
     color: #ffffff;
+    height: 100%;
 `
 
 const SideBarGrid = styled.div`
@@ -111,7 +112,7 @@ class SideBar extends React.Component {
               <ProfileInfo>
                 <Username>Andreas</Username>
                 <GroupSelect>
-                    <option>Team 1</option>
+                    {this.props.teams && this.props.teams.map((team, index) => <option key={team}>{team}</option>)}
                 </GroupSelect>
               </ProfileInfo>
           </SideProfile>

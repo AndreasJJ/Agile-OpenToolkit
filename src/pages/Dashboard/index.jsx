@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import styled from 'styled-components';
 
@@ -10,7 +11,7 @@ import io from 'socket.io-client';
 const Grid = styled.div`
     display: grid;
     grid-template-columns: ${props => props.hidden ? "0px 100%" : "200px calc(100% - 200px);"};
-    grid-template-rows: 100px calc(100% - 100px);
+    grid-template-rows: 80px calc(100% - 80px);
     width: 100%;
     height: 100%;
 `
@@ -27,25 +28,24 @@ const Content = styled.div`
 `;
 
 /* eslint-disable react/prefer-stateless-function */
-export default class Dashboard extends React.PureComponent {
+class Dashboard extends React.PureComponent {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      hidden: false,
-      user: JSON.parse(localStorage.getItem('user'))
+      hidden: false
     };
 
-    this.socket = io('http://localhost:5000/' + this.props.namespace, {query: {token: this.state.user.access_token}});
+    this.socket = io('http://localhost:5000/' + this.props.namespace, {query: {token: this.props.access_token}});
 
     this.collapseSideBar = this.collapseSideBar.bind(this)
     this.logout = this.logout.bind(this)
   }
 
   componentDidMount() {
-    
   }
+
   collapseSideBar() {
     event.preventDefault();
     event.stopPropagation();
@@ -60,7 +60,7 @@ export default class Dashboard extends React.PureComponent {
     return (
       <Grid hidden={this.state.hidden} >
         <Header onClickCollapse={this.collapseSideBar} onClickLogout={this.logout}></Header>
-        <SideBar hidden={this.state.hidden} profilePic={this.state.user.profile_picture} ></SideBar>
+        <SideBar hidden={this.state.hidden} teams={this.props.teams} profilePic={this.props.profile_picture}  ></SideBar>
         <Content>
           <this.props.content socket={this.socket} />
         </Content>
@@ -68,3 +68,15 @@ export default class Dashboard extends React.PureComponent {
     );
   }
 }
+
+function mapStateToProps(state) {
+    const { teams, profile_picture, access_token } = state.authentication.user;
+    return {
+        teams, 
+        profile_picture, 
+        access_token
+    };
+}
+
+const connectedDashboard = connect(mapStateToProps)(Dashboard);
+export { connectedDashboard as Dashboard };

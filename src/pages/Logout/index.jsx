@@ -14,7 +14,7 @@ class Logout extends React.PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-      dispatch(userActions.logout());
+      dispatch(userActions.logout(this.props.user));
   }
 
   render() {
@@ -25,9 +25,9 @@ class Logout extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const { loggingIn } = state.authentication;
+    const { user } = state.authentication;
     return {
-        loggingIn
+        user
     };
 }
 
