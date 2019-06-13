@@ -42,10 +42,10 @@ class App extends React.Component {
 				      <Route exact path='/login' component={Login} />
 				      <Route exact path='/register' component={Register} />
 				      <Route exact path='/logout' component={Logout} />
-				      <PrivateRoute path='/dashboard' component={Dashboard} content={Home} namespace="dashboard" />
+				      <PrivateRoute path='/dashboard' component={Dashboard} content={Home} namespace="home" />
 				      <PrivateRoute path='/sprintboard' component={Dashboard} content={Sprintboard} namespace="sprintboard" />
 				      <PrivateRoute path='/backlog' component={Dashboard} content={Backlog} namespace="backlog" />
-				      <PrivateRoute path='/planning' component={Dashboard} content={Planning} namespace="planning" />
+				      <PrivateRoute path='/planning' component={Dashboard} content={Planning} namespace="planningpoker" />
 				      <PrivateRoute path='/retrospective' component={Dashboard} content={Retrospective} namespace="retrospective" />
 				      <Route component={Error404}/>
 				    </Switch>

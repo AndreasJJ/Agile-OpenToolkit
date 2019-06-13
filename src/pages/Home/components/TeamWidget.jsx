@@ -1,12 +1,14 @@
 import React from 'react';
 
-import AddTeam from './AddTeam';
+import JoinTeam from './JoinTeam';
 import CreateNewTeam from './CreateNewTeam';
 
 import Modal from '../../../sharedComponents/Modal';
 import Tabs from '../../../sharedComponents/Tabs';
 
 import styled from 'styled-components';
+import {People} from 'styled-icons/material/People';
+import {Crown} from 'styled-icons/fa-solid/Crown';
 
 const Widget = styled.div`
   grid-column-start: 1;
@@ -37,10 +39,29 @@ const WidgetBody = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
 `
 
 const TeamList = styled.div`
   flex-grow: 1;
+  height: 100%;
+  overflow: auto;
+`
+
+const TeamCard = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+`
+
+const Left = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+const Members = styled.button`
+  height: 30px;
 `
 
 const AddTeamButton = styled.button`
@@ -80,13 +101,23 @@ export default class TeamWidget extends React.PureComponent {
     this.setState({showModal: false})
   }
 
+  static Team = (props) => (
+      <TeamCard>
+        <Left>
+          <b>{props.name}</b>
+          <span><Crown size="1em" /><i>{" " + props.leader.firstname.charAt(0).toUpperCase() + props.leader.firstname.slice(1) + " " + props.leader.lastname}</i></span>
+        </Left>
+        <Members> {props.members.length} <People size="1em" /></Members>
+      </TeamCard>
+  );
+
   render () {
     return(
     <Widget>
       {
         this.state.showModal
         ?
-        <Modal content={<Tabs tabNames={["Join Team", "Create New Team"]} tabComponents={[<AddTeam />, <CreateNewTeam />]} />} exitModalCallback={this.closeModal} />
+        <Modal content={<Tabs tabNames={["Create New Team", "Join Team"]} tabComponents={[<CreateNewTeam sendTeam={this.props.sendTeam} onclick={this.closeModal} />, <JoinTeam />]} />} exitModalCallback={this.closeModal} />
         :
         null
       }
@@ -96,6 +127,7 @@ export default class TeamWidget extends React.PureComponent {
         </WidgetHeader>
         <WidgetBody>
           <TeamList>
+            {this.props.teams && this.props.teams.map((team, index) => <TeamWidget.Team key={index} name={team.name} leader={team.leader} members={team.members} />)}
           </TeamList>
           <AddTeamButton onClick={this.addTeamButtonClicked}>Add Team</AddTeamButton>
         </WidgetBody>

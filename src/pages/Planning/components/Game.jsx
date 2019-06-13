@@ -26,7 +26,7 @@ export default class Game extends React.PureComponent {
     super(props)
 
     this.state = {
-      state: 1
+      state: 0
     };
 
   }

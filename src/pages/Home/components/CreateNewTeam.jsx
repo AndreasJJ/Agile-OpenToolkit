@@ -71,11 +71,46 @@ export default class CreateNewTeam extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      teamName: "",
+      teamDescription: ""
     }
+
+    this.sendTeam = this.sendTeam.bind(this)
+    this.changeTeamName = this.changeTeamName.bind(this)
+    this.changeTeamDescription = this.changeTeamDescription.bind(this)
   }
 
   componentDidMount() {
 
+  }
+
+  sendTeam(e) {
+    e.preventDefault()
+
+    let name = this.state.teamName.trim()
+    let description = this.state.teamDescription.trim()
+
+    if(name.length < 3 || (description.length < 3 && description != null)) {
+      return
+    }
+    if(description == "") {
+      description = null
+    }
+
+    this.props.sendTeam(JSON.stringify({name: name, description: description}))
+    this.props.onclick()
+  }
+
+  changeTeamName(e) {
+    this.setState({
+      teamName: e.target.value
+    });
+  }
+
+  changeTeamDescription(e) {
+    this.setState({
+      teamDescription: e.target.value
+    });
   }
 
   render () {
@@ -87,14 +122,14 @@ export default class CreateNewTeam extends React.PureComponent {
          <Form>
            <InputWrapper>
              <label>Team Name</label>
-             <Input placeholder="Fiery Devils" />
+             <Input placeholder="Fiery Devils" value={this.state.teamName} onChange={this.changeTeamName} />
              <label>Short Description</label>
-             <Input placeholder="A team with real spirit." />
+             <Input placeholder="A team with real spirit." value={this.state.teamDescription} onChange={this.changeTeamDescription} />
              <label>Add Members</label>
              <TagsInput />
            </InputWrapper>
            <ButtonWrapper>
-             <SubmitButton> Create Team! </SubmitButton>
+             <SubmitButton onClick={this.sendTeam}> Create Team! </SubmitButton>
            </ButtonWrapper>
          </Form>
       </Wrapper>
