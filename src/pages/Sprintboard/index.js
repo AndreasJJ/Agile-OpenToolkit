@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import BoardList from './../../sharedComponents/BoardList';
 import NewListButton from './../../sharedComponents/NewListButton';
@@ -33,7 +34,7 @@ const ListWrapper = styled.div`
   white-space: nowrap;
 `;
 
-export default class Sprintboard extends React.PureComponent {
+class Sprintboard extends React.PureComponent {
 
  constructor(props) {
     super(props)
@@ -48,7 +49,8 @@ export default class Sprintboard extends React.PureComponent {
   }
 
   getData = data => {
-    this.setState({ listData: JSON.parse(data)});
+    this.setState({ listData: JSON.parse(data), loading: false});
+    console.log(JSON.parse(data))
   };
 
   changeData = () => this.props.socket.emit("initial_data");
@@ -56,8 +58,7 @@ export default class Sprintboard extends React.PureComponent {
   componentDidMount() {
     this.props.socket.on('connect', function(_socket) {
       console.log("connected")
-      this.props.socket.emit('join', {username: 'andreas', group: 'Chads'});
-      this.setState({loading: true});
+      this.props.socket.emit('join', {team: this.props.teams[this.props.selectedTeam]});
     }.bind(this));
     this.props.socket.on('disconnect', function(){
       console.log("disconnected")
@@ -104,3 +105,15 @@ export default class Sprintboard extends React.PureComponent {
       );
   }
 }
+
+function mapStateToProps(state) {
+    const { teams } = state.authentication.user;
+    const { selectedTeam } = state.teams
+    return {
+        teams,
+        selectedTeam
+    };
+}
+
+const connectedSprintboard = connect(mapStateToProps)(Sprintboard);
+export { connectedSprintboard as Sprintboard }; 

@@ -1,14 +1,14 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
+import { history } from '../../state/helpers/history';
 
 import { userActions } from '../../state/actions/user';
+
+import sideImage from '../../assets/login_image';
 
 import styled from 'styled-components';
 import {User} from 'styled-icons/fa-solid/User';
 import {UnlockAlt} from 'styled-icons/fa-solid/UnlockAlt';
-
-import bg from '../../assets/bg.png'
 
 const Container = styled.div`
   width: 100%;
@@ -17,63 +17,65 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  background-image: ${props => "url(" + props.image + ");"}
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 `;
 
 const Wrapper = styled.div`
-  width: 500px;
-  border-radius: 10px;
+  width: 800px;
+  border-radius: 6px;
   overflow: hidden;
   padding: 55px 55px 37px 55px;
-  background: #9152f8;
-  background: -webkit-linear-gradient(top, #f87d72, #b224ef);
-  -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-     -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-          box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+     -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+          box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+  display: grid;
+  grid-template-columns: Calc(50% - 1px) 2px Calc(50% - 1px);
+  grid-template-rows: 100%;
 `;
+
+const Left = styled.div`
+  padding-right: 5px;
+`
+
+const Middle = styled.div`
+  border: 1px dashed #000000;
+`
+
+const Right = styled.div`
+  padding-left: 5px;
+  background-image: url("${props => props.image}");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+`
 
 const LoginForm = styled.form`
   width: 100%;
 `;
 
-const Logo = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-`;
-
-const LogoImage = styled.img`
-  width: 120px;
-  height: 120px;
-`
-
 const Title = styled.h1`
   font-size: 30px;
-  color: #fff;
+  color: #000000;
   line-height: 1.2;
-  text-align: center;
+  text-align: left;
   text-transform: uppercase;
   display: block;
 `;
 
-const UsernameWrapper = styled.div`
+const EmailWrapper = styled.div`
   width: 100%;
   position: relative;
-  border-bottom: 2px solid rgba(255,255,255,0.24);
+  border-bottom: 1px solid rgba(0,0,0,0.24);
   margin-bottom: 30px;
-  color: white;
+  color: #000000;
 `;
 
 const PasswordWrapper = styled.div`
   width: 100%;
   position: relative;
-  border-bottom: 2px solid rgba(255,255,255,0.24);
+  border-bottom: 1px solid rgba(0,0,0,0.24);
   margin-bottom: 30px;
-  color: white;
+  color: #000000;
 `;
 
 const InputWrapper = styled.div`
@@ -82,11 +84,11 @@ const InputWrapper = styled.div`
   align-items: center;
 `;
 
-const LoginButtonWrapper = styled.div`
+const ButtonsWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
 `;
 
 
@@ -97,20 +99,37 @@ const Footer = styled.div`
 
 const LoginButton = styled.button`
   font-size: 16px;
-  color: #555555;
+  color: #ffffff;
+  background-color: #1565f0;
   line-height: 1.2;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  min-width: 120px;
+  min-width: 150px;
   height: 50px;
   border-radius: 25px;
+  border: none;
 `;
 
-const UsernameInput = styled.input`
+const ToRegisterButton = styled.button`
   font-size: 16px;
-  color: #fff;
+  color: #1565f0;
+  background-color: #ffffff;
+  border: 2px solid #1565f0;
+  line-height: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  min-width: 150px;
+  height: 50px;
+  border-radius: 25px;
+`
+
+const EmailInput = styled.input`
+  font-size: 16px;
+  color: #0000000;
   line-height: 1.2;
   display: block;
   width: 100%;
@@ -123,7 +142,7 @@ const UsernameInput = styled.input`
 
 const PasswordInput = styled.input`
   font-size: 16px;
-  color: #fff;
+  color: #000000;
   line-height: 1.2;
   display: block;
   width: 100%;
@@ -134,18 +153,18 @@ const PasswordInput = styled.input`
   outline: none;
 `;
 
-/* eslint-disable react/prefer-stateless-function */
 class Login extends React.PureComponent {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      username: '',
+      email: '',
       password: ''
     };
     this.login = this.login.bind(this)
-    this.changeUsernameInputValue = this.changeUsernameInputValue.bind(this)
+    this.toRegister = this.toRegister.bind(this)
+    this.changeEmailInputValue = this.changeEmailInputValue.bind(this)
     this.changePasswordInputValue = this.changePasswordInputValue.bind(this)
   }
 
@@ -157,14 +176,20 @@ class Login extends React.PureComponent {
     e.preventDefault();
 
     const { dispatch } = this.props;
-    if (this.state.username && this.state.password) {
-      dispatch(userActions.login(this.state.username, this.state.password));
+    if (this.state.email && this.state.password) {
+      dispatch(userActions.login(this.state.email, this.state.password));
     }
   }
 
-  changeUsernameInputValue(value) {
+  toRegister(e) {
+    e.preventDefault();
+
+    history.push('/register');
+  }
+
+  changeEmailInputValue(value) {
     this.setState({
-      username: value
+      email: value
     });
   }
 
@@ -177,34 +202,40 @@ class Login extends React.PureComponent {
   render() {
 
     return (
-      <Container image={bg}>
+      <Container>
         <Wrapper>
-          <LoginForm>
-            <Logo>
-              <LogoImage src="static/assets/logo.svg" />
-            </Logo>
-            <Title>Login</Title>
-            <UsernameWrapper>
-              <span>Username</span>
-              <InputWrapper>
-                <User size="1em" />
-                <UsernameInput type="text" name="username" value={this.state.username} onChange={e => this.changeUsernameInputValue(e.target.value)} placeholder="Username" minlength="3" maxlength="12" required />
-              </InputWrapper>
-            </UsernameWrapper>
-            <PasswordWrapper>
-              <span>Password</span>
-              <InputWrapper>
-                <UnlockAlt size="1em" />
-                <PasswordInput type="password" name="password" value={this.state.password} onChange={e => this.changePasswordInputValue(e.target.value)} placeholder="Password" minlength="6" maxlength="32" required />
-              </InputWrapper>
-            </PasswordWrapper>
-            <LoginButtonWrapper>
-              <LoginButton onClick={e => this.login(e)}>
-                  Login
-              </LoginButton>
-            </LoginButtonWrapper>
-            <Footer></Footer>
-          </LoginForm>
+          <Left>
+            <LoginForm>
+              <Title>Login</Title>
+              <EmailWrapper>
+                <span>Email</span>
+                <InputWrapper>
+                  <User size="1em" />
+                  <EmailInput type="text" name="email" value={this.state.email} onChange={e => this.changeEmailInputValue(e.target.value)} placeholder="email" required />
+                </InputWrapper>
+              </EmailWrapper>
+              <PasswordWrapper>
+                <span>Password</span>
+                <InputWrapper>
+                  <UnlockAlt size="1em" />
+                  <PasswordInput type="password" name="password" value={this.state.password} onChange={e => this.changePasswordInputValue(e.target.value)} placeholder="Password" required />
+                </InputWrapper>
+              </PasswordWrapper>
+              <ButtonsWrapper>
+                <ToRegisterButton onClick={e => this.toRegister(e)}>
+                    Register
+                </ToRegisterButton>
+                <LoginButton onClick={e => this.login(e)}>
+                    Login
+                </LoginButton>
+              </ButtonsWrapper>
+              <Footer></Footer>
+            </LoginForm>
+          </Left>
+          <Middle></Middle>
+          <Right image={sideImage}>
+
+          </Right>
         </Wrapper>
       </Container>
     );

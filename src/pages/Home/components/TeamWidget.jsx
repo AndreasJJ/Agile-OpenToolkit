@@ -105,7 +105,7 @@ export default class TeamWidget extends React.PureComponent {
       <TeamCard>
         <Left>
           <b>{props.name}</b>
-          <span><Crown size="1em" /><i>{" " + props.leader.firstname.charAt(0).toUpperCase() + props.leader.firstname.slice(1) + " " + props.leader.lastname}</i></span>
+          <span><Crown size="1em" /><i>{props.leader.firstname ? " " + props.leader.firstname.charAt(0).toUpperCase() + props.leader.firstname.slice(1) : null }{props.leader.lastname ? + " " + props.leader.lastname : null}</i></span>
         </Left>
         <Members> {props.members.length} <People size="1em" /></Members>
       </TeamCard>

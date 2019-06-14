@@ -33,7 +33,6 @@ class Home extends React.PureComponent {
   
   getData = data => {
     this.setState({ teams: JSON.parse(data)});
-
     let teams = []
     JSON.parse(data).forEach((currentValue, index, arr) => {
       teams.push(currentValue.name)

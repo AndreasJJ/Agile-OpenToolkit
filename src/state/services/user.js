@@ -9,10 +9,10 @@ export const userService = {
     addTeams
 };
 
-async function login(username, password) {
+async function login(email, password) {
     let res = await fetch('http://localhost:5000/auth', {
       method: 'POST',
-      body: JSON.stringify({'email': username, 'password': password}),
+      body: JSON.stringify({'email': email, 'password': password}),
       crossDomain: true,
       credentials: 'include',
       headers: {
@@ -30,7 +30,7 @@ async function login(username, password) {
             location.reload(true);
         }
 
-        const error = response.statusText;
+        const error = res.statusText;
         return Promise.reject(error);
     }
 
@@ -60,10 +60,10 @@ async function logout(user) {
         });
 }
 
-async function register(username, password) {
+async function register(email, password, firstname, lastname) {
   let res = await fetch('http://localhost:5000/register', {
       method: 'POST',
-      body: JSON.stringify({'email': username, 'password': password}),
+      body: JSON.stringify({'email': email, 'password': password, 'firstname': firstname, 'lastname': lastname}),
       crossDomain: true,
       credentials: "include",
       headers: {
@@ -81,7 +81,7 @@ async function register(username, password) {
           location.reload(true);
       }
 
-      const error = response.statusText;
+      const error = res.statusText;
       return Promise.reject(error);
   }
 
@@ -109,7 +109,7 @@ async function refresh(user) {
           location.reload(true);
       }
 
-      const error = response.statusText;
+      const error = res.statusText;
       return Promise.reject(error);
   }
 
