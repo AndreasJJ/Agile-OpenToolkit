@@ -115,11 +115,11 @@ const InputWrapper = styled.div`
   align-items: center;
 `;
 
-const RegisterButtonWrapper = styled.div`
+const ButtonsWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
 `;
 
 const RegisterButton = styled.button`
@@ -131,11 +131,26 @@ const RegisterButton = styled.button`
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  min-width: 120px;
+  min-width: 150px;
   height: 50px;
   border-radius: 25px;
   border: none;
 `;
+
+const ToLoginButton = styled.button`
+  font-size: 16px;
+  color: #1565f0;
+  background-color: #ffffff;
+  border: 2px solid #1565f0;
+  line-height: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  min-width: 150px;
+  height: 50px;
+  border-radius: 25px;
+`
 
 const Footer = styled.div`
   text-align: center;
@@ -308,6 +323,12 @@ class Register extends React.PureComponent {
     });
   }
 
+  toLogin(e) {
+    e.preventDefault();
+
+    history.push('/login');
+  }
+
   render() {
 
     return (
@@ -353,11 +374,14 @@ class Register extends React.PureComponent {
                     <ConfirmPasswordInput type="password" name="confirm_password" value={this.state.confirmPassword} onChange={e => this.changeConfirmPasswordInputValue(e.target.value)} placeholder="Confirm password" minlength="6" maxlength="32" required />
                   </InputWrapper>
                 </PasswordWrapper>
-                <RegisterButtonWrapper>
+                <ButtonsWrapper>
+                  <ToLoginButton onClick={e => this.toLogin(e)}>
+                    To Login
+                  </ToLoginButton>
                   <RegisterButton onClick={e => this.register(e)}>
                       Register
                   </RegisterButton>
-                </RegisterButtonWrapper>
+                </ButtonsWrapper>
                 <Footer></Footer>
               </RegisterForm>
             </Left>

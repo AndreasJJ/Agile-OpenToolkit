@@ -223,7 +223,7 @@ class Login extends React.PureComponent {
               </PasswordWrapper>
               <ButtonsWrapper>
                 <ToRegisterButton onClick={e => this.toRegister(e)}>
-                    Register
+                    To Register
                 </ToRegisterButton>
                 <LoginButton onClick={e => this.login(e)}>
                     Login
