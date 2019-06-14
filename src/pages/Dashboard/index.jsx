@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { teamActions } from '../../state/actions/teams'
+
 import styled from 'styled-components';
 
 import Header from './components/Header';
@@ -41,6 +43,7 @@ class Dashboard extends React.PureComponent {
 
     this.collapseSideBar = this.collapseSideBar.bind(this)
     this.logout = this.logout.bind(this)
+    this.selectTeam = this.selectTeam.bind(this)
   }
 
   componentDidMount() {
@@ -56,11 +59,16 @@ class Dashboard extends React.PureComponent {
     this.props.history.push('/logout')
   }
 
+  selectTeam(index) {
+    const { dispatch } = this.props;
+    dispatch(teamActions.selectTeam(parseInt(index)));
+  }
+
   render() {
     return (
       <Grid hidden={this.state.hidden} >
         <Header onClickCollapse={this.collapseSideBar} onClickLogout={this.logout}></Header>
-        <SideBar hidden={this.state.hidden} teams={this.props.teams} profilePic={this.props.profile_picture}  ></SideBar>
+        <SideBar hidden={this.state.hidden} selectTeam={this.selectTeam} teams={this.props.teams} profilePic={this.props.profile_picture} selectedIndex={this.props.selectedTeam} ></SideBar>
         <Content>
           <this.props.content socket={this.socket} />
         </Content>
@@ -71,10 +79,12 @@ class Dashboard extends React.PureComponent {
 
 function mapStateToProps(state) {
     const { teams, profile_picture, access_token } = state.authentication.user;
+    const { selectedTeam } = state.teams
     return {
         teams, 
         profile_picture, 
-        access_token
+        access_token,
+        selectedTeam
     };
 }
 
