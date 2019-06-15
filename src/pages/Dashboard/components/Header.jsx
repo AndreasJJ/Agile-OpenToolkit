@@ -56,7 +56,7 @@ class Header extends React.Component {
           <Bars size="1em" />
         </Collapse>
         <LogoWrapper>
-            <Logo>Agile Toolbox</Logo>
+            <Logo>Agile Toolkit</Logo>
         </LogoWrapper>
         <Logout onClick={() => {this.props.onClickLogout()}}>
           <SignOutAlt size="1em" />

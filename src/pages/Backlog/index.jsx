@@ -129,7 +129,7 @@ export default class Backlog extends React.PureComponent {
               </Search>
             </Header>
             <Body>
-              <Issue title={"A test issue created to show the issue card"} id={1} creationDate={"2 months ago"} creator={"Andreas"} updated={"1 day ago"} status={"CLOSED"} />
+              <Issue title={"A test issue created to show the issue card"} id={1} creationDate={"2 months ago"} creator={"Andreas"} updated={"1 day ago"} status={"CLOSED"} tasks={[{'title': "Test 1"}, {'title': "Test 2"}, {'title': "Test 3"}, {'title': "Test 4"}, {'title': "Test 5"}]} />
               <Issue title={"Another test issue created to show the issue card"} id={2} creationDate={"2 months ago"} creator={"Andreas"} updated={"1 day ago"} status={"OPEN"} />
             </Body>
           </Content>

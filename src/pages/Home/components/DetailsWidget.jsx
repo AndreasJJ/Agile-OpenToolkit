@@ -115,6 +115,10 @@ const SaveButton = styled.button`
   -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
   -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
   box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+
+  &:disabled {
+    background-color: #cccccc;
+  }
 `
 
 
@@ -202,11 +206,17 @@ export default class DetailsWidget extends React.PureComponent {
 
     this.state = {
       profilePicture: this.props.profilePicture,
+      originalGender: this.props.gender,
+      originalFirstname: this.props.firstname ? this.props.firstname : "",
+      originalLastname: this.props.lastname ? this.props.lastname : "",
+      originalMobile: this.props.mobile ? this.props.mobile : "",
+      originalEmail: this.props.email ? this.props.email : "",
       gender: this.props.gender,
       firstname: this.props.firstname ? this.props.firstname : "",
       lastname: this.props.lastname ? this.props.lastname : "",
       mobile: this.props.mobile ? this.props.mobile : "",
-      email: this.props.email ? this.props.email : ""
+      email: this.props.email ? this.props.email : "",
+      saveDisabled: true
     };
 
     this.changeGender = this.changeGender.bind(this)
@@ -214,6 +224,7 @@ export default class DetailsWidget extends React.PureComponent {
     this.changeLastname = this.changeLastname.bind(this)
     this.changeMobile = this.changeMobile.bind(this)
     this.changeEmail = this.changeEmail.bind(this)
+    this.isOriginal = this.isOriginal.bind(this)
   }
 
   componentDidMount() {
@@ -221,33 +232,85 @@ export default class DetailsWidget extends React.PureComponent {
   }
 
   changeGender(e) {
-    console.log(e.target)
-    console.log(e.checked)
-    e.checked = !e.checked
+    let _saveDisabled = false
+    if(this.isOriginal(!this.state.gender)) {
+      _saveDisabled = true
+    }
+
+    this.setState({gender: !this.state.gender, saveDisabled: _saveDisabled})
   }
 
   changeFirstname(e) {
+    let _saveDisabled = false
+    if(this.isOriginal(null,e.target.value)) {
+      _saveDisabled = true
+    }
     this.setState({
-      firstname: e.target.value
+      firstname: e.target.value,
+      saveDisabled: _saveDisabled
     });
   }
 
   changeLastname(e) {
+    let _saveDisabled = false
+    if(this.isOriginal(null,null, e.target.value)) {
+      _saveDisabled = true
+    }
     this.setState({
-      lastname: e.target.value
+      lastname: e.target.value,
+      saveDisabled: _saveDisabled
     });
   }
 
-  changeMobile(e) {
+  changeMobile(e) { 
+    let value = parseInt(e.target.value) ? parseInt(e.target.value) : ""
+    value = value != NaN ? value: ""
+
+    let _saveDisabled = false
+    if(this.isOriginal(null,null, null, value)) {
+      _saveDisabled = true
+    }
     this.setState({
-      mobile: parseInt(e.target.value) ? parseInt(e.target.value) : ""
+      mobile: value,
+      saveDisabled: _saveDisabled
     });
   }
 
   changeEmail(e) {
+    let _saveDisabled = false
+    if(this.isOriginal(null, null, null, null, e.target.value)) {
+      _saveDisabled = true
+    }
     this.setState({
-      email: e.target.value
+      email: e.target.value,
+      saveDisabled: _saveDisabled
     });
+  }
+
+  isOriginal(
+              gender = null,
+              firstname = null,
+              lastname = null,
+              mobile = null,
+              email = null
+            )
+  {
+    let originalGender = this.state.originalGender
+    let originalFirstname = this.state.originalFirstname
+    let originalLastname = this.state.originalLastname
+    let originalMobile = this.state.originalMobile
+    let originalEmail = this.state.originalEmail
+    gender = gender != null ? gender : this.state.gender
+    firstname = firstname != null ? firstname : this.state.firstname
+    lastname = lastname != null  ? lastname : this.state.lastname
+    mobile = mobile != null ? mobile : this.state.mobile
+    email = email != null ? email : this.state.email
+
+    if(originalGender === gender && originalFirstname === firstname && originalLastname === lastname && originalMobile === mobile && originalEmail === email) {
+      return true
+    } else {
+      return false
+    }
   }
 
   render () {
@@ -263,7 +326,7 @@ export default class DetailsWidget extends React.PureComponent {
                 <ProfilePicture src={this.state.profilePicture ? this.state.profilePicture : BlankProfilePicture}>
                 </ProfilePicture>
                 <Switch>
-                  <ToggleButton type="checkbox" checked={this.state.gender} onChange={this.changeGender} />
+                  <ToggleButton type="checkbox" defaultChecked={this.state.gender} onChange={this.changeGender} />
                   <Slider></Slider>
                 </Switch>
               </FirstRow>
@@ -288,7 +351,7 @@ export default class DetailsWidget extends React.PureComponent {
                 </Email>
               </Contact>
             </Inputs>
-            <SaveButton> Save </SaveButton>
+            <SaveButton disabled={this.state.saveDisabled}> Save </SaveButton>
           </WidgetBody>
         </Content>
       </Widget>

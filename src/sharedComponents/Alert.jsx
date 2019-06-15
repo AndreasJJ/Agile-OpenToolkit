@@ -69,7 +69,6 @@ const Message = styled.div`
 class Alert extends React.Component {
     constructor(props) {
         super(props)
-
     }
 
     render() {
@@ -97,10 +96,10 @@ class Alert extends React.Component {
                     </Icon>
                     <AlertContent>
                         <Type>
-                            <b>{this.props.alert.type && <Toast>{this.props.alert.type}</Toast> }</b>
+                            <b>{this.props.alert.type && <Toast>{typeof this.props.alert.type === 'object' ? "" : this.props.alert.type}</Toast> }</b>
                         </Type>
                         <Message>
-                            {this.props.alert.message && <Toast>{this.props.alert.message}</Toast> }
+                            {this.props.alert.message && <Toast>{typeof this.props.alert.message === 'object' ? "" : this.props.alert.message}</Toast> }
                         </Message>
                     </AlertContent>
                 </Content>

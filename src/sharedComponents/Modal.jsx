@@ -19,9 +19,9 @@ const Content = styled.div `
     background-color: white;
     width: 60%;
     height: 60%;
-    max-width: 800px;
-    min-width: 500px;
-    min-height: 500px;
+    max-width: ${props => props.maxWidth ? props.maxWidth : "800px"};
+    min-width: ${props => props.minWidth ? props.minWidth : "500px"};
+    min-height: ${props => props.minHeight ? props.minHeight : "500px"};
     border-radius: 6px;
     overflow: auto;
     display: flex;
@@ -39,7 +39,7 @@ class Modal extends React.Component {
     render() {
         return (
             <Background onClick={this.props.exitModalCallback}>
-                <Content onClick={this.stopBackgroundCall}>
+                <Content minWidth={this.props.minWidth} maxWidth={this.props.maxWidth} minHeight={this.props.minHeight} onClick={this.stopBackgroundCall}>
                     {this.props.title ? <h1>{this.props.title}</h1> : null}
                     {this.props.content ? (this.props.content instanceof String ? <p>{this.props.content}</p> : this.props.content) : null}
                 </Content>

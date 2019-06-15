@@ -2,6 +2,7 @@ import React from 'react';
 
 import JoinTeam from './JoinTeam';
 import { CreateNewTeam } from './CreateNewTeam';
+import TeamMembers from './TeamMembers';
 
 import Modal from '../../../sharedComponents/Modal';
 import Tabs from '../../../sharedComponents/Tabs';
@@ -82,10 +83,13 @@ export default class TeamWidget extends React.PureComponent {
     super(props)
 
     this.state = {
-      showModal: false
+      showModal: false,
+      modalContent: "",
+      selectedTeam: 0
     };
 
     this.addTeamButtonClicked = this.addTeamButtonClicked.bind(this)
+    this.showMembersButtonClicked = this.showMembersButtonClicked.bind(this)
     this.closeModal = this.closeModal.bind(this)
   }
 
@@ -94,15 +98,26 @@ export default class TeamWidget extends React.PureComponent {
   }
 
   addTeamButtonClicked() {
-    this.setState({showModal: true})
+    this.setState({showModal: true, modalContent: "teamCreation"})
+  }
+
+  showMembersButtonClicked(e) {
+    if(e.target.tagName == "path") {
+      this.setState({selectedTeam: e.target.parentNode.parentNode.parentNode.dataset.teamindex})
+    } else if(e.target.tagName == "svg") {
+      this.setState({selectedTeam: e.target.parentNode.parentNode.dataset.teamindex})
+    } else if(e.target.tagName == "BUTTON") {
+     this.setState({selectedTeam: e.target.parentNode.dataset.teamindex})
+    }
+    this.setState({showModal: true, modalContent: "showMembers"})
   }
 
   closeModal() {
-    this.setState({showModal: false})
+    this.setState({showModal: false, modalContent: ""})
   }
 
   static Team = (props) => (
-      <TeamCard>
+      <TeamCard data-teamindex={props.teamIndex}>
         <Left>
           <b>{props.name}</b>
           <span>
@@ -112,17 +127,25 @@ export default class TeamWidget extends React.PureComponent {
             </i>
           </span>
         </Left>
-        <Members> {props.members.length} <People size="1em" /></Members>
+        <Members onClick={props.onclick}> {props.members.length} <People size="1em" /></Members>
       </TeamCard>
   );
 
   render () {
+    let modal = <Modal />
+
+    if(this.state.modalContent == "teamCreation") {
+      modal = <Modal content={<Tabs tabNames={["Create New Team", "Join Team"]} tabComponents={[<CreateNewTeam sendTeam={this.props.sendTeam} onclick={this.closeModal} />, <JoinTeam />]} />} exitModalCallback={this.closeModal} />
+    } else if (this.state.modalContent == "showMembers") {
+      modal = <Modal content={<TeamMembers teams={this.props.teams} teamIndex={this.state.selectedTeam} /> } minWidth={"400px"} maxWidth={"400px"} exitModalCallback={this.closeModal} />
+    }
+
     return(
     <Widget>
       {
         this.state.showModal
         ?
-        <Modal content={<Tabs tabNames={["Create New Team", "Join Team"]} tabComponents={[<CreateNewTeam sendTeam={this.props.sendTeam} onclick={this.closeModal} />, <JoinTeam />]} />} exitModalCallback={this.closeModal} />
+        modal
         :
         null
       }
@@ -132,7 +155,7 @@ export default class TeamWidget extends React.PureComponent {
         </WidgetHeader>
         <WidgetBody>
           <TeamList>
-            {this.props.teams && this.props.teams.map((team, index) => <TeamWidget.Team key={index} name={team.name} leader={team.leader} members={team.members} />)}
+            {this.props.teams && this.props.teams.map((team, index) => <TeamWidget.Team key={index} onclick={this.showMembersButtonClicked} teamIndex={index} name={team.name} leader={team.leader} members={team.members} />)}
           </TeamList>
           <AddTeamButton onClick={this.addTeamButtonClicked}>Add Team</AddTeamButton>
         </WidgetBody>
