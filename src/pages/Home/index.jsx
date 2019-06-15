@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { userActions } from '../../state/actions/user';
+import { alertActions } from '../../state/actions/alert';
 
 import TeamWidget from './components/TeamWidget';
 import DetailsWidget from './components/DetailsWidget';
@@ -29,6 +30,7 @@ class Home extends React.PureComponent {
     this.getData = this.getData.bind(this)
     this.changeData = this.changeData.bind(this)
     this.createTeam = this.createTeam.bind(this)
+    this.teamAdded = this.teamAdded.bind(this)
   }
   
   getData = data => {
@@ -43,6 +45,8 @@ class Home extends React.PureComponent {
 
   changeData = () => this.props.socket.emit("initial_data");
 
+  teamAdded = () => this.props.dispatch(alertActions.success('Team successfully added'));
+
   componentDidMount() {
     this.props.socket.on('connect', function(_socket) {
       console.log("connected")
@@ -53,16 +57,22 @@ class Home extends React.PureComponent {
     this.props.socket.emit('initial_data');
     this.props.socket.on('get_data', this.getData);
     this.props.socket.on('change_data', this.changeData);
+    this.props.socket.on('team_added', this.teamAdded);
   }
 
   componentWillUnmount() {
+    this.props.socket.off("conenct");
+    this.props.socket.off("disconenct");
     this.props.socket.off("get_data");
     this.props.socket.off("change_data");
+    this.props.socket.off('team_added');
   }
 
   createTeam(team) {
-    console.log(team)
     this.props.socket.emit('create_team', team);
+
+    const { dispatch } = this.props;
+    dispatch(alertActions.info('The team creation process has started. Please wait for verification.'));
   }
 
   render() {

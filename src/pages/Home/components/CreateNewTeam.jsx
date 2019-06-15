@@ -1,4 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
+import { alertActions } from '../../../state/actions/alert';
 
 import TagsInput from '../../../sharedComponents/TagsInput';
 
@@ -66,7 +69,7 @@ const SubmitButton = styled.button`
 `
 
 /* eslint-disable react/prefer-stateless-function */
-export default class CreateNewTeam extends React.PureComponent {
+class CreateNewTeam extends React.PureComponent {
 
   constructor(props) {
     super(props)
@@ -86,11 +89,18 @@ export default class CreateNewTeam extends React.PureComponent {
 
   sendTeam(e) {
     e.preventDefault()
+    const { dispatch } = this.props;
 
     let name = this.state.teamName.trim()
     let description = this.state.teamDescription.trim()
 
-    if(name.length < 3 || (description.length < 3 && description != null)) {
+    if(name.length < 3 ) {
+      dispatch(alertActions.error('The team name has to be at least 3 characters long'));
+      return
+    }
+
+    if(description.length < 3 && description != null) {
+      dispatch(alertActions.error('The description has to either be 3 characters long or empty'));
       return
     }
     if(description == "") {
@@ -136,3 +146,11 @@ export default class CreateNewTeam extends React.PureComponent {
     )
   }
 }
+
+function mapStateToProps(state) {
+    return {
+    };
+}
+
+const connectedCreateNewTeam = connect(mapStateToProps)(CreateNewTeam);
+export { connectedCreateNewTeam as CreateNewTeam }; 

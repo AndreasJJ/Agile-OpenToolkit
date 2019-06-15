@@ -50,7 +50,7 @@ const Right = styled.div`
   background-image: url("${props => props.image}");
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
 `
 
 

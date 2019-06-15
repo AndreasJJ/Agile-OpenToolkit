@@ -82,7 +82,7 @@ class Alert extends React.Component {
             } else if(this.props.alert.type == "alert-success") {
                 IconComponent = <Check />
                 color = "#249b34"
-            } else {
+            } else if(this.props.alert.type == "alert-info") {
                 IconComponent = <Bell />
             }
         }

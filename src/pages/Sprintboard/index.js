@@ -69,6 +69,8 @@ class Sprintboard extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    this.props.socket.off("conenct");
+    this.props.socket.off("disconenct");
     this.props.socket.off("get_data");
     this.props.socket.off("change_data");
   }
