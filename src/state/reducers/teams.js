@@ -1,14 +1,14 @@
-import { teamConstants } from '../constants/teams';
+import { teamConstants } from '../constants/teams'
 
-export function teams(state = {selectedTeam: 0}, action) {
-    switch (action.type) {
+export function teams (state = { selectedTeam: 0 }, action) {
+  switch (action.type) {
     case teamConstants.TEAM_SELECT_SUCCESS:
-        return {
-            selectedTeam: action.index
-        };
+      return {
+        selectedTeam: action.index
+      }
     case teamConstants.TEAM_SELECT_FAILURE:
-        return state
+      return state
     default:
-        return state
-    }
+      return state
+  }
 }

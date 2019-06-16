@@ -1,7 +1,7 @@
 export const teamService = {
-    selectTeam
-};
+  selectTeam
+}
 
-async function selectTeam(index) {
-    return index
+async function selectTeam (index) {
+  return index
 }

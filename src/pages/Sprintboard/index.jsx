@@ -48,7 +48,7 @@ class Sprintboard extends React.PureComponent {
     this.addList = this.addList.bind(this)
   }
 
-  getData = data => {
+  getData = (data) => {
     this.setState({ listData: JSON.parse(data), loading: false});
     console.log(JSON.parse(data))
   };

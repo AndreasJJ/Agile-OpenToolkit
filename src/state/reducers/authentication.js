@@ -1,53 +1,53 @@
-import { userConstants } from '../constants/user';
+import { userConstants } from '../constants/user'
 
-export function authentication(state = {}, action) {
-    switch (action.type) {
+export function authentication (state = {}, action) {
+  switch (action.type) {
     case userConstants.LOGIN_REQUEST:
-        return {
-            loggingIn: true,
-            user: action.user
-        };
+      return {
+        loggingIn: true,
+        user: action.user
+      }
     case userConstants.LOGIN_SUCCESS:
-        return {
-            loggedIn: true,
-            user: action.user
-        };
+      return {
+        loggedIn: true,
+        user: action.user
+      }
     case userConstants.LOGIN_FAILURE:
-        return {};
+      return {}
     case userConstants.REGISTRATION_REQUEST:
-        return {
-            loggingIn: true,
-            user: action.user
-        };
+      return {
+        loggingIn: true,
+        user: action.user
+      }
     case userConstants.REGISTRATION_SUCCESS:
-        return {
-            loggedIn: true,
-            user: action.user
-        };
+      return {
+        loggedIn: true,
+        user: action.user
+      }
     case userConstants.REGISTRATION_FAILURE:
-        return {};
+      return {}
     case userConstants.REFRESH_REQUEST:
-        return {
-            loggingIn: true,
-            user: action.user
-        };
+      return {
+        loggingIn: true,
+        user: action.user
+      }
     case userConstants.REFRESH_SUCCESS:
-        return {
-            loggedIn: true,
-            user: action.user
-        };
+      return {
+        loggedIn: true,
+        user: action.user
+      }
     case userConstants.REFRESH_FAILURE:
-        return {};
+      return {}
     case userConstants.LOGOUT:
-        return {};
+      return {}
     case userConstants.TEAM_ADD_SUCCESS:
-        return {
-            loggedIn: true,
-            user: action.user
-        };
+      return {
+        loggedIn: true,
+        user: action.user
+      }
     case userConstants.TEAM_ADD_FAILURE:
-        return state
+      return state
     default:
-        return state
-    }
+      return state
+  }
 }

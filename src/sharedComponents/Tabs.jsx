@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const Wrapper = styled.div`
   height: 100%;
@@ -53,7 +53,7 @@ const Tab = styled.li`
       }
   }
 
-  &:nth-child(${props => props.indexNumber-1}) {
+  &:nth-child(${props => props.indexNumber - 1}) {
       border: none;
       padding: 10px;
 
@@ -87,8 +87,7 @@ const ActiveTabComponent = styled.div`
 
 /* eslint-disable react/prefer-stateless-function */
 export default class Tabs extends React.PureComponent {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       activeTabIndex: 0
@@ -97,33 +96,32 @@ export default class Tabs extends React.PureComponent {
     this.tabClicked = this.tabClicked.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
 
   }
 
-  tabClicked(e) {
-    this.setState({activeTabIndex: parseInt(e.target.dataset.index)})
+  tabClicked (e) {
+    this.setState({ activeTabIndex: parseInt(e.target.dataset.index) })
   }
 
   render () {
-    return(
+    return (
       <Wrapper>
         <TabMenu>
           {
             this.props.tabNames.map((item, index) => {
-              if(index == this.state.activeTabIndex) {
-                return( <Tab indexNumber={this.state.activeTabIndex+1} key={index}>{item}</Tab> )
+              if (index === this.state.activeTabIndex) {
+                return (<Tab indexNumber={this.state.activeTabIndex + 1} key={index}>{item}</Tab>)
               } else {
-                return( <Tab onClick={this.tabClicked} indexNumber={this.state.activeTabIndex+1} key={index} data-index={index}>{item}</Tab> )
+                return (<Tab onClick={this.tabClicked} indexNumber={this.state.activeTabIndex + 1} key={index} data-index={index}>{item}</Tab>)
               }
-
             })
-           }
+          }
         </TabMenu>
         <ActiveTabComponent>
-        {
-          this.props.tabComponents[this.state.activeTabIndex]
-        }
+          {
+            this.props.tabComponents[this.state.activeTabIndex]
+          }
         </ActiveTabComponent>
       </Wrapper>
     )
