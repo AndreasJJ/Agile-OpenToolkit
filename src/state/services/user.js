@@ -1,5 +1,5 @@
-import { authAccessHeader } from '../helpers/AuthAccessHeader'
-import { authRefreshHeader } from '../helpers/AuthRefreshHeader'
+import { authAccessHeader } from '../helpers/AuthAccessHeader';
+import { authRefreshHeader } from '../helpers/AuthRefreshHeader';
 
 export const userService = {
   login,
@@ -7,7 +7,7 @@ export const userService = {
   register,
   refresh,
   addTeams
-}
+};
 
 async function login (email, password) {
   let res = await fetch('http://localhost:5000/auth', {
@@ -20,23 +20,23 @@ async function login (email, password) {
       'Content-Type': 'application/json'
     }
   }).catch(function (err) {
-    console.log(err)
-  })
+    Promise.reject(err);
+  });
 
   if (!res.ok) {
     if (res.status === 401) {
       // auto logout if 401 response returned from api
-      logout()
-      location.reload(true)
+      logout();
+      location.reload(true);
     }
 
-    const error = res.statusText
-    return Promise.reject(error)
+    const error = res.statusText;
+    return Promise.reject(error);
   }
 
-  let user = await res.json()
+  let user = await res.json();
 
-  return user
+  return user;
 }
 
 async function logout (user) {
@@ -47,8 +47,8 @@ async function logout (user) {
     credentials: 'include',
     headers: authAccessHeader(user)
   }).catch(function (err) {
-    console.log('error:' + err)
-  })
+    Promise.reject(err);
+  });
   await fetch('http://localhost:5000/logout/refresh', {
     method: 'POST',
     body: null,
@@ -56,8 +56,8 @@ async function logout (user) {
     credentials: 'include',
     headers: authRefreshHeader(user)
   }).catch(function (err) {
-    console.log('error:' + err)
-  })
+    Promise.reject(err);
+  });
 }
 
 async function register (email, password, firstname, lastname) {
@@ -71,23 +71,23 @@ async function register (email, password, firstname, lastname) {
       'Content-Type': 'application/json'
     }
   }).catch(function (err) {
-    console.log(err)
-  })
+    Promise.reject(err);
+  });
 
   if (!res.ok) {
     if (res.status === 401) {
       // auto logout if 401 response returned from api
-      logout()
-      location.reload(true)
+      logout();
+      location.reload(true);
     }
 
-    const error = res.statusText
-    return Promise.reject(error)
+    const error = res.statusText;
+    return Promise.reject(error);
   }
 
-  let user = await res.json()
+  let user = await res.json();
 
-  return user
+  return user;
 }
 
 async function refresh (user) {
@@ -98,31 +98,30 @@ async function refresh (user) {
     credentials: 'include',
     headers: authRefreshHeader(user)
   }).catch(function (err) {
-    console.log(err)
-  })
+    Promise.reject(err);
+  });
 
   if (!res.ok) {
-    console.log(res)
     if (res.status === 401) {
       // auto logout if 401 response returned from api
-      logout()
-      location.reload(true)
+      logout();
+      location.reload(true);
     }
 
-    const error = res.statusText
-    return Promise.reject(error)
+    const error = res.statusText;
+    return Promise.reject(error);
   }
 
-  let accessTokenInfo = await res.json()
+  let accessTokenInfo = await res.json();
 
-  user.access_token = accessTokenInfo.access_token
-  user.creation_timestamp = accessTokenInfo.creation_timestamp
-  user.expiration_timestamp = accessTokenInfo.expiration_timestamp
+  user.access_token = accessTokenInfo.access_token;
+  user.creation_timestamp = accessTokenInfo.creation_timestamp;
+  user.expiration_timestamp = accessTokenInfo.expiration_timestamp;
 
-  return user
+  return user;
 }
 
 async function addTeams (user, teams) {
-  user.teams = teams
-  return user
+  user.teams = teams;
+  return user;
 }

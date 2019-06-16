@@ -1,12 +1,12 @@
-import { createStore, applyMiddleware } from 'redux'
-import thunkMiddleware from 'redux-thunk'
-import { createLogger } from 'redux-logger'
-import rootReducer from '../reducers'
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { createLogger } from 'redux-logger';
+import rootReducer from '../reducers';
 
-import { loadState } from '../helpers/localstorage'
+import { loadState } from '../helpers/localstorage';
 
-const persistedState = loadState()
-const loggerMiddleware = createLogger()
+const persistedState = loadState();
+const loggerMiddleware = createLogger();
 
 export const store = createStore(
   rootReducer,
@@ -15,4 +15,4 @@ export const store = createStore(
     thunkMiddleware,
     loggerMiddleware
   )
-)
+);

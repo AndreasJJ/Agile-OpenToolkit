@@ -1,5 +1,5 @@
-var path = require('path')
-const webpack = require('webpack')
+var path = require('path');
+const webpack = require('webpack');
 const config = {
   devtool: 'eval-source-map',
   entry: ['babel-polyfill', path.join(__dirname, '/src/index.jsx')],
@@ -57,5 +57,5 @@ const config = {
       }
     ]
   }
-}
-module.exports = config
+};
+module.exports = config;

@@ -15,4 +15,4 @@ export const userConstants = {
 
   TEAM_ADD_SUCCESS: 'USERS_TEAM_ADD',
   TEAM_ADD_FAILURE: 'USERS_TEAM_FAILURE'
-}
+};
