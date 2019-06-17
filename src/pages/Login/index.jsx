@@ -211,21 +211,21 @@ class Login extends React.PureComponent {
                 <span>Email</span>
                 <InputWrapper>
                   <User size="1em" />
-                  <EmailInput type="text" name="email" value={this.state.email} onChange={e => this.changeEmailInputValue(e.target.value)} placeholder="email" required />
+                  <EmailInput type="text" tabIndex={1} name="email" value={this.state.email} onChange={e => this.changeEmailInputValue(e.target.value)} placeholder="email" required />
                 </InputWrapper>
               </EmailWrapper>
               <PasswordWrapper>
                 <span>Password</span>
                 <InputWrapper>
                   <UnlockAlt size="1em" />
-                  <PasswordInput type="password" name="password" value={this.state.password} onChange={e => this.changePasswordInputValue(e.target.value)} placeholder="Password" required />
+                  <PasswordInput type="password" tabIndex={2} name="password" value={this.state.password} onChange={e => this.changePasswordInputValue(e.target.value)} placeholder="Password" required />
                 </InputWrapper>
               </PasswordWrapper>
               <ButtonsWrapper>
-                <ToRegisterButton onClick={e => this.toRegister(e)}>
+                <ToRegisterButton type="button" tabIndex={4} onClick={e => this.toRegister(e)}>
                     To Register
                 </ToRegisterButton>
-                <LoginButton onClick={e => this.login(e)}>
+                <LoginButton type="submit" tabIndex={3} onClick={e => this.login(e)}>
                     Login
                 </LoginButton>
               </ButtonsWrapper>

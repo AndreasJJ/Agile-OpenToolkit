@@ -54,6 +54,8 @@ const TeamCard = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-top: 5px;
+  border-bottom: 0.5px solid lightgray;
+  padding-bottom: 5px;
 `
 
 const Left = styled.div`

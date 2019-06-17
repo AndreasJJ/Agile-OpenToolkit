@@ -67,8 +67,8 @@ class Dashboard extends React.PureComponent {
   render() {
     return (
       <Grid hidden={this.state.hidden} >
-        <Header onClickCollapse={this.collapseSideBar} onClickLogout={this.logout}></Header>
-        <SideBar hidden={this.state.hidden} selectTeam={this.selectTeam} teams={this.props.teams} profilePic={this.props.profile_picture} selectedIndex={this.props.selectedTeam} ></SideBar>
+        <Header onClickCollapse={this.collapseSideBar} selectTeam={this.selectTeam} firstname={this.props.firstname} lastname={this.props.lastname} teams={this.props.teams} profilePic={this.props.profile_picture} selectedIndex={this.props.selectedTeam}></Header>
+        <SideBar onClickLogout={this.logout} hidden={this.state.hidden} location={this.props.location} ></SideBar>
         <Content>
           <this.props.content socket={this.socket} />
         </Content>
@@ -78,10 +78,12 @@ class Dashboard extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const { teams, profile_picture, access_token } = state.authentication.user;
+    const { teams, firstname, lastname, profile_picture, access_token } = state.authentication.user;
     const { selectedTeam } = state.teams
     return {
         teams, 
+        firstname,
+        lastname,
         profile_picture, 
         access_token,
         selectedTeam

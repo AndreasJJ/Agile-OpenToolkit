@@ -3,18 +3,19 @@ import React from 'react';
 import styled from 'styled-components';
 import {Bars, SignOutAlt} from 'styled-icons/fa-solid'
 
+import BlankProfilePicture from '../../../assets/Blank-profile-image.gif'
+
 const HEADER = styled.header`
     display: grid;
-    grid-template-columns: fit-content(100%) auto fit-content(100%);
+    grid-template-columns: fit-content(100%) auto;
     grid-template-rows: 100%;
-    grid-column-start: 1;
+    grid-column-start: 2;
     grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 1;
-    -webkit-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.5);
-    -moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.5);
-    box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.5);
-    background-color: #ffffff;
+    background-color: #F4F4F4;
+    border-bottom: 1px solid #cccccc;
+    z-index: 9;
 `;
 
 const Collapse = styled.div`
@@ -25,14 +26,43 @@ const Collapse = styled.div`
     padding: 5px;
 `;
 
-const LogoWrapper = styled.div`
+const TopBar = styled.div`
     display: flex;
     align-items: center;
-    padding: 5px;
-`;
+    justify-content: flex-end;
+`
 
-const Logo = styled.span`
-    font-size: 2em;
+const ProfileCard = styled.div`
+    display: -webkit-inline-box;
+    align-items: center;
+    background-color: #ffffff;
+    -webkit-box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.31);
+    -moz-box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.31);
+    box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.31);
+    border-radius: 4px;
+    margin-right: 25px;
+`
+
+const ProfileImage = styled.img`
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+`
+
+const ProfileInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 50px;
+  justify-content: center;
+  padding: 0px 10px 0px 10px;
+`
+
+const Username = styled.span`
+
+`
+
+const GroupSelect = styled.select`
+    width: 100px;
 `
 
 const Logout = styled.div`
@@ -47,6 +77,18 @@ const Logout = styled.div`
 class Header extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      selectedIndex: this.props.selectedIndex
+    };
+
+    this.selectChange = this.selectChange.bind(this)
+  }
+
+  selectChange(e) {
+    this.setState({selectedIndex: e.target.value}, function(test) {
+      this.props.selectTeam(this.state.selectedIndex)
+    }.bind(this))
   }
 
   render() {
@@ -55,12 +97,20 @@ class Header extends React.Component {
         <Collapse onClick={() => {this.props.onClickCollapse()}}>
           <Bars size="1em" />
         </Collapse>
-        <LogoWrapper>
-            <Logo>Agile Toolkit</Logo>
-        </LogoWrapper>
-        <Logout onClick={() => {this.props.onClickLogout()}}>
-          <SignOutAlt size="1em" />
-        </Logout>
+        <TopBar>
+            <ProfileCard>
+              <ProfileImage src={this.props.ProfilePicture ? this.props.ProfilePicture : BlankProfilePicture}/>
+              <ProfileInfo>
+                <Username>{(this.props.firstname ? (this.props.firstname.charAt(0).toUpperCase() + this.props.firstname.slice(1)) : null) + " " + (this.props.lastname ? (this.props.lastname) : null)}</Username>
+                <GroupSelect onChange={this.selectChange} defaultValue={this.state.selectedIndex}>
+                    {
+                      //TODO: Handle if the stored selectedIndex in redux is higher than the number of teams
+                      this.props.teams && this.props.teams.map((team, index) => <option key={team} value={index}>{team}</option>)
+                    }
+                </GroupSelect>
+              </ProfileInfo>
+            </ProfileCard>
+        </TopBar>
       </HEADER>
     );
   }

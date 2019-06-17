@@ -6,7 +6,7 @@ import { alertActions } from '../../state/actions/alert';
 
 import TeamWidget from './components/TeamWidget';
 import DetailsWidget from './components/DetailsWidget';
-import PlaceholderWidget from './components/PlaceholderWidget';
+import NotificationsWidget from './components/NotificationsWidget';
 
 import styled from 'styled-components';
 
@@ -80,7 +80,7 @@ class Home extends React.PureComponent {
         <Wrapper>
           <TeamWidget teams={this.state.teams} sendTeam={this.createTeam} />
           <DetailsWidget profilePicture={this.props.profile_picture} gender={this.props.gender} firstname={this.props.firstname} lastname={this.props.lastname} email={this.props.email} />
-          <PlaceholderWidget />
+          <NotificationsWidget />
         </Wrapper>
       );
   }

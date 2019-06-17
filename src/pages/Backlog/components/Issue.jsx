@@ -134,7 +134,7 @@ export default class Issue extends React.Component {
           </TasksOpen>
         </Card>
         <Tasks displaying={this.state.taskVisible}>
-          {this.props.tasks && this.props.tasks.map((task, index) => <Task key={index} title={task.title} />)}
+          {this.props.tasks && this.props.tasks.map((task, index) => <Task key={index} title={task.title} assigne={task.assigne} />)}
         </Tasks>
       </Wrapper>
     )
