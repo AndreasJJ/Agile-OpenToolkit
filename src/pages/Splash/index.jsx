@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactFullpage from '@fullpage/react-fullpage';
+import { history } from '../../state/helpers/history';
 
 import styled from 'styled-components';
 
@@ -14,12 +15,17 @@ const Content = styled.div`
     height: inherit;
     width: inherit;
     display: grid;
-    grid-template-columns: 40% 60%;
-    grid-template-rows: 100%;
+    grid-template-columns: 100%;
+    grid-template-rows: 50% 50%;
     background-image: url(${props => props.image});
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover
+
+    @media only screen and (min-width: 768px) {
+      grid-template-columns: 40% 60%;
+      grid-template-rows: 100%;
+    }
 `
 
 const TextContent = styled.div`
@@ -78,10 +84,44 @@ export default class HomePage extends React.PureComponent {
     this.state = {
       
     };
+    this.toRegister = this.toRegister.bind(this)
+    this.setCookie = this.setCookie.bind(this)
+    this.getCookie = this.getCookie.bind(this)
   }
 
   componentDidMount() {
+    if(this.getCookie("visited")) {
+      history.push('/login');
+    }
 
+    this.setCookie("visited", true)
+  }
+
+  toRegister(e) {
+    e.preventDefault();
+
+    history.push('/register');
+  }
+
+  setCookie(name,value,days) {
+      var expires = "";
+      if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days*24*60*60*1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+  }
+
+  getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
   }
 
   render() {
@@ -98,9 +138,9 @@ export default class HomePage extends React.PureComponent {
                 <Content image={BackgroundImage}>
                   <TextContent>
                     <Logo>Agile Toolkit</Logo>
-                    <h2>Collaborate with your team, write clean code and make awesome products. Let us take care of scrum!</h2>
+                    <h2>Collaborate with your team, write clean code, and make awesome products. Let us take care of scrum!</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet augue tincidunt, efficitur augue eget, elementum dui. Nam lacinia ligula tellus, eget interdum ipsum dictum vel. Nam cursus, elit eget rhoncus vulputate, odio risus gravida mauris, nec maximus nisl purus nec mi. Morbi id pulvinar elit. Vivamus viverra id eros id egestas. Aliquam purus massa, ornare vel viverra eu.</p>
-                    <GetStarted>Get Started</GetStarted>
+                    <GetStarted onClick={e => this.toRegister(e)}>Get Started</GetStarted>
                     <Continue>Still not convinced? Scroll down!</Continue>
                   </TextContent>
                   <SideImage>
@@ -146,7 +186,7 @@ export default class HomePage extends React.PureComponent {
                   <TextContent>
                     <h2>Improve your sprints with our retrospective boards</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
-                    <LastChance>Start your journey today</LastChance>
+                    <LastChance onClick={e => this.toRegister(e)}>Start your journey today</LastChance>
                   </TextContent>
                   <SideImage>
                     <Image src={retrospectiveImage} />

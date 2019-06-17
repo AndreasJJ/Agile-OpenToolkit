@@ -6,7 +6,6 @@ import Loading from './Loading'
 import { userActions } from '../state/actions/user';
 
 import PropTypes from 'prop-types'
-import * as Cookies from "js-cookie";
 
 /* eslint-disable react/prefer-stateless-function */
 class Authenticated extends React.PureComponent {

@@ -34,7 +34,7 @@ const GlobalStyle = createGlobalStyle`
   #fp-nav ul li a.active span,
   .fp-slidesNav ul li:hover a.active span,
   .fp-slidesNav ul li a.active span {
-    background-color: chartreuse;
+    background-color: #02a3d9;
   }
 `;
 
