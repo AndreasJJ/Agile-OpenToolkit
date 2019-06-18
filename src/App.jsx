@@ -21,6 +21,7 @@ import Alert from './sharedComponents/Alert'
 import Error404 from './pages/404';
 
 import PrivateRoute from './sharedComponents/PrivateRoute';
+import OpenRoute from './sharedComponents/OpenRoute';
 
 import GlobalStyle from './global-styles';
 
@@ -47,15 +48,15 @@ class App extends React.Component {
 				{this.props.alert.type ? <Alert alert={this.props.alert} removeToast={this.removeAlert} /> : null}
 				<Router history={history}>
 				    <Switch>
-				      <Route exact path='/' component={Splash} />
-				      <Route exact path='/login' component={Login} />
-				      <Route exact path='/register' component={Register} />
-				      <Route exact path='/logout' component={Logout} />
-				      <PrivateRoute path='/dashboard' component={Dashboard} content={Home} namespace="home" />
-				      <PrivateRoute path='/sprintboard' component={Dashboard} content={Sprintboard} namespace="sprintboard" />
-				      <PrivateRoute path='/backlog' component={Dashboard} content={Backlog} namespace="backlog" />
-				      <PrivateRoute path='/planning' component={Dashboard} content={Planning} namespace="planningpoker" />
-				      <PrivateRoute path='/retrospective' component={Dashboard} content={Retrospective} namespace="retrospective" />
+				      <OpenRoute exact path='/' component={Splash} />
+				      <OpenRoute exact path='/login' component={Login} />
+				      <OpenRoute exact path='/register' component={Register} />
+				      <PrivateRoute exact path='/logout' component={Logout} />
+				      <PrivateRoute exact path='/dashboard' component={Dashboard} content={Home} namespace="home" />
+				      <PrivateRoute exact path='/sprintboard' component={Dashboard} content={Sprintboard} namespace="sprintboard" />
+				      <PrivateRoute exact path='/backlog' component={Dashboard} content={Backlog} namespace="backlog" />
+				      <PrivateRoute exact path='/planning' component={Dashboard} content={Planning} namespace="planningpoker" />
+				      <PrivateRoute exact path='/retrospective' component={Dashboard} content={Retrospective} namespace="retrospective" />
 				      <Route component={Error404}/>
 				    </Switch>
 			    </Router>

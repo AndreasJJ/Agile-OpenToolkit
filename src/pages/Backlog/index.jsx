@@ -1,6 +1,8 @@
 import React from 'react';
 
+import Modal from '../../sharedComponents/Modal';
 import Issue from './components/Issue'
+import CreateIssue from './components/CreateIssue'
 
 import styled from 'styled-components';
 
@@ -97,10 +99,12 @@ export default class Backlog extends React.PureComponent {
     super(props)
 
     this.state = {
-      activeTab: 0
+      activeTab: 0,
+      showModal: false
     };
 
     this.tabClicked = this.tabClicked.bind(this)
+    this.closeModal = this.closeModal.bind(this)
   }
   componentDidMount() {
     
@@ -110,10 +114,21 @@ export default class Backlog extends React.PureComponent {
     this.setState({activeTab: parseInt(e.target.dataset.index)})
   }
 
+  closeModal() {
+    this.setState({showModal: false})
+  }
+
 
   render() {
       return (
         <Wrapper>
+          {
+            this.state.showModal
+            ?
+            <Modal content={<CreateIssue />} minWidth={"800px"} exitModalCallback={this.closeModal} />
+            :
+            null
+          }
           <Content>
             <Header> 
               <Controls> 
@@ -122,7 +137,7 @@ export default class Backlog extends React.PureComponent {
                   <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>Closed</Tab>
                   <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>All</Tab>
                 </StateTabs>
-                <NewIssue>New Issue</NewIssue>
+                <NewIssue onClick={(e) => {this.setState({showModal: true})}}>New Issue</NewIssue>
               </Controls>
               <Search> 
                 <SearchInput placeholder="Search..." />

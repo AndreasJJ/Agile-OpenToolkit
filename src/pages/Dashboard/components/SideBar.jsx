@@ -15,7 +15,7 @@ const SIDEBAR = styled.aside`
     grid-column-end: 1;
     grid-row-start: 1;
     grid-row-end: 3;
-    background-color: #ffffff;
+    background-color: #2eb1e5;
     color: #ffffff;
     height: 100%;
     box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
@@ -49,13 +49,13 @@ const MenuItem = styled.li`
 `
 
 const Link = styled(rLink)`
-    color: ${props => props.current == props.next ? "#3743ab" : "#41464e"};
+    color: ${props => props.current == props.next ? "#2eb1e5" : "#ffffff"};
     text-decoration: none;
     display: flex;
     align-items: center;
 
     :visited {
-      color: ${props => props.current == props.next ? "#3743ab" : "#41464e"};
+      color: ${props => props.current == props.next ? "#2eb1e5" : "#ffffff"};
     }
 `
 
@@ -73,7 +73,8 @@ const LogoWrapper = styled.div`
 
 const Logo = styled.span`
     font-size: 2em;
-    color: #000000;
+    font-weight: bolder;
+    color: #ffffff;
 `
 
 const SideBarGrid = styled.div`
@@ -86,7 +87,7 @@ const SideBarGrid = styled.div`
 
 const Logout = styled.div`
   display: flex;
-  color: #41464e;
+  color: #ffffff;
   cursor: pointer;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */

@@ -39,7 +39,8 @@ const Content = styled.table`
 `
 
 const WidgetHeader = styled.thead`
-  background-color: #ecefff;
+  background-color: #00b8fe;
+  color: #ffffff;
 `
 
 const WidgetBody = styled.tbody`

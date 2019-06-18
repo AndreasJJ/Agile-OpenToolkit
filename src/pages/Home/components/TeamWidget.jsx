@@ -28,12 +28,13 @@ const Content = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 20px;
   box-sizing: border-box;
 `
 
 const WidgetHeader = styled.div`
-  border-bottom: 1px black solid
+  padding: 10px
+  background-color: #00b8fe;
+  color: #ffffff;
 `
 
 const WidgetBody = styled.div`
@@ -41,6 +42,7 @@ const WidgetBody = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: 10px
 `
 
 const TeamList = styled.div`

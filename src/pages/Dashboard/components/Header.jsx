@@ -13,7 +13,7 @@ const HEADER = styled.header`
     grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 1;
-    background-color: #F4F4F4;
+    background-color: #ffffff;
     border-bottom: 1px solid #cccccc;
     z-index: 9;
 `;
@@ -36,9 +36,9 @@ const ProfileCard = styled.div`
     display: -webkit-inline-box;
     align-items: center;
     background-color: #ffffff;
-    -webkit-box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.31);
-    -moz-box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.31);
-    box-shadow: 0px 0px 12px -2px rgba(0,0,0,0.31);
+    -webkit-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
     border-radius: 4px;
     margin-right: 25px;
 `

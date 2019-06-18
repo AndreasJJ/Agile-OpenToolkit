@@ -26,7 +26,7 @@ const Content = styled.div`
     grid-row-end: 3;
     width: 100%;
     height: 100%;
-    background-color: #F4F4F4;
+    background-color: #f2f5ff;
 `;
 
 /* eslint-disable react/prefer-stateless-function */

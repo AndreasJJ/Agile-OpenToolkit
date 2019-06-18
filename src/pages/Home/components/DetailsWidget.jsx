@@ -21,19 +21,20 @@ const Content = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 20px;
   box-sizing: border-box;
 `
 
 const WidgetHeader = styled.div`
-  border-bottom: 1px black solid
+  padding: 10px;
+  background-color: #00b8fe;
+  color: #ffffff;
 `
 
 const WidgetBody = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding-top: 5px;
+  padding: 10px;
 `
 
 const Inputs = styled.div`
