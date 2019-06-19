@@ -28,7 +28,8 @@ export function authentication (state = {}, action) {
       return {};
     case userConstants.REFRESH_REQUEST:
       return {
-        loggingIn: true,
+        loggedIn: true,
+        refreshing: true,
         user: action.user
       };
     case userConstants.REFRESH_SUCCESS:

@@ -65,11 +65,11 @@ function refresh (user) {
   return dispatch => {
     dispatch(request(user));
 
-    userService.refresh(user)
+    return userService.refresh(user)
       .then(
         user => {
           dispatch(success(user));
-          location.reload();
+          console.log("refresh success")
         },
         error => {
           dispatch(failure(error));

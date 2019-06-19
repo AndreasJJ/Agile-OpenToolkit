@@ -52,11 +52,11 @@ class App extends React.Component {
 				      <OpenRoute exact path='/login' component={Login} />
 				      <OpenRoute exact path='/register' component={Register} />
 				      <PrivateRoute exact path='/logout' component={Logout} />
-				      <PrivateRoute exact path='/dashboard' component={Dashboard} content={Home} namespace="home" />
-				      <PrivateRoute exact path='/sprintboard' component={Dashboard} content={Sprintboard} namespace="sprintboard" />
-				      <PrivateRoute exact path='/backlog' component={Dashboard} content={Backlog} namespace="backlog" />
-				      <PrivateRoute exact path='/planning' component={Dashboard} content={Planning} namespace="planningpoker" />
-				      <PrivateRoute exact path='/retrospective' component={Dashboard} content={Retrospective} namespace="retrospective" />
+				      <PrivateRoute exact path='/dashboard' component={Dashboard} content={Home} />
+				      <PrivateRoute exact path='/sprintboard' component={Dashboard} content={Sprintboard} />
+				      <PrivateRoute exact path='/backlog' component={Dashboard} content={Backlog} />
+				      <PrivateRoute exact path='/planning' component={Dashboard} content={Planning} />
+				      <PrivateRoute exact path='/retrospective' component={Dashboard} content={Retrospective} />
 				      <Route component={Error404}/>
 				    </Switch>
 			    </Router>

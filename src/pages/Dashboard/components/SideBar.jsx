@@ -123,7 +123,6 @@ class SideBar extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.location.pathname)
   }
 
   render() {

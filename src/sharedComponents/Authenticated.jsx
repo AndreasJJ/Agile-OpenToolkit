@@ -23,6 +23,7 @@ class Authenticated extends React.PureComponent {
       if(this.props.user.expiration_timestamp < (new Date()).getTime()) {
         const { dispatch } = this.props;
         dispatch(userActions.refresh(this.props.user));
+        location.reload();
       } else {
         this.setState({isLoaded: true})
       }
