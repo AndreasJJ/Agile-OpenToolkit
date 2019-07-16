@@ -35,7 +35,7 @@ const TitleWrapper = styled.div`
 
 const Title = styled.label`
   padding: 7px 15px 7px 15px;
-  width: 100px;
+  min-width: 100px;
 `
 
 const TitleInput = styled.input`
@@ -53,7 +53,7 @@ const DescriptionWrapper = styled.div`
 
 const Description = styled.label`
   padding: 7px 15px 7px 15px;
-  width: 100px;
+  min-width: 100px;
 `
 
 const DescriptionArea = styled.textarea`
@@ -65,49 +65,26 @@ const DescriptionArea = styled.textarea`
 
 const Options = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  padding-top: 15px;
 `
 
-const SprintWrapper = styled.div`
-
-`
-
-const Sprint = styled.label`
-
-`
-
-const SprintSelect = styled.select`
-  min-width: 80px;
-`
-
-const LabelsWrapper = styled.div`
-
-`
-
-const Labels = styled.label`
-
-`
-
-const LabelsSelect = styled.select`
-  min-width: 80px;
-`
-
-const Option = styled.option`
+const DateWrapper = styled.div`
   width: 100%;
+  display: flex;
+  margin-top: 15px;
 `
 
-const DueDateWrapper = styled.div`
-
-`
-
-const DueDate = styled.label`
-
+const DateLabel = styled.label`
+  padding: 7px 15px 7px 15px;
+  min-width: 100px;
 `
 
 const DateInput = styled.input`
-
+  flex-grow: 1;
+  margin: 0px 15px 0px 15px;
+  border: 1px solid rgb(238,238,238);
 `
 
 const Action = styled.div`
@@ -140,16 +117,14 @@ export default class CreateIssue extends React.Component {
     this.state = {
       title: "",
       description: "",
-      dueDate: new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
-      selectedSprint: 0,
-      selectedLabels: [],
+      startDate: new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
+      dueDate: new Date(new Date().setDate((new Date).getDate() + 1)).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
       submitDisabled: true
     }
     this.onChangeTitle = this.onChangeTitle.bind(this)
     this.onChangeDescription = this.onChangeDescription.bind(this)
+    this.onChangeStartDate = this.onChangeStartDate.bind(this)
     this.onChangeDueDate = this.onChangeDueDate.bind(this)
-    this.onChangeSprintSelect = this.onChangeSprintSelect.bind(this)
-    this.onChangeLabelsSelect = this.onChangeLabelsSelect.bind(this)
   }
 
   componentDidMount() {
@@ -169,43 +144,22 @@ export default class CreateIssue extends React.Component {
     this.setState({description: e.target.value})
   }
 
+  onChangeStartDate(e) {
+    if(new Date(e.target.value) >= new Date(this.state.dueDate)) {
+      this.setState({dueDate: new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1)).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")})
+    } 
+    this.setState({startDate: e.target.value})
+  }
+
   onChangeDueDate(e) {
     this.setState({dueDate: e.target.value})
-  }
-
-  onChangeSprintSelect(e) {
-    this.setState({selectedSprint: e.target.value})
-  }
-
-  onChangeLabelsSelect(e) {
-    let newVal = event.target.value
-    let stateVal = this.state.selectedLabels
-
-    let selectedValue = [...e.target.options].filter(o => o.selected).map(o => o.value)
-    this.setState({selectedLabels: selectedValue})
-  }
-
-  createIssue() {
-    let sprint = this.props.sprints.length <= this.state.selectedSprint ? null : this.props.sprints[this.state.selectedSprint]
-    let labels = this.state.selectedLabels.map(i => this.props.labels[i])
-    let dueDate = new Date(this.state.dueDate)
-    let issue = {
-      title: this.state.title,
-      description: this.state.description,
-      dueDate: dueDate,
-      labels: labels,
-      sprint: sprint,
-      status: "OPEN",
-    }
-
-    this.props.sendIssue(issue)
   }
 
   render () {
     return (
       <Wrapper>
         <Header>
-          <h3>New Issue</h3>
+          <h3>New Sprint</h3>
         </Header>
         <Body>
           <Info>
@@ -219,29 +173,18 @@ export default class CreateIssue extends React.Component {
             </DescriptionWrapper>
           </Info>
           <Options>
-            <SprintWrapper>
-              <Sprint>Sprint</Sprint>
-              <SprintSelect onChange={this.onChangeSprintSelect} defaultValue={this.state.selectedSprint}>
-                <Option disabled></Option>
-              </SprintSelect>
-            </SprintWrapper>
-            <LabelsWrapper>
-              <Labels>Labels</Labels>
-              <LabelsSelect multiple onChange={this.onChangeLabelsSelect} defaultValue={this.state.selectedLabels}>
-                <Option disabled></Option>
-                {
-                  this.props.labels && this.props.labels.map((label, index) => <Option key={index} value={index}>{label}</Option>)
-                }
-              </LabelsSelect>
-            </LabelsWrapper>
-            <DueDateWrapper>
-              <DueDate>Due Date</DueDate>
-              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
-            </DueDateWrapper>
+            <DateWrapper>
+              <DateLabel>Start Date</DateLabel>
+              <DateInput type="date" value={this.state.startDate} onChange={this.onChangeStartDate} min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+            </DateWrapper>
+            <DateWrapper>
+              <DateLabel>Due Date</DateLabel>
+              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={new Date(new Date().setDate((new Date(this.state.startDate)).getDate() + 1)).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+            </DateWrapper>
           </Options>
           <Action>
-            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.createIssue()}>Submit issue</Submit>
-            <Cancel onClick={(e) => this.props.exit()}>Cancel</Cancel>
+            <Submit disabled={this.state.submitDisabled}>Submit issue</Submit>
+            <Cancel>Cancel</Cancel>
           </Action>
         </Body>
       </Wrapper>

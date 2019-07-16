@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import Task from './Task'
 
@@ -35,6 +36,16 @@ const Right = styled.div`
 
 const Title = styled.span`
 
+`
+
+const ReactLink = styled(Link)`
+  font-weight: bold;
+  color: #000000;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `
 
 const Id = styled.span`
@@ -85,7 +96,9 @@ export default class Issue extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      taskVisible: false
+      taskVisible: false,
+      tasks: [],
+      loadedTasks: false
     }
 
     this.showTasks = this.showTasks.bind(this)
@@ -96,7 +109,13 @@ export default class Issue extends React.Component {
   }
 
   showTasks() {
-    this.setState({taskVisible: !this.state.taskVisible})
+    if(!this.state.loadedTasks) {
+      this.props.getTasks(this.props.id).then(function(tasks) {
+        this.setState({taskVisible: true, tasks: tasks, loadedTasks: true})
+      }.bind(this))
+    } else {
+      this.setState({taskVisible: !this.state.taskVisible})
+    }
   }
 
   render () {
@@ -106,10 +125,10 @@ export default class Issue extends React.Component {
           <IssueInfo>
             <Left>
               <div>
-                <Title>{this.props.title}</Title>
+                <ReactLink to={"/backlog/issue/" + this.props.id}>{this.props.title}</ReactLink>
               </div>
               <div>
-                <Id>#{this.props.id}</Id>
+                <Id>#{this.props.number}</Id>
                 <span> · </span>
                 <Creation>Created {this.props.creationDate} by {this.props.creator}</Creation>
               </div>
@@ -134,7 +153,7 @@ export default class Issue extends React.Component {
           </TasksOpen>
         </Card>
         <Tasks displaying={this.state.taskVisible}>
-          {this.props.tasks && this.props.tasks.map((task, index) => <Task key={index} title={task.title} assigne={task.assigne} />)}
+          {this.state.tasks && this.state.tasks.map((task, index) => <Task key={index} title={task.title} assigne={task.assignee} />)}
         </Tasks>
       </Wrapper>
     )

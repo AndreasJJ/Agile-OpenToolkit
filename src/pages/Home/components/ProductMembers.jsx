@@ -80,16 +80,19 @@ const Name = styled.div`
   word-break: break-all;
 `
 
-export default class TeamMembers extends React.PureComponent {
+export default class ProductMembers extends React.PureComponent {
 
   constructor(props) {
     super(props)
     this.state = {
+      members: []
     }
   }
 
   componentDidMount() {
-
+    this.props.getMembers(this.props.products[this.props.productIndex].id).then(function(members) {
+      this.setState({members: members})
+    }.bind(this))
   }
 
   static Member = (props) => (
@@ -123,7 +126,7 @@ export default class TeamMembers extends React.PureComponent {
         </Header>
         <Body>
           <MemberList>
-            {this.props.teams[this.props.teamIndex].members && this.props.teams[this.props.teamIndex].members.map((member, index) => <TeamMembers.Member key={index} profilePicture={member.profile_picture} firstname={member.firstname} lastname={member.lastname} />)}
+            {this.state.members && this.state.members.map((member, index) => <ProductMembers.Member key={index} profilePicture={member.profile_picture} firstname={member.firstname} lastname={member.lastname} />)}
           </MemberList>
         </Body>  
       </Wrapper>

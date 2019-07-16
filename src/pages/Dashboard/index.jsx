@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { teamActions } from '../../state/actions/teams'
+import { productActions } from '../../state/actions/product';
 
 import styled from 'styled-components';
 
@@ -39,7 +39,7 @@ class Dashboard extends React.PureComponent {
 
     this.collapseSideBar = this.collapseSideBar.bind(this)
     this.logout = this.logout.bind(this)
-    this.selectTeam = this.selectTeam.bind(this)
+    this.selectProduct = this.selectProduct.bind(this)
   }
 
   componentDidMount() {
@@ -55,16 +55,15 @@ class Dashboard extends React.PureComponent {
     this.props.history.push('/logout')
   }
 
-  selectTeam(index) {
-    const { dispatch } = this.props;
-    dispatch(teamActions.selectTeam(parseInt(index)));
+  selectProduct(index) {
+    this.props.dispatch(productActions.selectProduct(index))
   }
 
   render() {
     return (
       <Grid hidden={this.state.hidden} >
-        <Header onClickCollapse={this.collapseSideBar} selectTeam={this.selectTeam} firstname={this.props.firstname} lastname={this.props.lastname} teams={this.props.teams} profilePic={this.props.profile_picture} selectedIndex={this.props.selectedTeam}></Header>
-        <SideBar onClickLogout={this.logout} hidden={this.state.hidden} location={this.props.location} ></SideBar>
+        <Header onClickCollapse={this.collapseSideBar} firstname={this.props.firstname} lastname={this.props.lastname} profilePic={this.props.photoURL}></Header>
+        <SideBar onClickLogout={this.logout} hidden={this.state.hidden} location={this.props.location} selectProduct={this.selectProduct} products={this.props.products} selectedIndex={this.props.selectedProduct}></SideBar>
         <Content>
           <this.props.content />
         </Content>
@@ -74,15 +73,14 @@ class Dashboard extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const { teams, firstname, lastname, profile_picture, access_token } = state.authentication.user;
-    const { selectedTeam } = state.teams
+    const { firstname, lastname, photoURL } = state.authentication.user;
+    const { selectedProduct, products } = state.product;
     return {
-        teams, 
         firstname,
         lastname,
-        profile_picture, 
-        access_token,
-        selectedTeam
+        photoURL,
+        selectedProduct,
+        products
     };
 }
 

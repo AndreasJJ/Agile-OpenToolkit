@@ -1,8 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withFirebase } from '../../sharedComponents/Firebase';
 import { history } from '../../state/helpers/history';
 
-import { userActions } from '../../state/actions/user';
+import { alertActions } from '../../state/actions/alert';
 
 import sideImage from '../../assets/login_image';
 
@@ -175,9 +177,12 @@ class Login extends React.PureComponent {
   login(e) {
     e.preventDefault();
 
-    const { dispatch } = this.props;
+    const {dispatch} = this.props
     if (this.state.email && this.state.password) {
-      dispatch(userActions.login(this.state.email, this.state.password));
+      this.props.firebase.doSignInWithEmailAndPassword(this.state.email, this.state.password).then((user) => {
+      }).catch((err) => {
+         dispatch(alertActions.error(err.message));
+      })
     }
   }
 
@@ -250,4 +255,5 @@ function mapStateToProps(state) {
 }
 
 const connectedLoginPage = connect(mapStateToProps)(Login);
-export { connectedLoginPage as Login }; 
+const firebaseLoginPage = compose(withFirebase)(connectedLoginPage)
+export { firebaseLoginPage as Login }; 

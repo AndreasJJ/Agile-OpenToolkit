@@ -8,8 +8,12 @@ import { alertActions } from './state/actions/alert';
 import { Dashboard } from './pages/Dashboard';
 import { Home } from './pages/Home';
 import { Sprintboard } from './pages/Sprintboard';
-import Backlog from './pages/Backlog';
+import { Backlog } from './pages/Backlog';
+import { IssuePage } from './pages/IssuePage';
+import { Sprints } from './pages/Sprints';
+import { SprintPage } from './pages/SprintPage';
 import Planning from './pages/Planning';
+import { PlanningPokerGame } from './pages/PlanningPokerGame';
 import Retrospective from './pages/Retrospective';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
@@ -53,9 +57,13 @@ class App extends React.Component {
 				      <OpenRoute exact path='/register' component={Register} />
 				      <PrivateRoute exact path='/logout' component={Logout} />
 				      <PrivateRoute exact path='/dashboard' component={Dashboard} content={Home} />
-				      <PrivateRoute exact path='/sprintboard' component={Dashboard} content={Sprintboard} />
 				      <PrivateRoute exact path='/backlog' component={Dashboard} content={Backlog} />
+				      <PrivateRoute path='/backlog/issue/:id' component={Dashboard} content={IssuePage} />
+				      <PrivateRoute exact path='/sprints' component={Dashboard} content={Sprints} />
+				      <PrivateRoute path='/sprints/:id' component={Dashboard} content={SprintPage} />
+				      <PrivateRoute exact path='/sprintboard' component={Dashboard} content={Sprintboard} />
 				      <PrivateRoute exact path='/planning' component={Dashboard} content={Planning} />
+				      <PrivateRoute exact path='/planning/game/:id' component={Dashboard} content={PlanningPokerGame} />
 				      <PrivateRoute exact path='/retrospective' component={Dashboard} content={Retrospective} />
 				      <Route component={Error404}/>
 				    </Switch>

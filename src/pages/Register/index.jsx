@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withFirebase } from '../../sharedComponents/Firebase';
 import { history } from '../../state/helpers/history';
 
-import { userActions } from '../../state/actions/user';
 import { alertActions } from '../../state/actions/alert';
 
 import sideImage from '../../assets/register_image.svg';
@@ -280,7 +281,14 @@ class Register extends React.PureComponent {
       return
     }
 
-    dispatch(userActions.register(this.state.email, this.state.password, this.state.firstname, this.state.lastname));
+    this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password).then((user) => {
+      console.log(user.user)
+      user.user.updateProfile({
+         displayName: this.state.firstname + " " + this.state.lastname
+      })
+    }).catch((err) => {
+       dispatch(alertActions.error(err.message));
+    })
   }
 
   validateEmail(email) {
@@ -403,4 +411,5 @@ function mapStateToProps(state) {
 }
 
 const connectedRegisterPage = connect(mapStateToProps)(Register);
-export { connectedRegisterPage as Register }; 
+const firebaseRegisterPage = compose(withFirebase)(connectedRegisterPage)
+export { firebaseRegisterPage as Register }; 

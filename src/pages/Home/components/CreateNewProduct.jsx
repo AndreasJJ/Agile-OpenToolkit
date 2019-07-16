@@ -68,31 +68,30 @@ const SubmitButton = styled.button`
     box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
 `
 
-/* eslint-disable react/prefer-stateless-function */
-class CreateNewTeam extends React.PureComponent {
+class CreateNewProduct extends React.PureComponent {
 
   constructor(props) {
     super(props)
     this.state = {
-      teamName: "",
-      teamDescription: ""
+      productName: "",
+      productDescription: ""
     }
 
-    this.sendTeam = this.sendTeam.bind(this)
-    this.changeTeamName = this.changeTeamName.bind(this)
-    this.changeTeamDescription = this.changeTeamDescription.bind(this)
+    this.sendProduct = this.sendProduct.bind(this)
+    this.changeproductName = this.changeproductName.bind(this)
+    this.changeproductDescription = this.changeproductDescription.bind(this)
   }
 
   componentDidMount() {
 
   }
 
-  sendTeam(e) {
+  sendProduct(e) {
     e.preventDefault()
     const { dispatch } = this.props;
 
-    let name = this.state.teamName.trim()
-    let description = this.state.teamDescription.trim()
+    let name = this.state.productName.trim()
+    let description = this.state.productDescription.trim()
 
     if(name.length < 3 ) {
       dispatch(alertActions.error('The team name has to be at least 3 characters long'));
@@ -107,19 +106,19 @@ class CreateNewTeam extends React.PureComponent {
       description = null
     }
 
-    this.props.sendTeam(JSON.stringify({name: name, description: description}))
+    this.props.sendProduct({name: name, description: description})
     this.props.onclick()
   }
 
-  changeTeamName(e) {
+  changeproductName(e) {
     this.setState({
-      teamName: e.target.value
+      productName: e.target.value
     });
   }
 
-  changeTeamDescription(e) {
+  changeproductDescription(e) {
     this.setState({
-      teamDescription: e.target.value
+      productDescription: e.target.value
     });
   }
 
@@ -127,19 +126,19 @@ class CreateNewTeam extends React.PureComponent {
     return(
       <Wrapper>
          <Header>
-           Create New Team
+           Create New Product
          </Header>
          <Form>
            <InputWrapper>
-             <label>Team Name</label>
-             <Input placeholder="Fiery Devils" value={this.state.teamName} onChange={this.changeTeamName} />
+             <label>Product Name</label>
+             <Input placeholder="marvelous dog feeder" value={this.state.productName} onChange={this.changeproductName} />
              <label>Short Description</label>
-             <Input placeholder="A team with real spirit." value={this.state.teamDescription} onChange={this.changeTeamDescription} />
+             <Input placeholder="A product for the future." value={this.state.productDescription} onChange={this.changeproductDescription} />
              <label>Add Members</label>
              <TagsInput />
            </InputWrapper>
            <ButtonWrapper>
-             <SubmitButton onClick={this.sendTeam}> Create Team! </SubmitButton>
+             <SubmitButton onClick={this.sendProduct}> Create Product! </SubmitButton>
            </ButtonWrapper>
          </Form>
       </Wrapper>
@@ -152,5 +151,5 @@ function mapStateToProps(state) {
     };
 }
 
-const connectedCreateNewTeam = connect(mapStateToProps)(CreateNewTeam);
-export { connectedCreateNewTeam as CreateNewTeam }; 
+const connectedCreateNewProduct = connect(mapStateToProps)(CreateNewProduct);
+export { connectedCreateNewProduct as CreateNewProduct }; 

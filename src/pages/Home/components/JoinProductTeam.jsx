@@ -55,7 +55,7 @@ const Message = styled.div`
   padding-bottom: 20px;
 `
 
-export default class JoinTeam extends React.PureComponent {
+export default class JoinProductTeam extends React.PureComponent {
 
   constructor(props) {
     super(props)

@@ -43,41 +43,10 @@ class Sprintboard extends React.PureComponent {
       listData: {},
       loading: true
     };
-    /*
-    this.sendStory = this.sendStory.bind(this)
-    this.addList = this.addList.bind(this)
-    */
   }
-  /*
-  getData = (data) => {
-    this.setState({ listData: JSON.parse(data), loading: false});
-    console.log(JSON.parse(data))
-  };*/
-
-  /*changeData = () => this.props.socket.emit("initial_data");*/
 
   componentDidMount() {
-    /*
-    this.props.socket.on('connect', function(_socket) {
-      console.log("connected")
-      this.props.socket.emit('join', {team: this.props.teams[this.props.selectedTeam]});
-    }.bind(this));
-    this.props.socket.on('disconnect', function(){
-      console.log("disconnected")
-    });
-    this.props.socket.emit('initial_data');
-    this.props.socket.on('get_data', this.getData);
-    this.props.socket.on('change_data', this.changeData);
-    */
-  }
 
-  componentWillUnmount() {
-    /*
-    this.props.socket.off("conenct");
-    this.props.socket.off("disconenct");
-    this.props.socket.off("get_data");
-    this.props.socket.off("change_data");
-    */
   }
 
   sendStory(data) {
@@ -117,10 +86,10 @@ class Sprintboard extends React.PureComponent {
 
 function mapStateToProps(state) {
     const { teams } = state.authentication.user;
-    const { selectedTeam } = state.teams
+    const { selectedProduct } = state.product
     return {
         teams,
-        selectedTeam
+        selectedProduct
     };
 }
 

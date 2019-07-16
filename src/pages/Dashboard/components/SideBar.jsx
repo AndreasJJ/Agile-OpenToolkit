@@ -4,6 +4,7 @@ import { Link as rLink } from 'react-router-dom'
 import styled from 'styled-components'
 import {Home} from 'styled-icons/fa-solid/Home'
 import {Collection} from 'styled-icons/boxicons-regular/Collection'
+import {DirectionsRun} from 'styled-icons/material/DirectionsRun'
 import {Columns} from 'styled-icons/boxicons-regular/Columns'
 import {Directions} from 'styled-icons/boxicons-regular/Directions'
 import {ViewCarousel} from 'styled-icons/material/ViewCarousel'
@@ -29,6 +30,19 @@ const SideNav = styled.div`
     align-items: center;
     text-align: center;
 `;
+
+const ProductSelecter = styled.div`
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+    padding: 15px 10px 15px 10px;
+    box-sizing: border-box;
+`
+
+const ProductSelect = styled.select`
+    width: 100%;
+`
 
 const Menu = styled.ul`
     list-style: none;
@@ -109,20 +123,25 @@ const SignIcon = styled(SignOutAlt)`
   margin-right: 5px;
 `
 
-
-
-/* eslint-disable react/prefer-stateless-function */
 class SideBar extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      selectedPage: 0
+      selectedPage: 0,
+      selectedIndex: this.props.selectedIndex
     };
 
+    this.selectChange = this.selectChange.bind(this)
   }
 
   componentDidMount() {
+  }
+
+  selectChange(e) {
+    this.setState({selectedIndex: e.target.value}, function(test) {
+      this.props.selectProduct(this.state.selectedIndex)
+    }.bind(this))
   }
 
   render() {
@@ -134,12 +153,29 @@ class SideBar extends React.Component {
           </LogoWrapper>
           <SideNav>
             <Menu>
-                <MenuItem current={this.props.location.pathname} next={"/dashboard"}><Link to="/dashboard" current={this.props.location.pathname} next={"/dashboard"}><Home size="1em"/><LeftPadding>Overview</LeftPadding></Link></MenuItem>
+              <MenuItem current={this.props.location.pathname} next={"/dashboard"}><Link to="/dashboard" current={this.props.location.pathname} next={"/dashboard"}><Home size="1em"/><LeftPadding>Home</LeftPadding></Link></MenuItem>
+            </Menu>
+            <ProductSelecter>
+                <ProductSelect onChange={this.selectChange} defaultValue={this.state.selectedIndex}>
+                    {
+                      //TODO: Handle if the stored selectedIndex in redux is higher than the number of products
+                      this.props.products && this.props.products.map((product, index) => <option key={product.id} value={index}>{product.name}</option>)
+                    }
+                </ProductSelect>
+            </ProductSelecter>
+            {
+              this.props.products.length > 0
+              ?
+              <Menu>
                 <MenuItem current={this.props.location.pathname} next={"/backlog"}><Link to="/backlog" current={this.props.location.pathname} next={"/backlog"}><Collection size="1em"/><LeftPadding>Product backlog</LeftPadding></Link></MenuItem>
+                <MenuItem current={this.props.location.pathname} next={"/sprints"}><Link to="/sprints" current={this.props.location.pathname} next={"/sprints"}><DirectionsRun size="1em"/><LeftPadding>Sprints</LeftPadding></Link></MenuItem>
                 <MenuItem current={this.props.location.pathname} next={"/sprintboard"}><Link to="/sprintboard" current={this.props.location.pathname} next={"/sprintboard"}><Columns size="1em"/><LeftPadding>Sprintboard</LeftPadding></Link></MenuItem>
                 <MenuItem current={this.props.location.pathname} next={"/planning"}><Link to="/planning" current={this.props.location.pathname} next={"/planning"}><ViewCarousel size="1em"/><LeftPadding>Planning Poker</LeftPadding></Link></MenuItem>
                 <MenuItem current={this.props.location.pathname} next={"/retrospective"}><Link to="/retrospective" current={this.props.location.pathname} next={"/retrospective"}><Directions size="1em"/><LeftPadding>Retrospective Board</LeftPadding></Link></MenuItem>
-            </Menu>
+              </Menu>
+              :
+              null
+            }
           </SideNav>
           <Logout title="Click here to logout">
             <LogoutButton onClick={() => {this.props.onClickLogout()}}>

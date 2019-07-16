@@ -61,34 +61,14 @@ const Username = styled.span`
 
 `
 
-const GroupSelect = styled.select`
-    width: 100px;
-`
-
-const Logout = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: -webkit-xxx-large;
-    padding: 5px;
-`;
-
 /* eslint-disable react/prefer-stateless-function */
 class Header extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      selectedIndex: this.props.selectedIndex
     };
 
-    this.selectChange = this.selectChange.bind(this)
-  }
-
-  selectChange(e) {
-    this.setState({selectedIndex: e.target.value}, function(test) {
-      this.props.selectTeam(this.state.selectedIndex)
-    }.bind(this))
   }
 
   render() {
@@ -102,12 +82,6 @@ class Header extends React.Component {
               <ProfileImage src={this.props.ProfilePicture ? this.props.ProfilePicture : BlankProfilePicture}/>
               <ProfileInfo>
                 <Username>{(this.props.firstname ? (this.props.firstname.charAt(0).toUpperCase() + this.props.firstname.slice(1)) : null) + " " + (this.props.lastname ? (this.props.lastname) : null)}</Username>
-                <GroupSelect onChange={this.selectChange} defaultValue={this.state.selectedIndex}>
-                    {
-                      //TODO: Handle if the stored selectedIndex in redux is higher than the number of teams
-                      this.props.teams && this.props.teams.map((team, index) => <option key={team} value={index}>{team}</option>)
-                    }
-                </GroupSelect>
               </ProfileInfo>
             </ProfileCard>
         </TopBar>

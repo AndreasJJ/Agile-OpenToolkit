@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux';
 
 import { authentication } from './authentication';
-import { teams } from './teams';
 import { alert } from './alert';
+import { product } from './product';
 
 const rootReducer = combineReducers({
   authentication,
-  teams,
-  alert
+  alert,
+  product
 });
 
 export default rootReducer;

@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withFirebase } from './Firebase';
 
 import Loading from './Loading'
 
@@ -14,40 +16,50 @@ class Authenticated extends React.PureComponent {
     super(props)
     this.state = {
       isLoaded: false,
+      loggedIn: false,
       render: ''
     }
   }
 
   componentDidMount() {
-    if(this.props.loggedIn) {
-      if(this.props.user.expiration_timestamp < (new Date()).getTime()) {
-        const { dispatch } = this.props;
-        dispatch(userActions.refresh(this.props.user));
-        location.reload();
-      } else {
-        this.setState({isLoaded: true})
-      }
+    const {dispatch, user} = this.props
+
+    this.listener = this.props.firebase.onAuthUserListener(
+      authUser => {
+        dispatch(userActions.setUser(authUser));
+      },
+      () => {
+        dispatch(userActions.setUser(null));
+      },
+    );
+    
+    if(user) {
+      this.setState({isLoaded: true, loggedIn: true})
     } else {
-      this.setState({isLoaded: true})
+      this.setState({isLoaded: true, loggedIn: false})
     }
+  }
+
+  componentWillUnmount() {
+      this.listener();
   }
 
   render () {
     if (!this.state.isLoaded) {
       return ( <Loading /> )
     } else {
-      return (this.props.loggedIn ? (this.props.is instanceof Function ? this.props.is() : this.props.is) : this.props.not)
+      return (this.state.loggedIn ? (this.props.is instanceof Function ? this.props.is() : this.props.is) : this.props.not)
     } 
   }
 }
 
 function mapStateToProps(state) {
-    const { loggedIn, user } = state.authentication;
+    const { user } = state.authentication;
     return {
-        loggedIn,
         user
     };
 }
 
 const connectedAuthenticated = connect(mapStateToProps)(Authenticated);
-export { connectedAuthenticated as Authenticated }; 
+const firebaseAuthenticated = compose(withFirebase)(connectedAuthenticated)
+export { firebaseAuthenticated as Authenticated }; 

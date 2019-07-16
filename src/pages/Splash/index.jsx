@@ -2,6 +2,8 @@ import React from 'react';
 import ReactFullpage from '@fullpage/react-fullpage';
 import { history } from '../../state/helpers/history';
 
+import LogoImage from '../../assets/Logo.svg'
+
 import styled from 'styled-components';
 
 import BackgroundImage from '../../assets/splash/background.gif'
@@ -36,9 +38,15 @@ const TextContent = styled.div`
   color: white;
 `
 
-const Logo = styled.h1`
-  font-size: 3em;
+const LogoWrapper = styled.div`
+  display: flex;
+  align-content: center;
+`
+
+const Logo = styled.div`
+  font-size: 2em;
   font-weight: bolder;
+  text-align: center;
 `
 
 const GetStarted = styled.button`
@@ -137,7 +145,10 @@ export default class HomePage extends React.PureComponent {
               <div className="section">
                 <Content image={BackgroundImage}>
                   <TextContent>
-                    <Logo>Agile Toolkit</Logo>
+                    <LogoWrapper>
+                      <img src={LogoImage} />
+                      <Logo><h1>Agile Toolkit</h1></Logo>
+                    </LogoWrapper>
                     <h2>Collaborate with your team, write clean code, and make awesome products. Let us take care of scrum!</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet augue tincidunt, efficitur augue eget, elementum dui. Nam lacinia ligula tellus, eget interdum ipsum dictum vel. Nam cursus, elit eget rhoncus vulputate, odio risus gravida mauris, nec maximus nisl purus nec mi. Morbi id pulvinar elit. Vivamus viverra id eros id egestas. Aliquam purus massa, ornare vel viverra eu.</p>
                     <GetStarted onClick={e => this.toRegister(e)}>Get Started</GetStarted>
