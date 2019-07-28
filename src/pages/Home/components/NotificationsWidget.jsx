@@ -82,7 +82,7 @@ export default class NotificationsWidget extends React.PureComponent {
   }
 
   componentDidMount() {
-
+    this.props.finishedLoading()
   }
 
   render () {

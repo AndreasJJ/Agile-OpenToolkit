@@ -21,18 +21,38 @@ class Home extends React.PureComponent {
     super(props)
 
     this.state = {
+      productWidgetFinishedLoading: false,
+      notificationWidgetFinishedLoading: false
     };
+
+    this.handleFinishedLoadingProductWidget = this.handleFinishedLoadingProductWidget.bind(this)
+    this.handleFinishedLoadingNotificationsWidget = this.handleFinishedLoadingNotificationsWidget.bind(this)
   }
 
   componentDidMount() {
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if(((prevState.productWidgetFinishedLoading !== this.state.productWidgetFinishedLoading) || (prevState.notificationWidgetFinishedLoading !== this.state.notificationWidgetFinishedLoading))
+        && (this.state.productWidgetFinishedLoading && this.state.notificationWidgetFinishedLoading)) {
+      this.props.finishLoading()
+    }
+  }
+
+  handleFinishedLoadingProductWidget() {
+    this.setState({productWidgetFinishedLoading: true})
+  }
+
+  handleFinishedLoadingNotificationsWidget() {
+    this.setState({notificationWidgetFinishedLoading: true})
+  }
+
   render() {
       return (
         <Wrapper>
-          <ProductWidget />
+          <ProductWidget finishedLoading={this.handleFinishedLoadingProductWidget} />
           <DetailsWidget profilePicture={this.props.profile_picture} gender={this.props.gender} firstname={this.props.firstname} lastname={this.props.lastname} email={this.props.email} />
-          <NotificationsWidget />
+          <NotificationsWidget finishedLoading={this.handleFinishedLoadingNotificationsWidget} />
         </Wrapper>
       );
   }

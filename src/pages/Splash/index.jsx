@@ -107,6 +107,11 @@ export default class HomePage extends React.PureComponent {
     this.setCookie("visited", true)
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if(this.props.location.hash !== prevProps.location.hash) {
+      this.props.finishLoading()
+    }
+  }
   toRegister(e) {
     e.preventDefault();
 

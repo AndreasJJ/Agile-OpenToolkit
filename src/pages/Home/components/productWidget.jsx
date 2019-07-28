@@ -99,6 +99,7 @@ class ProductWidget extends React.PureComponent {
     super(props)
 
     this.state = {
+      loading: true,
       products: [],
       showModal: false,
       modalContent: "",
@@ -113,15 +114,17 @@ class ProductWidget extends React.PureComponent {
     this.closeModal = this.closeModal.bind(this)
   }
 
-  componentDidMount() {
-    this.productListener = this.props.firebase.db.collection('users').doc(this.props.uid).collection('products').onSnapshot(function(querySnapshot) {
+  async componentDidMount() {
+    this.productListener = await this.props.firebase.db.collection('users').doc(this.props.uid).collection('products').onSnapshot(function(querySnapshot) {
       let tempArray = [];
       querySnapshot.forEach(function (doc) {
         let tempObj = doc.data()
         tempObj.id = doc.id
         tempArray.push(tempObj)
       });
-      this.setState({products: tempArray});
+      this.setState({products: tempArray, loading: false}, () => {
+        this.props.finishedLoading()
+      });
       this.props.dispatch(productActions.getProducts(tempArray));
     }.bind(this));
   }
@@ -233,11 +236,11 @@ class ProductWidget extends React.PureComponent {
         </WidgetHeader>
         <WidgetBody>
           <ProductList>
-            {this.state.products && this.state.products.length > 0
+            {this.state.loading
              ?
-               this.state.products.map((product, index) => <ProductWidget.Product key={index} onclick={this.showMembersButtonClicked} productIndex={index} name={product.name} owner={product.owner}/>)
-             :
                (["skeletonProduct1", "skeletonProduct2", "skeletonProduct3"]).map((key, index) => <ProductWidget.Product skeleton={true} key={key} onclick={() => false} productIndex={index} name={"Skeleton name"} owner={{firstname: "god", lastname: "the creator"}}/>)
+              :
+               this.state.products && this.state.products.map((product, index) => <ProductWidget.Product key={index} onclick={this.showMembersButtonClicked} productIndex={index} name={product.name} owner={product.owner}/>)
             }
           </ProductList>
           <AddProductButton onClick={this.AddProductButtonClicked}>Add Product</AddProductButton>

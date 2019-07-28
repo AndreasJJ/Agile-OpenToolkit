@@ -283,11 +283,14 @@ class Register extends React.PureComponent {
     }
 
     this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password).then((user) => {
-      user.user.updateProfile({
-         displayName: this.state.firstname + " " + this.state.lastname
+      this.props.firebase.db.collection("users").doc(user.user.uid).set({
+        email: user.user.email,
+        firstname: this.state.firstname,
+        lastname: this.state.lastname
       }).then(() => {
+
       }).catch((err) => {
-         dispatch(alertActions.error(err.message));
+        dispatch(alertActions.error(err.message));
       })
     }).catch((err) => {
        dispatch(alertActions.error(err.message));
