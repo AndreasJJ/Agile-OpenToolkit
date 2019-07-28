@@ -32,6 +32,7 @@ export default class Planning extends React.PureComponent {
   }
 
   componentDidMount() {
+    this.props.finishLoading()
   }
 
   render() {

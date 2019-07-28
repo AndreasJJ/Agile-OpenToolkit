@@ -232,6 +232,8 @@ class Register extends React.PureComponent {
   constructor(props) {
     super(props)
 
+    this.props.finishLoading()
+
     this.state = {
       email: '',
       password: '',
@@ -256,7 +258,6 @@ class Register extends React.PureComponent {
     const { dispatch } = this.props;
 
     if(!this.validateEmail(this.state.email) || this.state.email == "") {
-      console.log(this.state.email)
       dispatch(alertActions.error('Please provide a valid email'));
       return
     }
@@ -282,9 +283,11 @@ class Register extends React.PureComponent {
     }
 
     this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password).then((user) => {
-      console.log(user.user)
       user.user.updateProfile({
          displayName: this.state.firstname + " " + this.state.lastname
+      }).then(() => {
+      }).catch((err) => {
+         dispatch(alertActions.error(err.message));
       })
     }).catch((err) => {
        dispatch(alertActions.error(err.message));

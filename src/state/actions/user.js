@@ -9,7 +9,7 @@ export const userActions = {
 
 function setUser (user) {
   return dispatch => {
-    dispatch(request({ user }));
+    dispatch(request(user));
 
     userService.setUser(user)
       .then(

@@ -46,6 +46,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
     "@fullpage/react-fullpage": "^0.1.13",
+    "@tanem/react-nprogress": "^1.1.32",
     "firebase": "^6.2.4",
     "history": "^4.9.0",
     "prop-types": "^15.7.2",

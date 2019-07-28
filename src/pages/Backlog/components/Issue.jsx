@@ -24,6 +24,11 @@ const Left = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   align-items: flex-start;
+
+  & > div {
+    color: ${props => props.skeleton ? "transparent" : null};
+    background-color: ${props => props.skeleton ? "lightgray" : null}
+  }
 `
 
 const Right = styled.div`
@@ -32,6 +37,11 @@ const Right = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   align-items: flex-end;
+
+  & > div {
+    color: ${props => props.skeleton ? "transparent" : null};
+    background-color: ${props => props.skeleton ? "lightgray" : null}
+  }
 `
 
 const Title = styled.span`
@@ -40,8 +50,9 @@ const Title = styled.span`
 
 const ReactLink = styled(Link)`
   font-weight: bold;
-  color: #000000;
   text-decoration: none;
+  color: ${props => props.skeleton ? "transparent" : "#000000"};
+  background-color: ${props => props.skeleton ? "lightgray" : null}
 
   &:hover {
     text-decoration: underline;
@@ -90,6 +101,7 @@ const TasksOpen = styled.div`
   justify-content: center;
   align-items: center;
   width: 50px;
+  pointer-events: ${props => props.skeleton ? "none" : null};
 `
 
 export default class Issue extends React.Component {
@@ -123,9 +135,9 @@ export default class Issue extends React.Component {
       <Wrapper>
         <Card>
           <IssueInfo>
-            <Left>
+            <Left skeleton={this.props.skeleton}>
               <div>
-                <ReactLink to={"/backlog/issue/" + this.props.id}>{this.props.title}</ReactLink>
+                <ReactLink skeleton={this.props.skeleton} to={"/backlog/issue/" + this.props.id}>{this.props.title}</ReactLink>
               </div>
               <div>
                 <Id>#{this.props.number}</Id>
@@ -133,7 +145,7 @@ export default class Issue extends React.Component {
                 <Creation>Created {this.props.creationDate} by {this.props.creator}</Creation>
               </div>
             </Left>
-            <Right>
+            <Right skeleton={this.props.skeleton}>
               <div>
                 <Status>{this.props.status}</Status>
               </div>
@@ -142,7 +154,7 @@ export default class Issue extends React.Component {
               </div>
             </Right>
           </IssueInfo>
-          <TasksOpen onClick={this.showTasks}>
+          <TasksOpen skeleton={this.props.skeleton} onClick={this.showTasks}>
             {
               this.state.taskVisible
               ?

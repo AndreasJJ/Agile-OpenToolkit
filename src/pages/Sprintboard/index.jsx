@@ -46,13 +46,11 @@ class Sprintboard extends React.PureComponent {
   }
 
   componentDidMount() {
-
+    this.props.finishLoading()
   }
 
   sendStory(data) {
-    /*
-    this.props.socket.emit('add_story', data);
-    */
+
   }
 
   addList(list) {

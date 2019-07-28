@@ -17,7 +17,7 @@ class SprintPage extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log(this.props.match.params.id)
+    this.props.finishLoading()
   }
 
   render() {

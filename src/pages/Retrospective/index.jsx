@@ -19,7 +19,7 @@ export default class Retrospective extends React.PureComponent {
 
   }
   componentDidMount() {
-    
+    this.props.finishLoading()
   }
 
 

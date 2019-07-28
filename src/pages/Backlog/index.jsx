@@ -4,8 +4,8 @@ import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
 import Modal from '../../sharedComponents/Modal';
-import Issue from './components/Issue'
-import CreateIssue from './components/CreateIssue'
+import Issue from './components/Issue';
+import { CreateIssue } from '../../sharedComponents/CreateIssue';
 
 import styled from 'styled-components';
 
@@ -102,37 +102,33 @@ class Backlog extends React.PureComponent {
     super(props)
 
     this.state = {
+      loading: true,
       issues: [],
-      labels: [],
-      sprints: [],
       activeTab: 0,
       showModal: false
     };
 
     this.tabClicked = this.tabClicked.bind(this)
     this.closeModal = this.closeModal.bind(this)
-    this.sendIssue = this.sendIssue.bind(this)
     this.getIssues = this.getIssues.bind(this)
-    this.getLabels = this.getLabels.bind(this)
-    this.getSprints = this.getSprints.bind(this)
     this.getPrettyCreationDate = this.getPrettyCreationDate.bind(this)
     this.getTasks = this.getTasks.bind(this)
   }
 
-  componentDidMount() {
-    this.getIssues()
-    this.getLabels()
-    this.getSprints()
+  async componentDidMount() {
+    await this.getIssues()
+    await this.props.finishLoading()
+    this.setState({loading: false})
   }
 
   getIssues() {
     let ref;
     if(this.state.activeTab === 0) {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").where("status", "==", "OPEN")
+      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").where("status", "==", "OPEN").orderBy("timestamp")
     }else if(this.state.activeTab === 1) {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").where("status", "==", "CLOSED")
+      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").where("status", "==", "CLOSED").orderBy("timestamp")
     } else {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories")
+      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").orderBy("timestamp")
     }
     let issues = ref.get().then(function(querySnapshot) {
       let tempArray = [];
@@ -146,39 +142,17 @@ class Backlog extends React.PureComponent {
       });
       return tempArray
     });
-    issues.then(data => this.setState({issues: data}))
+    return issues.then(data => this.setState({issues: data}))
   }
 
   getTasks(id) {
-    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(id).collection("tasks").get().then(function(querySnapshot) {
+    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(id).collection("tasks").orderBy("title").get().then(function(querySnapshot) {
       let tempArray = []
       querySnapshot.forEach(function (doc) {
         tempArray.push(doc.data())
       });
       return tempArray
     })
-  }
-
-  getLabels() {
-    let labels = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("labels").get().then(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        tempArray.push(doc.id)
-      });
-      return tempArray
-    });
-    labels.then(data => this.setState({labels: data}))
-  }
-
-  getSprints() {
-    let sprints = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").get().then(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        tempArray.push(doc.data())
-      });
-      return tempArray
-    });
-    sprints.then(data => this.setState({sprints: data}))
   }
 
   tabClicked(e) {
@@ -189,45 +163,6 @@ class Backlog extends React.PureComponent {
 
   closeModal() {
     this.setState({showModal: false})
-  }
-
-  sendIssue(issue) {
-    issue.timestamp = this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
-    issue.lastUpdateTimestamp = this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
-    issue.creator = {
-      uid: this.props.uid,
-      firstname: this.props.firstname,
-      lastname: this.props.lastname
-    }
-    issue.lastEditer = {
-      uid: this.props.uid,
-      firstname: this.props.firstname,
-      lastname: this.props.lastname
-    }
-
-    var issueRef = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc();
-
-    var incrementRef = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc("--STATS--");
-
-    return this.props.firebase.db.runTransaction(function(transaction) {
-      return transaction.get(incrementRef).then(function(incrementValueDoc) {
-          var incrementValue;
-          if (!incrementValueDoc.exists) {
-            incrementValue = 0;
-          } else {
-            incrementValue = incrementValueDoc.data().count;
-          }
-
-          issue.number = incrementValue
-
-          transaction.set(issueRef, issue)
-          transaction.set(incrementRef, {count: this.props.firebase.db.app.firebase_.firestore.FieldValue.increment(1)}, {merge: true})
-      }.bind(this));
-    }.bind(this)).then(function() {
-        console.log("Transaction successfully committed!");
-    }).catch(function(error) {
-        console.log("Transaction failed: ", error);
-    });
   }
 
   getPrettyCreationDate(date) {
@@ -265,7 +200,7 @@ class Backlog extends React.PureComponent {
           {
             this.state.showModal
             ?
-            <Modal content={<CreateIssue labels={this.state.labels} sprints={this.state.sprints} exit={this.closeModal} sendIssue={this.sendIssue} />} minWidth={"800px"} exitModalCallback={this.closeModal} />
+            <Modal content={<CreateIssue exit={this.closeModal} finished={this.getIssues} />} minWidth={"800px"} exitModalCallback={this.closeModal} />
             :
             null
           }
@@ -283,9 +218,13 @@ class Backlog extends React.PureComponent {
                 <SearchInput placeholder="Search..." />
               </Search>
             </Header>
-            <Body>
+            <Body> 
               {
-                this.state.issues && this.state.issues.map((issue, index) => <Issue key={issue.id} getTasks={this.getTasks} id={issue.id} title={issue.title} number={issue.number} creationDate={this.getPrettyCreationDate(new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000))} creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} updated={this.getPrettyCreationDate(new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000))} status={issue.status} />)
+                this.state.loading
+                ?
+                  (["skeletonIssue1", "skeletonIssue2", "skeletonIssue3", "skeletonIssue4", "skeletonIssue5", "skeletonIssue6"]).map((key, index) => <Issue skeleton={true} key={key} getTasks={() => false} id={""} title={"This is a skeleton title"} number={0} creationDate={this.getPrettyCreationDate(new Date())} creator={"god himself"} updated={this.getPrettyCreationDate(new Date())} status={"OPEN"} />)
+                :
+                  this.state.issues && this.state.issues.map((issue, index) => <Issue key={issue.id} getTasks={this.getTasks} id={issue.id} title={issue.title} number={issue.number} creationDate={this.getPrettyCreationDate(new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000))} creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} updated={this.getPrettyCreationDate(new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000))} status={issue.status} />)
               }
             </Body>
           </Content>

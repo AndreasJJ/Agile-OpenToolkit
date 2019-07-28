@@ -88,6 +88,8 @@ export default class HomePage extends React.PureComponent {
 
   constructor(props) {
     super(props)
+    
+    this.props.finishLoading()
 
     this.state = {
       

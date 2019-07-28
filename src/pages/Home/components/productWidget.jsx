@@ -70,6 +70,12 @@ const ProductCard = styled.div`
 const Left = styled.div`
   display: flex;
   flex-direction: column;
+
+  & > span {
+    margin-bottom: 2px;
+    color: ${props => props.skeleton ? "transparent" : null} !important;
+    background-color: ${props => props.skeleton ? "lightgray" : null}
+  }
 `
 
 const Members = styled.button`
@@ -108,7 +114,7 @@ class ProductWidget extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.firebase.db.collection('users').doc(this.props.uid).collection('products').onSnapshot(function(querySnapshot) {
+    this.productListener = this.props.firebase.db.collection('users').doc(this.props.uid).collection('products').onSnapshot(function(querySnapshot) {
       let tempArray = [];
       querySnapshot.forEach(function (doc) {
         let tempObj = doc.data()
@@ -120,8 +126,11 @@ class ProductWidget extends React.PureComponent {
     }.bind(this));
   }
 
-  createProduct(product) {
+  componentWillUnmount() {
+    this.productListener()
+  }
 
+  createProduct(product) {
     var batch = this.props.firebase.db.batch();
 
     var productsRef = this.props.firebase.db.collection("products").doc();
@@ -145,18 +154,6 @@ class ProductWidget extends React.PureComponent {
       email: this.props.email,
       firstname: this.props.firstname,
       lastname: this.props.lastname
-    });
-
-    
-    var userProductsRef = this.props.firebase.db.collection("users").doc(this.props.uid).collection("products").doc(productsRef.id);
-    batch.set(userProductsRef, {
-      name: product.name,
-      description: product.description,
-      owner: {
-         uid: this.props.uid,
-         firstname: this.props.firstname,
-         lastname: this.props.lastname
-      }
     });
     
     batch.commit().then(function () {
@@ -199,8 +196,8 @@ class ProductWidget extends React.PureComponent {
 
   static Product = (props) => (
       <ProductCard data-productindex={props.productIndex}>
-        <Left>
-          <b>{props.name}</b>
+        <Left skeleton={props.skeleton}>
+          <span><b>{props.name}</b></span>
           <span>
             <Crown size="1em" />
             <i>
@@ -236,7 +233,12 @@ class ProductWidget extends React.PureComponent {
         </WidgetHeader>
         <WidgetBody>
           <ProductList>
-            {this.state.products && this.state.products.map((product, index) => <ProductWidget.Product key={index} onclick={this.showMembersButtonClicked} productIndex={index} name={product.name} owner={product.owner}/>)}
+            {this.state.products && this.state.products.length > 0
+             ?
+               this.state.products.map((product, index) => <ProductWidget.Product key={index} onclick={this.showMembersButtonClicked} productIndex={index} name={product.name} owner={product.owner}/>)
+             :
+               (["skeletonProduct1", "skeletonProduct2", "skeletonProduct3"]).map((key, index) => <ProductWidget.Product skeleton={true} key={key} onclick={() => false} productIndex={index} name={"Skeleton name"} owner={{firstname: "god", lastname: "the creator"}}/>)
+            }
           </ProductList>
           <AddProductButton onClick={this.AddProductButtonClicked}>Add Product</AddProductButton>
         </WidgetBody>

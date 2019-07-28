@@ -125,6 +125,7 @@ export default class CreateIssue extends React.Component {
     this.onChangeDescription = this.onChangeDescription.bind(this)
     this.onChangeStartDate = this.onChangeStartDate.bind(this)
     this.onChangeDueDate = this.onChangeDueDate.bind(this)
+    this.sendSprint = this.sendSprint.bind(this)
   }
 
   componentDidMount() {
@@ -155,6 +156,20 @@ export default class CreateIssue extends React.Component {
     this.setState({dueDate: e.target.value})
   }
 
+  sendSprint() {
+    let sprint = {
+      title: this.state.title,
+      description: this.state.description,
+      startDate: new Date(this.state.startDate),
+      dueDate: new Date(this.state.dueDate),
+      finishedIssues: 0,
+      totalIssues: 0
+    }
+    this.props.createSprint(sprint).then(function() {
+      this.props.exit()
+    }.bind(this))  
+  }
+
   render () {
     return (
       <Wrapper>
@@ -183,8 +198,8 @@ export default class CreateIssue extends React.Component {
             </DateWrapper>
           </Options>
           <Action>
-            <Submit disabled={this.state.submitDisabled}>Submit issue</Submit>
-            <Cancel>Cancel</Cancel>
+            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendSprint()}>Submit sprint</Submit>
+            <Cancel onClick={(e) => this.props.exit()}>Cancel</Cancel>
           </Action>
         </Body>
       </Wrapper>

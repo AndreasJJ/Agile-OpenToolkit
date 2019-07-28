@@ -65,7 +65,7 @@ class Dashboard extends React.PureComponent {
         <Header onClickCollapse={this.collapseSideBar} firstname={this.props.firstname} lastname={this.props.lastname} profilePic={this.props.photoURL}></Header>
         <SideBar onClickLogout={this.logout} hidden={this.state.hidden} location={this.props.location} selectProduct={this.selectProduct} products={this.props.products} selectedIndex={this.props.selectedProduct}></SideBar>
         <Content>
-          <this.props.content />
+          <this.props.content {...this.props} />
         </Content>
       </Grid>
     );

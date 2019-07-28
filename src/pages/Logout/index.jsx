@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withFirebase } from '../../sharedComponents/Firebase';
 
 import { userActions } from '../../state/actions/user';
 
@@ -13,8 +15,7 @@ class Logout extends React.PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-      dispatch(userActions.logout(this.props.user));
+    this.props.firebase.doSignOut()
   }
 
   render() {
@@ -24,12 +25,5 @@ class Logout extends React.PureComponent {
   }
 }
 
-function mapStateToProps(state) {
-    const { user } = state.authentication;
-    return {
-        user
-    };
-}
-
-const connectedLogoutPage = connect(mapStateToProps)(Logout);
-export { connectedLogoutPage as Logout }; 
+const firebaseLogoutPage = compose(withFirebase)(Logout)
+export { firebaseLogoutPage as Logout }; 

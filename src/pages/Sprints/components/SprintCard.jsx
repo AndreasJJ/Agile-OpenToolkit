@@ -21,12 +21,19 @@ const Wrapper = styled.div`
 
 const Left = styled.div`
 
+  & > div {
+    margin-top: 2px;
+    color: ${props => props.skeleton ? "transparent" : null};
+    background-color: ${props => props.skeleton ? "lightgray" : null}
+  }
 `
 
 const ReactLink = styled(Link)`
   font-weight: bold;
-  color: #000000;
   text-decoration: none;
+  margin-bottom: 2px;
+  color: ${props => props.skeleton ? "transparent" : "#000000"};
+  background-color: ${props => props.skeleton ? "lightgray" : null}
 
   &:hover {
     text-decoration: underline;
@@ -50,6 +57,11 @@ const ProgressInfo = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+
+  & > span {
+    color: ${props => props.skeleton ? "transparent" : null};
+    background-color: ${props => props.skeleton ? "lightgray" : null}
+  }
 `
 
 export default class CreateIssue extends React.Component {
@@ -68,20 +80,20 @@ export default class CreateIssue extends React.Component {
   render () {
     return (
       <Wrapper>
-        <Left>
-          <ReactLink to={"/sprints/" + this.props.sprintId}>{this.props.title}</ReactLink>
+        <Left skeleton={this.props.skeleton}>
+          <ReactLink skeleton={this.props.skeleton} to={"/sprints/" + this.props.sprintId}>{this.props.title}</ReactLink>
           <Dates>
             {this.props.startDate} / {this.props.dueDate}
           </Dates>
         </Left>
         <ProgressWrapper>
-          <ProgressBar max={100} value={(this.props.finishedIssues / this.props.totalIssues)*100}>{(this.props.finishedIssues / this.props.totalIssues)*100}</ProgressBar>
-          <ProgressInfo>
+          <ProgressBar max={100} value={this.props.totalIssues === 0 ? 100 : (this.props.finishedIssues / this.props.totalIssues)*100}>{this.props.totalIssues === 0 ? 100 : (this.props.finishedIssues / this.props.totalIssues)*100}</ProgressBar>
+          <ProgressInfo skeleton={this.props.skeleton}>
             <span>
               {this.props.totalIssues} Issues
             </span>
             <span>
-              {(this.props.finishedIssues / this.props.totalIssues)*100}%
+              {this.props.totalIssues === 0 ? 100 : (this.props.finishedIssues / this.props.totalIssues)*100}%
             </span>
           </ProgressInfo>
         </ProgressWrapper>

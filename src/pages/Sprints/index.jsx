@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withFirebase } from '../../sharedComponents/Firebase';
 
 import Modal from '../../sharedComponents/Modal';
 import CreateSprint from './components/CreateSprint';
@@ -83,39 +85,69 @@ const Body = styled.div`
   box-sizing: border-box;
 `
 
-const NoSprints = styled.div`
-  width: 100%;
-  min-height: 90px;
-  background-color: #f2f2f2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
 class Sprints extends React.PureComponent {
 
   constructor(props) {
     super(props)
 
     this.state = {
+      loading: true,
       activeTab: 1,
       showModal: false,
-      sprints: [{id: 1, title: "Test sprint 1", startDate: "21-06-2019", dueDate: "31-06-2019", totalIssues: 5, finishedIssues: 3}, {id: 2, title: "Test sprint 2", startDate: "19-06-2019", dueDate: "27-06-2019", totalIssues: 8, finishedIssues: 1}]
+      sprints: []
     };
 
+    this.getSprints = this.getSprints.bind(this)
     this.tabClicked = this.tabClicked.bind(this)
     this.closeModal = this.closeModal.bind(this)
+    this.createSprint = this.createSprint.bind(this)
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.getSprints()
+    await this.props.finishLoading()
+    this.setState({loading: false})
+  }
+
+  getSprints() {
+    let ref;
+    if(this.state.activeTab === 0) {
+      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").where("dueDate", "<", new Date()).orderBy("dueDate", 'desc')
+    }else if(this.state.activeTab === 1) {
+      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").where("dueDate", ">=", new Date()).orderBy("dueDate", 'asc')
+    } else {
+      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").where("startDate", ">", new Date()).orderBy("startDate", 'asc')
+    }
+
+    return ref.get().then(function(snapshot) {
+      let tempArray = [];
+      snapshot.forEach(function (doc) {
+        let tempObj = doc.data()
+        tempObj.id = doc.id
+
+        tempArray.push(tempObj)
+      })
+
+      if(this.state.activeTab === 1) {
+        tempArray = tempArray.filter((obj) => new Date(obj.startDate.nanoseconds/1000000 + obj.startDate.seconds*1000) <= new Date())
+      } 
+
+      this.setState({sprints: tempArray})
+    }.bind(this))
   }
 
   tabClicked(e) {
-    this.setState({activeTab: parseInt(e.target.dataset.index)})
+    this.setState({activeTab: parseInt(e.target.dataset.index)}, function() {
+      this.getSprints()
+    }.bind(this))
   }
 
   closeModal() {
     this.setState({showModal: false})
+  }
+
+  createSprint(sprint) {
+    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").add(sprint)
   }
 
   render() {
@@ -124,7 +156,7 @@ class Sprints extends React.PureComponent {
           {
             this.state.showModal
             ?
-            <Modal content={<CreateSprint />} minWidth={"800px"} exitModalCallback={this.closeModal} />
+            <Modal content={<CreateSprint exit={this.closeModal} createSprint={this.createSprint} />} minWidth={"800px"} exitModalCallback={this.closeModal} />
             :
             null
           }
@@ -141,13 +173,13 @@ class Sprints extends React.PureComponent {
             </Header>
             <Body>
               {
-                this.state.sprints && this.state.sprints.length > 0
+                this.state.loading
                 ?
-                  this.state.sprints.map((sprint, index) =>
-                    <SprintCard key={index} sprintId={sprint.id} title={sprint.title} startDate={sprint.startDate} dueDate={sprint.dueDate} totalIssues={sprint.totalIssues} finishedIssues={sprint.finishedIssues} />
-                  )
+                  <SprintCard skeleton={true} key={"skeletonSprintCard"} sprintId={""} title={"This is a skeleton sprint title"} startDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} dueDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} totalIssues={1} finishedIssues={0} />
                 :
-                  <NoSprints>No sprints to show</NoSprints>
+                  this.state.sprints && this.state.sprints.map((sprint, index) =>
+                    <SprintCard key={index} sprintId={sprint.id} title={sprint.title} startDate={new Date(sprint.startDate.nanoseconds/1000000 + sprint.startDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} dueDate={new Date(sprint.dueDate.nanoseconds/1000000 + sprint.dueDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} totalIssues={sprint.totalIssues} finishedIssues={sprint.finishedIssues} />
+                  )
               }
             </Body>
           </Content>
@@ -158,12 +190,14 @@ class Sprints extends React.PureComponent {
 
 function mapStateToProps(state) {
     const { user} = state.authentication;
-    const { selectedProduct } = state.product
+    const { products, selectedProduct } = state.product
     return {
         user,
+        products,
         selectedProduct
     };
 }
 
 const connectedSprints = connect(mapStateToProps)(Sprints);
-export { connectedSprints as Sprints };
+const firebaseSprints = compose(withFirebase)(connectedSprints)
+export { firebaseSprints as Sprints };

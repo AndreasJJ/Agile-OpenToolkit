@@ -3,9 +3,9 @@ import { Route, Redirect } from 'react-router-dom';
 
 import { Authenticated } from './Authenticated';
 
-const OpenRoute = ({ component: Component, ...rest }) => (
+const OpenRoute = ({ component: Component, finishLoading: FinishLoading, ...rest }) => (
   <Route {...rest} render={(props) => (
-    <Authenticated is={<Redirect to={{pathname: '/dashboard',state: { from: props.location }}} />} not={<Component {...props} />} />
+    <Authenticated is={<Redirect to={{pathname: '/dashboard',state: { from: props.location }}} />} not={<Component finishLoading={FinishLoading} {...props} />} />
   )} />
 )
 
