@@ -33,8 +33,11 @@ class Home extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(((prevState.productWidgetFinishedLoading !== this.state.productWidgetFinishedLoading) || (prevState.notificationWidgetFinishedLoading !== this.state.notificationWidgetFinishedLoading))
-        && (this.state.productWidgetFinishedLoading && this.state.notificationWidgetFinishedLoading)) {
+    if(((prevState.productWidgetFinishedLoading !== this.state.productWidgetFinishedLoading) || 
+       (prevState.notificationWidgetFinishedLoading !== this.state.notificationWidgetFinishedLoading))
+       && 
+       (this.state.productWidgetFinishedLoading && this.state.notificationWidgetFinishedLoading)) 
+    {
       this.props.finishLoading()
     }
   }
@@ -51,7 +54,11 @@ class Home extends React.PureComponent {
       return (
         <Wrapper>
           <ProductWidget finishedLoading={this.handleFinishedLoadingProductWidget} />
-          <DetailsWidget profilePicture={this.props.profile_picture} gender={this.props.gender} firstname={this.props.firstname} lastname={this.props.lastname} email={this.props.email} />
+          <DetailsWidget profilePicture={this.props.profile_picture} 
+                         gender={this.props.gender} 
+                         firstname={this.props.firstname} 
+                         lastname={this.props.lastname} 
+                         email={this.props.email} />
           <NotificationsWidget finishedLoading={this.handleFinishedLoadingNotificationsWidget} />
         </Wrapper>
       );

@@ -69,7 +69,6 @@ const NavElement = styled.div`
   }
 `
 
-/* eslint-disable react/prefer-stateless-function */
 export default class NotificationsWidget extends React.PureComponent {
 
   constructor(props) {
@@ -106,7 +105,10 @@ export default class NotificationsWidget extends React.PureComponent {
           </AAA>
           <Navigation>
             <NavElement>First page</NavElement>
-            {this.state.pageNumbers && this.state.pageNumbers.map((number) => <NavElement key={number}>{number}</NavElement>)}
+            {this.state.pageNumbers && this.state.pageNumbers.map((number) => 
+                                                                  <NavElement key={number}>{number}</NavElement>
+                                                                  )
+            }
             <NavElement>Last page</NavElement>
           </Navigation>
         </Wrapper>

@@ -241,6 +241,8 @@ class Register extends React.PureComponent {
       firstname: '',
       lastname: ''
     };
+
+    this.setCookie = this.setCookie.bind(this)
     this.register = this.register.bind(this)
     this.changeEmailInputValue = this.changeEmailInputValue.bind(this)
     this.changePasswordInputValue = this.changePasswordInputValue.bind(this)
@@ -250,7 +252,17 @@ class Register extends React.PureComponent {
   }
 
   componentDidMount() {
+    this.setCookie("visited", true)
+  }
 
+  setCookie(name,value,days) {
+      var expires = "";
+      if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + (days*24*60*60*1000));
+          expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
 
   register(e) {
@@ -355,7 +367,15 @@ class Register extends React.PureComponent {
                   <span>Email</span>
                   <InputWrapper>
                     <Envelope size="1em" />
-                    <EmailInput type="email" tabIndex={1} name="email" value={this.state.eamil} onChange={e => this.changeEmailInputValue(e.target.value)} placeholder="Email" minlength="3" maxlength="12" required />
+                    <EmailInput type="email" 
+                                tabIndex={1} 
+                                name="email" 
+                                value={this.state.eamil} 
+                                onChange={e => this.changeEmailInputValue(e.target.value)} 
+                                placeholder="Email" 
+                                minlength="3" 
+                                maxlength="12" 
+                                required />
                   </InputWrapper>
                 </EmailWrapper>
                 <NameWrapper>
@@ -363,14 +383,28 @@ class Register extends React.PureComponent {
                     <span>Lastname</span>
                     <InputWrapper>
                       <User size="1em" />
-                      <FirstnameInput type="text" tabIndex={2} name="fistname" value={this.state.firstname} onChange={e => this.changeFirstnameInputValue(e.target.value)} placeholder="Firstname" minlength="3" required />
+                      <FirstnameInput type="text" 
+                                      tabIndex={2} 
+                                      name="fistname" 
+                                      value={this.state.firstname} 
+                                      onChange={e => this.changeFirstnameInputValue(e.target.value)} 
+                                      placeholder="Firstname" 
+                                      minlength="3" 
+                                      required />
                     </InputWrapper>
                   </FirstnameWrapper>
                   <LastnameWrapper>
                     <span>Lastname</span>
                     <InputWrapper>
                       <User size="1em" />
-                      <LastnameInput type="text" tabIndex={3} name="lastname" value={this.state.lastname} onChange={e => this.changeLastnameInputValue(e.target.value)} placeholder="Lastname" minlength="3" required />
+                      <LastnameInput type="text" 
+                                     tabIndex={3} 
+                                     name="lastname" 
+                                     value={this.state.lastname} 
+                                     onChange={e => this.changeLastnameInputValue(e.target.value)} 
+                                     placeholder="Lastname" 
+                                     minlength="3" 
+                                     required />
                     </InputWrapper>
                   </LastnameWrapper>
                 </NameWrapper>
@@ -378,21 +412,43 @@ class Register extends React.PureComponent {
                   <span>Password</span>
                   <InputWrapper>
                     <UnlockAlt size="1em" />
-                    <PasswordInput type="password" tabIndex={4} name="password" value={this.state.password} onChange={e => this.changePasswordInputValue(e.target.value)} placeholder="Password" minlength="6" maxlength="32" required />
+                    <PasswordInput type="password" 
+                                   tabIndex={4} 
+                                   name="password" 
+                                   value={this.state.password} 
+                                   onChange={e => this.changePasswordInputValue(e.target.value)} 
+                                   placeholder="Password" 
+                                   minlength="6" 
+                                   maxlength="32" 
+                                   required />
                   </InputWrapper>
                 </PasswordWrapper>
                 <PasswordWrapper>
                   <span>Confirm Password</span>
                   <InputWrapper>
                     <UnlockAlt size="1em" />
-                    <ConfirmPasswordInput type="password" tabIndex={5} name="confirm_password" value={this.state.confirmPassword} onChange={e => this.changeConfirmPasswordInputValue(e.target.value)} placeholder="Confirm password" minlength="6" maxlength="32" required />
+                    <ConfirmPasswordInput type="password" 
+                                          tabIndex={5} 
+                                          name="confirm_password" 
+                                          value={this.state.confirmPassword} 
+                                          onChange={e => this.changeConfirmPasswordInputValue(e.target.value)} 
+                                          placeholder="Confirm password" 
+                                          minlength="6" 
+                                          maxlength="32" 
+                                          required />
                   </InputWrapper>
                 </PasswordWrapper>
                 <ButtonsWrapper>
-                  <ToLoginButton type="button" tabIndex={7} onClick={e => this.toLogin(e)}>
+                  <ToLoginButton type="button" 
+                                 tabIndex={7} 
+                                 onClick={e => this.toLogin(e)}
+                  >
                     To Login
                   </ToLoginButton>
-                  <RegisterButton type="submit" tabIndex={6} onClick={e => this.register(e)}>
+                  <RegisterButton type="submit" 
+                                  tabIndex={6} 
+                                  onClick={e => this.register(e)}
+                  >
                       Register
                   </RegisterButton>
                 </ButtonsWrapper>

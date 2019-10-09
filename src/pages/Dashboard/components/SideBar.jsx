@@ -9,6 +9,7 @@ import {Columns} from 'styled-icons/boxicons-regular/Columns'
 import {Directions} from 'styled-icons/boxicons-regular/Directions'
 import {ViewCarousel} from 'styled-icons/material/ViewCarousel'
 import {SignOutAlt} from 'styled-icons/fa-solid'
+import {Label} from 'styled-icons/material/Label'
 
 const SIDEBAR = styled.aside`
     display: ${props => props.hidden ? "none" : "block"};
@@ -138,10 +139,9 @@ class SideBar extends React.Component {
   componentDidMount() {
   }
 
-  selectChange(e) {
-    this.setState({selectedIndex: e.target.value}, function(test) {
-      this.props.selectProduct(this.state.selectedIndex)
-    }.bind(this))
+  async selectChange(e) {
+    await this.setState({selectedIndex: e.target.value})
+    this.props.selectProduct(this.state.selectedIndex)
   }
 
   render() {
@@ -153,33 +153,68 @@ class SideBar extends React.Component {
           </LogoWrapper>
           <SideNav>
             <Menu>
-              <MenuItem current={this.props.location.pathname} next={"/dashboard"}><Link to="/dashboard" current={this.props.location.pathname} next={"/dashboard"}><Home size="1em"/><LeftPadding>Home</LeftPadding></Link></MenuItem>
+              <MenuItem current={this.props.location.pathname} next={"/dashboard"}>
+                <Link to="/dashboard" current={this.props.location.pathname} next={"/dashboard"}>
+                  <Home size="1em"/>
+                  <LeftPadding>Home</LeftPadding>
+                </Link>
+              </MenuItem>
             </Menu>
             <ProductSelecter>
                 <ProductSelect onChange={this.selectChange} defaultValue={this.state.selectedIndex}>
                     {
                       //TODO: Handle if the stored selectedIndex in redux is higher than the number of products
-                      this.props.products && this.props.products.map((product, index) => <option key={product.id} value={index}>{product.name}</option>)
+                      this.props.products && this.props.products.map((product, index) => 
+                                                                      <option key={product.id} value={index}>{product.name}</option>
+                                                                    )
                     }
                 </ProductSelect>
             </ProductSelecter>
             {
               this.props.products.length > 0
               ?
-              <Menu>
-                <MenuItem current={this.props.location.pathname} next={"/backlog"}><Link to="/backlog" current={this.props.location.pathname} next={"/backlog"}><Collection size="1em"/><LeftPadding>Product backlog</LeftPadding></Link></MenuItem>
-                <MenuItem current={this.props.location.pathname} next={"/sprints"}><Link to="/sprints" current={this.props.location.pathname} next={"/sprints"}><DirectionsRun size="1em"/><LeftPadding>Sprints</LeftPadding></Link></MenuItem>
-                <MenuItem current={this.props.location.pathname} next={"/sprintboard"}><Link to="/sprintboard" current={this.props.location.pathname} next={"/sprintboard"}><Columns size="1em"/><LeftPadding>Sprintboard</LeftPadding></Link></MenuItem>
-                <MenuItem current={this.props.location.pathname} next={"/planning"}><Link to="/planning" current={this.props.location.pathname} next={"/planning"}><ViewCarousel size="1em"/><LeftPadding>Planning Poker</LeftPadding></Link></MenuItem>
-                <MenuItem current={this.props.location.pathname} next={"/retrospective"}><Link to="/retrospective" current={this.props.location.pathname} next={"/retrospective"}><Directions size="1em"/><LeftPadding>Retrospective Board</LeftPadding></Link></MenuItem>
-              </Menu>
+                <Menu>
+                  <MenuItem current={this.props.location.pathname} next={"/backlog"}>
+                    <Link to="/backlog" current={this.props.location.pathname} next={"/backlog"}><Collection size="1em"/>
+                      <LeftPadding>Product backlog</LeftPadding>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem current={this.props.location.pathname} next={"/labels"}>
+                    <Link to="/labels" current={this.props.location.pathname} next={"/labels"}><Label size="1em"/>
+                      <LeftPadding>Labels</LeftPadding>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem current={this.props.location.pathname} next={"/sprints"}>
+                    <Link to="/sprints" current={this.props.location.pathname} next={"/sprints"}><DirectionsRun size="1em"/>
+                      <LeftPadding>Sprints</LeftPadding>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem current={this.props.location.pathname} next={"/sprintboard"}>
+                    <Link to="/sprintboard" current={this.props.location.pathname} next={"/sprintboard"}>
+                      <Columns size="1em"/>
+                      <LeftPadding>Sprintboard</LeftPadding>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem current={this.props.location.pathname} next={"/planning"}>
+                    <Link to="/planning" current={this.props.location.pathname} next={"/planning"}><ViewCarousel size="1em"/>
+                      <LeftPadding>Planning Poker</LeftPadding>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem current={this.props.location.pathname} next={"/retrospective"}>
+                    <Link to="/retrospective" current={this.props.location.pathname} next={"/retrospective"}>
+                      <Directions size="1em"/>
+                      <LeftPadding>Retrospective Board</LeftPadding>
+                    </Link>
+                  </MenuItem>
+                </Menu>
               :
-              null
+                null
             }
           </SideNav>
           <Logout title="Click here to logout">
             <LogoutButton onClick={() => {this.props.onClickLogout()}}>
-              <SignIcon size="1em" /><span>Logout</span>
+              <SignIcon size="1em" />
+              <span>Logout</span>
             </LogoutButton>
           </Logout>
         </SideBarGrid>

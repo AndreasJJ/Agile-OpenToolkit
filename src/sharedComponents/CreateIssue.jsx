@@ -170,31 +170,33 @@ export default class CreateIssue extends React.Component {
     this.getSprints()
   }
 
-  getSprints() {
-    let sprints = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").get().then(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        tempArray.push(doc.data())
-      });
-      return tempArray
-    });
-    sprints.then(data => this.setState({sprints: data}))
+  async getSprints() {
+    let querySnapshot = await this.props.firebase
+                            .db.collection("products")
+                            .doc(this.props.products[this.props.selectedProduct].id)
+                            .collection("sprints")
+                            .get()
+    let sprints = querySnapshot.docs.map((doc) => doc.data())
+    this.setState({sprints: sprints})
   }
 
-  getLabels() {
-    let labels = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("labels").doc("list").get().then(function(doc) {
-      return doc.data().list
-    });
-    labels.then(data => this.setState({labels: data}))
+  async getLabels() {
+    let docSnapshot = this.props.firebase
+                            .db.collection("products")
+                            .doc(this.props.products[this.props.selectedProduct].id)
+                            .collection("labels")
+                            .doc("list")
+                            .get()
+    let labels = docSnapshot.data().list
+    this.setState({labels: labels})
   }
 
   onChangeTitle(e) {
-    let isSubmitDisabled = false
-    if(e.target.value === "") {
-      isSubmitDisabled = true
-    } 
+    let isSubmitDisabled = e.target.value === "" ? true : false
 
-    this.setState({title: e.target.value, submitDisabled: isSubmitDisabled})
+    this.setState({title: e.target.value, 
+                   submitDisabled: isSubmitDisabled
+                 })
   }
 
   onChangeDescription(e) {
@@ -222,8 +224,7 @@ export default class CreateIssue extends React.Component {
       title: this.state.title,
       description: this.state.description,
       dueDate: new Date(this.state.dueDate),
-      labels: this.state.selectedLabels.map(i => this.state.labels[i]),
-      sprint: this.state.sprints.length <= this.state.selectedSprint ? null : (this.state.selectedSprint > 0 ? this.state.sprints[this.state.selectedSprint-1].id : null),
+      sprint: (this.state.sprints.length <= this.state.selectedSprint) ? null : (this.state.selectedSprint > 0 ? this.state.sprints[this.state.selectedSprint-1].id : null),
       status: "OPEN",
       timestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
       lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
@@ -238,18 +239,25 @@ export default class CreateIssue extends React.Component {
         lastname: this.props.lastname
       }
     }
+    if(this.state.labels.length > 0) {
+      issue.labels = this.state.selectedLabels.map(i => this.state.labels[i])
+    }
 
-    var issueRef = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc();
-    var incrementRef = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc("--STATS--");
+
+    var issueRef = this.props.firebase
+                             .db.collection("products")
+                             .doc(this.props.products[this.props.selectedProduct].id)
+                             .collection("stories")
+                             .doc()
+    var incrementRef = this.props.firebase
+                                 .db.collection("products")
+                                 .doc(this.props.products[this.props.selectedProduct].id)
+                                 .collection("stories")
+                                 .doc("--STATS--")
 
     return this.props.firebase.db.runTransaction(function(transaction) {
       return transaction.get(incrementRef).then(function(incrementValueDoc) {
-          var incrementValue;
-          if (!incrementValueDoc.exists) {
-            incrementValue = 0;
-          } else {
-            incrementValue = incrementValueDoc.data().count;
-          }
+          var incrementValue = incrementValueDoc.exists ? incrementValue = incrementValueDoc.data().count : 0
 
           issue.number = incrementValue
 
@@ -276,20 +284,27 @@ export default class CreateIssue extends React.Component {
           <Info>
             <TitleWrapper>
               <Title>Title</Title>
-              <TitleInput placeholder="Title" value={this.state.title} onChange={this.onChangeTitle} />
+              <TitleInput placeholder="Title" 
+                          value={this.state.title} 
+                          onChange={this.onChangeTitle} />
             </TitleWrapper>
             <DescriptionWrapper>
               <Description>Description</Description>
-              <DescriptionArea placeholder="Write a comment..." value={this.state.description} onChange={this.onChangeDescription} />
+              <DescriptionArea placeholder="Write a comment..." 
+                               value={this.state.description} 
+                               onChange={this.onChangeDescription} />
             </DescriptionWrapper>
           </Info>
           <Options>
             <SprintWrapper>
               <Sprint>Sprint</Sprint>
-              <SprintSelect onChange={this.onChangeSprintSelect} defaultValue={this.state.selectedSprint}>
+              <SprintSelect onChange={this.onChangeSprintSelect} 
+                            defaultValue={this.state.selectedSprint}>
                 <Option></Option>
                 {
-                  this.state.sprints && this.state.sprints.map((sprint, index) => <Option key={index} value={index+1}>{sprint.title}</Option>)
+                  this.state.sprints && this.state.sprints.map((sprint, index) => 
+                                                                <Option key={index} value={index+1}>{sprint.title}</Option>
+                                                               )
                 }
               </SprintSelect>
             </SprintWrapper>
@@ -300,18 +315,27 @@ export default class CreateIssue extends React.Component {
                   this.state.labels && this.state.labels.length > 0 ? null : <Option disabled></Option>
                 }
                 {
-                  this.state.labels && this.state.labels.map((label, index) => <Option key={index} value={index}>{label}</Option>)
+                  this.state.labels && this.state.labels.map((label, index) => 
+                                                              <Option key={index} value={index}>{label}</Option>
+                                                             )
                 }
               </LabelsSelect>
             </LabelsWrapper>
             <DueDateWrapper>
               <DueDate>Due Date</DueDate>
-              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+              <DateInput type="date" 
+                         value={this.state.dueDate} 
+                         onChange={this.onChangeDueDate} 
+                         min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
             </DueDateWrapper>
           </Options>
           <Action>
-            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendIssue()}>Submit issue</Submit>
-            <Cancel onClick={(e) => this.props.exit()}>Cancel</Cancel>
+            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendIssue()}>
+              Submit issue
+            </Submit>
+            <Cancel onClick={(e) => this.props.exit()}>
+              Cancel
+            </Cancel>
           </Action>
         </Body>
       </Wrapper>

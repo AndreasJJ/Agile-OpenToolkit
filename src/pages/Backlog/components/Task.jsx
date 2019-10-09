@@ -60,9 +60,9 @@ export default class Task extends React.Component {
             {
               this.props.assigne
               ?
-              <ProfilePicture src={this.props.assigne.profilePicture ? this.props.assigne.profilePicture : BlankProfilePicture} />
+                <ProfilePicture src={this.props.assigne.profilePicture ? this.props.assigne.profilePicture : BlankProfilePicture} />
               :
-              null
+                null
             }
           <Text>
             <Title>
@@ -72,9 +72,9 @@ export default class Task extends React.Component {
               {
                 this.props.assigne
                 ?
-                "Assigne: " + this.props.assigne.firstname.charAt(0).toUpperCase() + this.props.assigne.firstname.slice(1) + " " + this.props.assigne.lastname
+                  "Assigne: " + this.props.assigne.firstname.charAt(0).toUpperCase() + this.props.assigne.firstname.slice(1) + " " + this.props.assigne.lastname
                 :
-                null
+                  null
               }
             </div>
           </Text>

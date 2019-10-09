@@ -118,47 +118,55 @@ class Backlog extends React.PureComponent {
   async componentDidMount() {
     await this.getIssues()
     await this.props.finishLoading()
-    this.setState({loading: false})
+    await this.setState({loading: false})
   }
 
-  getIssues() {
+  async getIssues() {
     let ref;
     if(this.state.activeTab === 0) {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").where("status", "==", "OPEN").orderBy("timestamp")
+      ref = this.props.firebase
+                      .db
+                      .collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("stories")
+                      .where("status", "==", "OPEN").orderBy("timestamp")
     }else if(this.state.activeTab === 1) {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").where("status", "==", "CLOSED").orderBy("timestamp")
+      ref = this.props.firebase
+                      .db.collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("stories")
+                      .where("status", "==", "CLOSED")
+                      .orderBy("timestamp")
     } else {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").orderBy("timestamp")
+      ref = this.props.firebase
+                      .db.collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("stories")
+                      .orderBy("timestamp")
     }
-    let issues = ref.get().then(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        if(doc.id == "--STATS--") {
-          return
-        }
-        let obj = doc.data()
-        obj.id = doc.id
-        tempArray.push(obj)
-      });
-      return tempArray
-    });
-    return issues.then(data => this.setState({issues: data}))
+    let querySnapshot = await ref.get()
+    let issues = querySnapshot.docs.filter((doc) => doc.id != "--STATS--").map((doc) => {
+      let obj = doc.data()
+      obj.id = doc.id
+      return obj
+    })
+    this.setState({issues: issues})
   }
 
-  getTasks(id) {
-    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(id).collection("tasks").orderBy("title").get().then(function(querySnapshot) {
-      let tempArray = []
-      querySnapshot.forEach(function (doc) {
-        tempArray.push(doc.data())
-      });
-      return tempArray
-    })
+  async getTasks(id) {
+    let querySnapshot = await this.props.firebase
+                      .db.collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("stories")
+                      .doc(id)
+                      .collection("tasks")
+                      .orderBy("title")
+                      .get()
+    return querySnapshot.docs.map((doc) => doc.data())
   }
 
   tabClicked(e) {
-    this.setState({activeTab: parseInt(e.target.dataset.index)}, function() {
-      this.getIssues()
-    }.bind(this))
+    this.setState({activeTab: parseInt(e.target.dataset.index)}, () => this.getIssues())
   }
 
   closeModal() {
@@ -200,19 +208,32 @@ class Backlog extends React.PureComponent {
           {
             this.state.showModal
             ?
-            <Modal content={<CreateIssue exit={this.closeModal} finished={this.getIssues} />} minWidth={"800px"} exitModalCallback={this.closeModal} />
+              <Modal content={<CreateIssue 
+                     exit={this.closeModal} 
+                     finished={this.getIssues} />} 
+                     minWidth={"800px"} 
+                     exitModalCallback={this.closeModal} 
+              />
             :
-            null
+              null
           }
           <Content>
             <Header> 
               <Controls> 
                 <StateTabs> 
-                  <Tab activeIndex={this.state.activeTab} index={0} data-index={0} onClick={this.tabClicked}>Open</Tab>
-                  <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>Closed</Tab>
-                  <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>All</Tab>
+                  <Tab activeIndex={this.state.activeTab} index={0} data-index={0} onClick={this.tabClicked}>
+                    Open
+                  </Tab>
+                  <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>
+                    Closed
+                  </Tab>
+                  <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>
+                    All
+                  </Tab>
                 </StateTabs>
-                <NewIssue onClick={(e) => {this.setState({showModal: true})}}>New Issue</NewIssue>
+                <NewIssue onClick={(e) => {this.setState({showModal: true})}}>
+                  New Issue
+                </NewIssue>
               </Controls>
               <Search> 
                 <SearchInput placeholder="Search..." />
@@ -222,9 +243,30 @@ class Backlog extends React.PureComponent {
               {
                 this.state.loading
                 ?
-                  (["skeletonIssue1", "skeletonIssue2", "skeletonIssue3", "skeletonIssue4", "skeletonIssue5", "skeletonIssue6"]).map((key, index) => <Issue skeleton={true} key={key} getTasks={() => false} id={""} title={"This is a skeleton title"} number={0} creationDate={this.getPrettyCreationDate(new Date())} creator={"god himself"} updated={this.getPrettyCreationDate(new Date())} status={"OPEN"} />)
+                  (["skeletonIssue1", "skeletonIssue2", "skeletonIssue3", "skeletonIssue4", "skeletonIssue5", "skeletonIssue6"]).map((key, index) => 
+                      <Issue skeleton={true} 
+                             key={key} 
+                             getTasks={() => false} 
+                             id={""} 
+                             title={"This is a skeleton title"} 
+                             number={0} 
+                             creationDate={this.getPrettyCreationDate(new Date())} 
+                             creator={"god himself"} 
+                             updated={this.getPrettyCreationDate(new Date())} 
+                             status={"OPEN"} />
+                    )
                 :
-                  this.state.issues && this.state.issues.map((issue, index) => <Issue key={issue.id} getTasks={this.getTasks} id={issue.id} title={issue.title} number={issue.number} creationDate={this.getPrettyCreationDate(new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000))} creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} updated={this.getPrettyCreationDate(new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000))} status={issue.status} />)
+                  this.state.issues && this.state.issues.map((issue, index) => 
+                      <Issue key={issue.id} 
+                             getTasks={this.getTasks} 
+                             id={issue.id} 
+                             title={issue.title} 
+                             number={issue.number} 
+                             creationDate={this.getPrettyCreationDate(new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000))} 
+                             creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} 
+                             updated={this.getPrettyCreationDate(new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000))} 
+                             status={issue.status} />
+                    )
               }
             </Body>
           </Content>

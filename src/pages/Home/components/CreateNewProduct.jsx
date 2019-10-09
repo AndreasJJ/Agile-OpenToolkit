@@ -106,7 +106,9 @@ class CreateNewProduct extends React.PureComponent {
       description = null
     }
 
-    this.props.sendProduct({name: name, description: description})
+    this.props.sendProduct({name: name, 
+                            description: description
+                          })
     this.props.onclick()
   }
 
@@ -131,14 +133,20 @@ class CreateNewProduct extends React.PureComponent {
          <Form>
            <InputWrapper>
              <label>Product Name</label>
-             <Input placeholder="marvelous dog feeder" value={this.state.productName} onChange={this.changeproductName} />
+             <Input placeholder="marvelous dog feeder" 
+                    value={this.state.productName} 
+                    onChange={this.changeproductName} />
              <label>Short Description</label>
-             <Input placeholder="A product for the future." value={this.state.productDescription} onChange={this.changeproductDescription} />
+             <Input placeholder="A product for the future." 
+                    value={this.state.productDescription} 
+                    onChange={this.changeproductDescription} />
              <label>Add Members</label>
              <TagsInput />
            </InputWrapper>
            <ButtonWrapper>
-             <SubmitButton onClick={this.sendProduct}> Create Product! </SubmitButton>
+            <SubmitButton onClick={this.sendProduct}> 
+             Create Product! 
+            </SubmitButton>
            </ButtonWrapper>
          </Form>
       </Wrapper>

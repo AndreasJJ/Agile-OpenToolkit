@@ -115,18 +115,22 @@ class ProductWidget extends React.PureComponent {
   }
 
   async componentDidMount() {
-    this.productListener = await this.props.firebase.db.collection('users').doc(this.props.uid).collection('products').onSnapshot(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        let tempObj = doc.data()
-        tempObj.id = doc.id
-        tempArray.push(tempObj)
-      });
-      this.setState({products: tempArray, loading: false}, () => {
-        this.props.finishedLoading()
-      });
-      this.props.dispatch(productActions.getProducts(tempArray));
-    }.bind(this));
+    this.productListener = await this.props.firebase
+                                           .db
+                                           .collection('users')
+                                           .doc(this.props.uid)
+                                           .collection('products')
+                                           .onSnapshot(async function(querySnapshot) {
+                                              let tempArray = querySnapshot.docs.map((doc) => {
+                                                let obj = doc.data()
+                                                obj.id = doc.id
+                                                return obj
+                                              })
+                                              await this.setState({products: tempArray, 
+                                                                   loading: false})
+                                              this.props.finishedLoading()
+                                              this.props.dispatch(productActions.getProducts(tempArray))
+                                            }.bind(this));
   }
 
   componentWillUnmount() {
@@ -136,7 +140,10 @@ class ProductWidget extends React.PureComponent {
   createProduct(product) {
     var batch = this.props.firebase.db.batch();
 
-    var productsRef = this.props.firebase.db.collection("products").doc();
+    var productsRef = this.props.firebase
+                                .db
+                                .collection("products")
+                                .doc();
     batch.set(productsRef, {
       name: product.name,
       description: product.description,
@@ -147,12 +154,21 @@ class ProductWidget extends React.PureComponent {
       }
     });
 
-    var rolesRef = this.props.firebase.db.collection("products").doc(productsRef.id).collection("roles").doc(this.props.uid);
+    var rolesRef = this.props.firebase
+                             .db.collection("products")
+                             .doc(productsRef.id)
+                             .collection("roles")
+                             .doc(this.props.uid);
     batch.set(rolesRef, {
       role: 1
     });
 
-    var membersRef = this.props.firebase.db.collection("products").doc(productsRef.id).collection("members").doc(this.props.uid);
+    var membersRef = this.props.firebase
+                               .db
+                               .collection("products")
+                               .doc(productsRef.id)
+                               .collection("members")
+                               .doc(this.props.uid);
     batch.set(membersRef, {
       email: this.props.email,
       firstname: this.props.firstname,
@@ -169,17 +185,19 @@ class ProductWidget extends React.PureComponent {
   }
 
   AddProductButtonClicked() {
-    this.setState({showModal: true, modalContent: "productCreation"})
+    this.setState({showModal: true, 
+                   modalContent: "productCreation"
+                  })
   }
 
-  getMembers(productId) {
-    return this.props.firebase.db.collection('products').doc(productId).collection('members').get().then(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        tempArray.push(doc.data())
-      });
-      return tempArray
-    });
+  async getMembers(productId) {
+    let querySnapshot = await this.props.firebase
+                                        .db
+                                        .collection('products')
+                                        .doc(productId)
+                                        .collection('members')
+                                        .get()
+    return querySnapshot.docs.map((doc) => doc.data())
   }
 
   showMembersButtonClicked(e) {
@@ -204,7 +222,20 @@ class ProductWidget extends React.PureComponent {
           <span>
             <Crown size="1em" />
             <i>
-              {props.owner.firstname ? (" " + props.owner.firstname.charAt(0).toUpperCase() + props.owner.firstname.slice(1)) : null }{props.owner.lastname ? (" " + props.owner.lastname) : null}
+              {
+                props.owner.firstname 
+                ? 
+                  (" " + props.owner.firstname.charAt(0).toUpperCase() + props.owner.firstname.slice(1)) 
+                : 
+                  null 
+              }
+              {
+                props.owner.lastname 
+                ? 
+                  (" " + props.owner.lastname) 
+                : 
+                  null
+              }
             </i>
           </span>
         </Left>
@@ -216,9 +247,20 @@ class ProductWidget extends React.PureComponent {
     let modal = <Modal />
 
     if(this.state.modalContent == "productCreation") {
-      modal = <Modal content={<Tabs tabNames={["Create New Product", "Join Product Team"]} tabComponents={[<CreateNewProduct sendProduct={this.createProduct} onclick={this.closeModal} />, <JoinProductTeam />]} />} exitModalCallback={this.closeModal} />
+      modal = <Modal content={<Tabs tabNames={["Create New Product", "Join Product Team"]} 
+                                    tabComponents={[<CreateNewProduct 
+                                    sendProduct={this.createProduct} 
+                                    onclick={this.closeModal} />, <JoinProductTeam />]} />
+                              } 
+                     exitModalCallback={this.closeModal} />
     } else if (this.state.modalContent == "showMembers") {
-      modal = <Modal content={<ProductMembers products={this.state.products} productIndex={this.state.selectedProduct} getMembers={this.getMembers} /> } minWidth={"400px"} maxWidth={"400px"} exitModalCallback={this.closeModal} />
+      modal = <Modal content={<ProductMembers products={this.state.products} 
+                                              productIndex={this.state.selectedProduct} 
+                                              getMembers={this.getMembers} /> 
+                              } 
+                    minWidth={"400px"} 
+                    maxWidth={"400px"} 
+                    exitModalCallback={this.closeModal} />
     }
 
     return(
@@ -226,9 +268,9 @@ class ProductWidget extends React.PureComponent {
       {
         this.state.showModal
         ?
-        modal
+          modal
         :
-        null
+          null
       }
       <Content>
         <WidgetHeader>
@@ -238,12 +280,27 @@ class ProductWidget extends React.PureComponent {
           <ProductList>
             {this.state.loading
              ?
-               (["skeletonProduct1", "skeletonProduct2", "skeletonProduct3"]).map((key, index) => <ProductWidget.Product skeleton={true} key={key} onclick={() => false} productIndex={index} name={"Skeleton name"} owner={{firstname: "god", lastname: "the creator"}}/>)
+               (["skeletonProduct1", "skeletonProduct2", "skeletonProduct3"]).map((key, index) => 
+                                                                                    <ProductWidget.Product skeleton={true} 
+                                                                                                           key={key} 
+                                                                                                           onclick={() => false} 
+                                                                                                           productIndex={index} 
+                                                                                                           name={"Skeleton name"} 
+                                                                                                           owner={{firstname: "god", lastname: "the creator"}}/>
+                                                                                  )
               :
-               this.state.products && this.state.products.map((product, index) => <ProductWidget.Product key={index} onclick={this.showMembersButtonClicked} productIndex={index} name={product.name} owner={product.owner}/>)
+               this.state.products && this.state.products.map((product, index) => 
+                                                                <ProductWidget.Product key={index} 
+                                                                                       onclick={this.showMembersButtonClicked} 
+                                                                                       productIndex={index} 
+                                                                                       name={product.name} 
+                                                                                       owner={product.owner}/>
+                                                              )
             }
           </ProductList>
-          <AddProductButton onClick={this.AddProductButtonClicked}>Add Product</AddProductButton>
+          <AddProductButton onClick={this.AddProductButtonClicked}>
+            Add Product
+          </AddProductButton>
         </WidgetBody>
       </Content>
     </Widget>

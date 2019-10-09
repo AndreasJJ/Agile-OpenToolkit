@@ -5,7 +5,10 @@ import { Authenticated } from './Authenticated';
 
 const OpenRoute = ({ component: Component, finishLoading: FinishLoading, ...rest }) => (
   <Route {...rest} render={(props) => (
-    <Authenticated is={<Redirect to={{pathname: '/dashboard',state: { from: props.location }}} />} not={<Component finishLoading={FinishLoading} {...props} />} />
+    <Authenticated is={<Redirect 
+    			   to={{pathname: '/dashboard',state: { from: props.location }}} />} 
+    			   not={<Component finishLoading={FinishLoading} {...props} />} 
+  	/>
   )} />
 )
 

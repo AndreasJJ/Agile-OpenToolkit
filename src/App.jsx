@@ -12,6 +12,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Home } from './pages/Home';
 import { Sprintboard } from './pages/Sprintboard';
 import { Backlog } from './pages/Backlog';
+import { Labels } from './pages/Labels';
 import { IssuePage } from './pages/IssuePage';
 import { Sprints } from './pages/Sprints';
 import { SprintPage } from './pages/SprintPage';
@@ -95,13 +96,14 @@ class App extends React.Component {
 						      <PrivateRoute exact path='/dashboard' component={Dashboard} content={Home} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/backlog' component={Dashboard} content={Backlog} finishLoading={this.finishLoading} />
 						      <PrivateRoute path='/backlog/issue/:id' component={Dashboard} content={IssuePage} finishLoading={this.finishLoading} />
+						      <PrivateRoute exact path='/labels' component={Dashboard} content={Labels} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/sprints' component={Dashboard} content={Sprints} finishLoading={this.finishLoading} />
 						      <PrivateRoute path='/sprints/:id' component={Dashboard} content={SprintPage} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/sprintboard' component={Dashboard} content={Sprintboard} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/planning' component={Dashboard} content={Planning} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/planning/game/:id' component={Dashboard} content={PlanningPokerGame} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/retrospective' component={Dashboard} content={Retrospective} finishLoading={this.finishLoading} />
-						      <Route component={Error404}/>
+						      <Route render={(props) => (<Error404 finishLoading={this.finishLoading} {...props} />)} />
 						    </Switch>
 			            </React.Fragment>
 			          )} />

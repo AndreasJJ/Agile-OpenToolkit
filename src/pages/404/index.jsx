@@ -15,6 +15,10 @@ export default class Error404 extends React.PureComponent {
     super(props)
   }
 
+  componentDidMount() {
+    this.props.finishLoading()
+  }
+
   render() {
 
     return (

@@ -218,9 +218,9 @@ class IssuePage extends React.PureComponent {
     this.props.finishLoading()
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
   if (this.props.match.params.id !== prevProps.match.params.id) { 
-      this.setState({
+      await this.setState({
         showModal: false,
         status: "OPEN",
         creationTimestamp: new Date(),
@@ -236,10 +236,10 @@ class IssuePage extends React.PureComponent {
         editingIssue: false,
         originalTitle: "",
         originalDescription: ""
-      }, function() {
-        this.getData()
-        this.getTasks()
       })
+      this.getData()
+      this.getTasks()
+      this.props.finishLoading()
     }
   }
 
@@ -249,54 +249,92 @@ class IssuePage extends React.PureComponent {
   }
 
   getData() {
-    this.DataListener = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).onSnapshot(function(doc) {
-      let issue = doc.data()
-      issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000)
-      issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000)
-      this.setState({status: issue.status, creationTimestamp: issue.timestamp, editedTimestamp: issue.lastUpdateTimestamp, creator: issue.creator, lastEditer: issue.lastEditer, title: issue.title, description: issue.description, originalTitle: issue.title, originalDescription: issue.description, sprint: issue.sprint, dueDate: new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000), labels: issue.labels});
-    }.bind(this))
+    this.DataListener = this.props.firebase
+                                  .db
+                                  .collection("products")
+                                  .doc(this.props.products[this.props.selectedProduct].id)
+                                  .collection("stories")
+                                  .doc(this.props.match.params.id)
+                                  .onSnapshot(function(doc) {
+                                    let issue = doc.data()
+                                    issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000)
+                                    issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000)
+                                    this.setState({status: issue.status, 
+                                                   creationTimestamp: issue.timestamp, 
+                                                   editedTimestamp: issue.lastUpdateTimestamp, 
+                                                   creator: issue.creator, 
+                                                   lastEditer: issue.lastEditer, 
+                                                   title: issue.title, 
+                                                   description: issue.description, 
+                                                   originalTitle: issue.title, 
+                                                   originalDescription: issue.description, 
+                                                   sprint: issue.sprint, 
+                                                   dueDate: new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000), labels: issue.labels
+                                                 });
+                                  }.bind(this))
   }
 
   getTasks() {
-    this.TasksListener = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).collection("tasks").orderBy("title").onSnapshot(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        let obj = doc.data()
-        obj.id = doc.id
-        tempArray.push(obj)
-      });
-      this.setState({tasks: tempArray})
-    }.bind(this))
+    this.TasksListener = this.props.firebase
+                                   .db.collection("products")
+                                   .doc(this.props.products[this.props.selectedProduct].id)
+                                   .collection("stories")
+                                   .doc(this.props.match.params.id)
+                                   .collection("tasks")
+                                   .orderBy("title")
+                                   .onSnapshot(function(querySnapshot) {
+                                      let tempArray = querySnapshot.docs.map((doc) => {
+                                        let obj = doc.data()
+                                        obj.id = doc.id
+                                      })
+                                      this.setState({tasks: tempArray})
+                                    }.bind(this))
   }
 
-  getAllLables() {
-    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("labels").doc("list").get().then(function(doc) {
-      return doc.data().list
-    });
+  async getAllLables() {
+    let docSnapshot = await this.props.firebase
+                     .db
+                     .collection("products")
+                     .doc(this.props.products[this.props.selectedProduct].id)
+                     .collection("labels")
+                     .doc("list")
+                     .get()
+    if(docSnapshot.data()) {
+      return docSnapshot.data().list
+    } else {
+      return []
+    }
   }
 
-  getAllSprints() {
-    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").get().then(function(querySnapshot) {
-      let tempArray = [];
-      querySnapshot.forEach(function (doc) {
-        let tempObj = doc.data()
-        tempObj.id = doc.id
-        tempArray.push(tempObj)
-      });
-      return tempArray
-    });
+  async getAllSprints() {
+    let querySnapshot = await this.props.firebase
+                     .db.collection("products")
+                     .doc(this.props.products[this.props.selectedProduct].id)
+                     .collection("sprints")
+                     .get()
+    return querySnapshot.docs.map((doc) => {
+      let obj = doc.data()
+      obj.id = doc.id
+      return obj
+    })
   }
 
   issueStatusChange() {
-    this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).update({
-      status: this.state.status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
-      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-      lastEditer: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
-      }
-    })
+    this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                status: this.state.status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
   }
   
   changeToEditMode() {
@@ -304,64 +342,97 @@ class IssuePage extends React.PureComponent {
   }
 
   saveEdit() {
-    if(this.state.title == this.state.originalTitle && this.state.description == this.state.originalDescription) {
+    if(this.state.title == this.state.originalTitle && 
+       this.state.description == this.state.originalDescription) 
+    {
       this.setState({editingIssue: false})
       return
     }
-    this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).update({
-      title: this.state.title,
-      description: this.state.description,
-      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-      lastEditer: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
-      }
-    }).then(function() {
-      this.setState({editingIssue: false})
-    }.bind(this)).catch(function(err) {
-      this.setState({editingIssue: false, title: this.state.originalTitle, description: this.state.originalDescription})
-    }.bind(this))
+    this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                title: this.state.title,
+                description: this.state.description,
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
+              .then(function() {
+                  this.setState({editingIssue: false})
+              }.bind(this))
+              .catch(function(err) {
+                this.setState({editingIssue: false, 
+                               title: this.state.originalTitle, 
+                               description: this.state.originalDescription
+                             })
+              }.bind(this))
   }
 
   updateSprint(sprintId) {
-    this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).update({
-      sprint: sprintId,
-      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-      lastEditer: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
-      }
-    })
+    this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                sprint: sprintId,
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
   }
 
   updateDueDate(dueDate) {
-    this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).update({
-      dueDate: new Date(dueDate),
-      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-      lastEditer: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
-      }
-    })
+    this.props.firebase
+              .db.collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                dueDate: new Date(dueDate),
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
   }
 
   updateLabels(labels) {
-    this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.match.params.id).update({
-      labels: labels,
-      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-      lastEditer: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
-      }
-    })
+    this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                labels: labels,
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
   }
 
   discardEdit() {
-    this.setState({editingIssue: false, title: this.state.originalTitle, description: this.state.originalDescription})
+    this.setState({editingIssue: false, 
+                   title: this.state.originalTitle, 
+                   description: this.state.originalDescription
+                 })
   }
 
   onChangeTitle(e) {
@@ -416,26 +487,57 @@ class IssuePage extends React.PureComponent {
           {
             this.state.showModal
             ?
-            <Modal content={<CreateIssue exit={this.closeModal} finished={this.goToCreatedIssue} />} minWidth={"800px"} exitModalCallback={this.closeModal} />
+              <Modal content={<CreateIssue exit={this.closeModal} 
+                                           finished={this.goToCreatedIssue} />
+                              } 
+                     minWidth={"800px"} 
+                     exitModalCallback={this.closeModal} />
             :
-            null
+              null
           }
           <Issue>
             <IssueContent>
               <Header>
                 <Left>
                   <Status status={this.state.status}>{this.state.status}</Status>
-                  <span>Edited {this.getPrettyCreationDate(this.state.editedTimestamp)} by</span> <b>{this.state.lastEditer ? this.state.lastEditer.firstname + " " + this.state.lastEditer.lastname : ""}</b>
+                  <span>Edited {this.getPrettyCreationDate(this.state.editedTimestamp)} by </span> 
+                  <b>{this.state.lastEditer ? this.state.lastEditer.firstname + " " + this.state.lastEditer.lastname : ""}</b>
                 </Left>
                 <Right>
-                  <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={(e) => this.issueStatusChange()}>{this.state.status.toLowerCase() == "open" ? "Close" : "Reopen"}</Button>
-                  <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={(e) => this.setState({showModal: true})}>New Issue</Button>
+                  <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={(e) => this.issueStatusChange()}>
+                    {this.state.status.toLowerCase() == "open" ? "Close" : "Reopen"}
+                  </Button>
+                  <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={(e) => this.setState({showModal: true})}>
+                    New Issue
+                  </Button>
                 </Right>
               </Header>
               <InfoBody>
                 <TitleWrapper>
-                  {this.state.editingIssue ? <TitleEdit value={this.state.title} onChange={this.onChangeTitle} /> : <Title>{this.state.title}</Title>}
-                  {this.state.status.toLowerCase() == "open" ? this.state.editingIssue ? <EditButton><Button onClick={(e) => this.saveEdit()} backgroundColor={"#1f78d1"} borderColor={"#16528e"}>Save</Button> <Button onClick={(e) => this.discardEdit()} backgroundColor={"#dc0011"} borderColor={"#b0000e"}>Discard</Button></EditButton> : <Edit onClick={(e) => this.changeToEditMode()} size="1em" /> : null}
+                  { this.state.editingIssue 
+                    ? 
+                      <TitleEdit value={this.state.title} onChange={this.onChangeTitle} /> 
+                    : 
+                      <Title>{this.state.title}</Title>
+                  }
+                  {
+                    this.state.status.toLowerCase() == "open" 
+                    ? 
+                      this.state.editingIssue 
+                      ? 
+                        <EditButton>
+                          <Button onClick={(e) => this.saveEdit()} backgroundColor={"#1f78d1"} borderColor={"#16528e"}>
+                            Save
+                          </Button> 
+                          <Button onClick={(e) => this.discardEdit()} backgroundColor={"#dc0011"} borderColor={"#b0000e"}>
+                            Discard
+                          </Button>
+                        </EditButton> 
+                      : 
+                        <Edit onClick={(e) => this.changeToEditMode()} size="1em" /> 
+                    : 
+                      null
+                  }
                 </TitleWrapper>
                 {
                   this.state.editingIssue 
@@ -460,7 +562,17 @@ class IssuePage extends React.PureComponent {
                 </TasksHeader>
                 <Tasks>
                   {
-                    this.state.tasks && this.state.tasks.map((task, index) => <Task issueStatus={this.state.status} key={task.id} issueId={this.props.match.params.id} taskId={task.id} title={task.title} description={task.description} status={task.status} assignee={task.assignee} />)
+                    this.state.tasks && this.state.tasks.map((task, index) => 
+                                                              <Task issueStatus={this.state.status} 
+                                                                    key={task.id} 
+                                                                    issueId={this.props.match.params.id} 
+                                                                    taskId={task.id} 
+                                                                    title={task.title} 
+                                                                    description={task.description} 
+                                                                    status={task.status} 
+                                                                    assignee={task.assignee} 
+                                                              />
+                                                            )
                   }
                 </Tasks>
               </TasksWrapper>
@@ -470,7 +582,16 @@ class IssuePage extends React.PureComponent {
               </Comment>
             </IssueContent>
           </Issue>
-          <SideBar status={this.state.status} sprints={this.getAllSprints} selectedSprint={this.state.sprint} dueDate={this.state.dueDate} labels={this.getAllLables} selectedLabels={this.state.labels} updateSprint={this.updateSprint} updateDueDate={this.updateDueDate} updateLabels={this.updateLabels} />
+          <SideBar status={this.state.status} 
+                   sprints={this.getAllSprints} 
+                   selectedSprint={this.state.sprint} 
+                   dueDate={this.state.dueDate} 
+                   labels={this.getAllLables} 
+                   selectedLabels={this.state.labels} 
+                   updateSprint={this.updateSprint} 
+                   updateDueDate={this.updateDueDate} 
+                   updateLabels={this.updateLabels} 
+          />
         </Wrapper>
     );
   }

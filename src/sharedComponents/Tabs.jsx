@@ -113,7 +113,13 @@ export default class Tabs extends React.PureComponent {
               if (index === this.state.activeTabIndex) {
                 return (<Tab indexNumber={this.state.activeTabIndex + 1} key={index}>{item}</Tab>)
               } else {
-                return (<Tab onClick={this.tabClicked} indexNumber={this.state.activeTabIndex + 1} key={index} data-index={index}>{item}</Tab>)
+                return (<Tab onClick={this.tabClicked} 
+                             indexNumber={this.state.activeTabIndex + 1} 
+                             key={index} data-index={index}
+                        >
+                          {item}
+                        </Tab>
+                        )
               }
             })
           }

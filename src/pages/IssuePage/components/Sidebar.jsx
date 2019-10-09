@@ -36,15 +36,15 @@ const Value = styled.div`
 `
 
 const SprintSelect = styled.select`
-
+  width: 100%;
 `
 
 const DueDateInput = styled.input`
-
+  width: 100%;
 `
 
 const LabelSelect = styled.select`
-
+  width: 100%;
 `
 
 export default class Sidebar extends React.PureComponent {
@@ -59,7 +59,6 @@ export default class Sidebar extends React.PureComponent {
       dueDate: this.props.dueDate,
       selectedLabels: this.props.selectedLabels.map(label => this.state.labels.indexOf(label))
     }
-
     this.onChangeSprint = this.onChangeSprint.bind(this)
     this.onChangeDuedate = this.onChangeDuedate.bind(this)
     this.onChangeLabels = this.onChangeLabels.bind(this)
@@ -68,15 +67,14 @@ export default class Sidebar extends React.PureComponent {
     this.saveLabels = this.saveLabels.bind(this)
   }
 
-  componentDidMount() {
-    this.props.sprints().then(function(arr) {
-      let index = arr.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
-      index = index === -1 ? 0 : index+1
-      this.setState({sprints: arr, selectedSprint: index})
-    }.bind(this))
-    this.props.labels().then(function(arr) {
-      this.setState({labels: arr})
-    }.bind(this))
+  async componentDidMount() {
+    let sprints = await this.props.sprints()
+    let index = sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
+    index = index === -1 ? 0 : index+1
+    this.setState({sprints: sprints, selectedSprint: index})
+
+    let labels = await this.props.labels()
+    this.setState({labels: labels})
   }
 
   componentDidUpdate(prevProps) {
@@ -91,7 +89,8 @@ export default class Sidebar extends React.PureComponent {
     }
 
     if (this.props.selectedLabels !== prevProps.selectedLabels) {
-      this.setState({selectedLabels: this.props.selectedLabels.map(label => this.state.labels.indexOf(label))})
+      let selectedLabels = this.props.selectedLabels ? this.props.selectedLabels : []
+      this.setState({selectedLabels: selectedLabels.map(label => this.state.labels.indexOf(label))})
     }
   }
 
@@ -130,7 +129,9 @@ export default class Sidebar extends React.PureComponent {
 
   saveLabels() {
     let selectedLabels = this.state.selectedLabels.map(i => this.state.labels[i])
-
+    if(!this.props.selectedLabels) {
+      return
+    }
     if(this.props.selectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
       return
     }
@@ -205,7 +206,9 @@ export default class Sidebar extends React.PureComponent {
             {
               this.state.editingSection.includes(1)
               ?
-                <DueDateInput type="date" onChange={this.onChangeDuedate} value={this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+                <DueDateInput type="date" 
+                              onChange={this.onChangeDuedate} 
+                              value={this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
               :
                 this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-") 
             }

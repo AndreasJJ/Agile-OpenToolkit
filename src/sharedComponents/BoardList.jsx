@@ -123,7 +123,11 @@ export default class BoardList extends React.PureComponent {
   }
 
   static AddStory = (props) => (
-    props.state ? <BoardList.AddStoryInput inputValue={props.inputValue} inputOnChange={props.inputOnChange} sendOnClick={props.AddStoryInputSendOnClick} onclick={props.addStoryInputOnClick} /> : <BoardList.AddStoryButton onclick={props.addStoryButtonOnClick} />
+    props.state ? <BoardList.AddStoryInput inputValue={props.inputValue} 
+                                           inputOnChange={props.inputOnChange} 
+                                           sendOnClick={props.AddStoryInputSendOnClick} 
+                                           onclick={props.addStoryInputOnClick} /> 
+                : <BoardList.AddStoryButton onclick={props.addStoryButtonOnClick} />
   );
 
   static AddStoryButton = (props) => (
@@ -158,12 +162,18 @@ export default class BoardList extends React.PureComponent {
          {
            this.props.list.map((item, index) => {
               return( <Story key={index}>
-                  <StoryName>{item.name}</StoryName>
-              </Story>)
+                        <StoryName>{item.name}</StoryName>
+                      </Story>
+                    )
           })
          }
        </ListStory>
-       <BoardList.AddStory state={this.state.inputingStory} inputValue={this.state.storyName} inputOnChange={this.changeInputValue} AddStoryInputSendOnClick={this.clickSendStory} addStoryInputOnClick={this.clickStopAddStory} addStoryButtonOnClick={this.clickAddStory}  />
+       <BoardList.AddStory state={this.state.inputingStory} 
+                           inputValue={this.state.storyName} 
+                           inputOnChange={this.changeInputValue} 
+                           AddStoryInputSendOnClick={this.clickSendStory} 
+                           addStoryInputOnClick={this.clickStopAddStory} 
+                           addStoryButtonOnClick={this.clickAddStory}  />
      </List>
     );
   }

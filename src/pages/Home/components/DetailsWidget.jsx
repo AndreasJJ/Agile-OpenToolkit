@@ -238,12 +238,15 @@ export default class DetailsWidget extends React.PureComponent {
       _saveDisabled = true
     }
 
-    this.setState({gender: !this.state.gender, saveDisabled: _saveDisabled})
+    this.setState({
+      gender: !this.state.gender, 
+      saveDisabled: _saveDisabled
+    })
   }
 
   changeFirstname(e) {
     let _saveDisabled = false
-    if(this.isOriginal(null,e.target.value)) {
+    if(this.isOriginal(null, e.target.value)) {
       _saveDisabled = true
     }
     this.setState({
@@ -268,7 +271,7 @@ export default class DetailsWidget extends React.PureComponent {
     value = value != NaN ? value: ""
 
     let _saveDisabled = false
-    if(this.isOriginal(null,null, null, value)) {
+    if(this.isOriginal(null, null, null, value)) {
       _saveDisabled = true
     }
     this.setState({
@@ -307,7 +310,12 @@ export default class DetailsWidget extends React.PureComponent {
     mobile = mobile != null ? mobile : this.state.mobile
     email = email != null ? email : this.state.email
 
-    if(originalGender === gender && originalFirstname === firstname && originalLastname === lastname && originalMobile === mobile && originalEmail === email) {
+    if(originalGender === gender && 
+       originalFirstname === firstname && 
+       originalLastname === lastname && 
+       originalMobile === mobile && 
+       originalEmail === email) 
+    {
       return true
     } else {
       return false

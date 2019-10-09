@@ -76,7 +76,10 @@ export default class JoinProductTeam extends React.PureComponent {
          <Body>
            <Info>
              <Envelope size="2em" />
-             <Message>To join a team please write in the invitation code that was sent to you through mail. If you haven't recived it then please make sure to check your spam folder or ask your invitor to  invite you once more.</Message>
+             <Message>To join a team please write in the invitation code that was sent to you through mail. 
+                      If you haven't recived it then please make sure to check your spam folder or 
+                      ask your invitor to invite you once more.
+              </Message>
            </Info>
            <Form>
              <Input placeholder="Enter invitation code" />

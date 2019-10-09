@@ -61,7 +61,6 @@ const Username = styled.span`
 
 `
 
-/* eslint-disable react/prefer-stateless-function */
 class Header extends React.Component {
   constructor(props) {
     super(props)
@@ -81,7 +80,13 @@ class Header extends React.Component {
             <ProfileCard>
               <ProfileImage src={this.props.ProfilePicture ? this.props.ProfilePicture : BlankProfilePicture}/>
               <ProfileInfo>
-                <Username>{(this.props.firstname ? (this.props.firstname.charAt(0).toUpperCase() + this.props.firstname.slice(1)) : null) + " " + (this.props.lastname ? (this.props.lastname) : null)}</Username>
+                <Username>
+                  {
+                    (this.props.firstname ? (this.props.firstname.charAt(0).toUpperCase() + this.props.firstname.slice(1)) : null) 
+                    + " " 
+                    + (this.props.lastname ? (this.props.lastname) : null)
+                  }
+                </Username>
               </ProfileInfo>
             </ProfileCard>
         </TopBar>

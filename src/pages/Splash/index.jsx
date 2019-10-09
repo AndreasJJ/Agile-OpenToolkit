@@ -95,7 +95,6 @@ export default class HomePage extends React.PureComponent {
       
     };
     this.toRegister = this.toRegister.bind(this)
-    this.setCookie = this.setCookie.bind(this)
     this.getCookie = this.getCookie.bind(this)
   }
 
@@ -103,8 +102,6 @@ export default class HomePage extends React.PureComponent {
     if(this.getCookie("visited")) {
       history.push('/login');
     }
-
-    this.setCookie("visited", true)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -116,16 +113,6 @@ export default class HomePage extends React.PureComponent {
     e.preventDefault();
 
     history.push('/register');
-  }
-
-  setCookie(name,value,days) {
-      var expires = "";
-      if (days) {
-          var date = new Date();
-          date.setTime(date.getTime() + (days*24*60*60*1000));
-          expires = "; expires=" + date.toUTCString();
-      }
-      document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
 
   getCookie(name) {

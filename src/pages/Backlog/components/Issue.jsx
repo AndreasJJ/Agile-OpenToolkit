@@ -120,11 +120,10 @@ export default class Issue extends React.Component {
 
   }
 
-  showTasks() {
+  async showTasks() {
     if(!this.state.loadedTasks) {
-      this.props.getTasks(this.props.id).then(function(tasks) {
-        this.setState({taskVisible: true, tasks: tasks, loadedTasks: true})
-      }.bind(this))
+      let tasks = await this.props.getTasks(this.props.id)
+      this.setState({taskVisible: true, tasks: tasks, loadedTasks: true})
     } else {
       this.setState({taskVisible: !this.state.taskVisible})
     }
@@ -137,7 +136,9 @@ export default class Issue extends React.Component {
           <IssueInfo>
             <Left skeleton={this.props.skeleton}>
               <div>
-                <ReactLink skeleton={this.props.skeleton} to={"/backlog/issue/" + this.props.id}>{this.props.title}</ReactLink>
+                <ReactLink skeleton={this.props.skeleton} to={"/backlog/issue/" + this.props.id}>
+                  {this.props.title}
+                </ReactLink>
               </div>
               <div>
                 <Id>#{this.props.number}</Id>
@@ -158,14 +159,18 @@ export default class Issue extends React.Component {
             {
               this.state.taskVisible
               ?
-              <AngleDoubleUp size="2em" />
+                <AngleDoubleUp size="2em" />
               :
-              <AngleDoubleDown size="2em" />
+                <AngleDoubleDown size="2em" />
             }    
           </TasksOpen>
         </Card>
         <Tasks displaying={this.state.taskVisible}>
-          {this.state.tasks && this.state.tasks.map((task, index) => <Task key={index} title={task.title} assigne={task.assignee} />)}
+          {
+            this.state.tasks && this.state.tasks.map((task, index) => 
+                                                      <Task key={index} title={task.title} assigne={task.assignee} />
+                                                    )
+          }
         </Tasks>
       </Wrapper>
     )

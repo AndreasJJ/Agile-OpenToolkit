@@ -39,7 +39,11 @@ class Modal extends React.Component {
     render() {
         return (
             <Background onClick={this.props.exitModalCallback}>
-                <Content minWidth={this.props.minWidth} maxWidth={this.props.maxWidth} minHeight={this.props.minHeight} onClick={this.stopBackgroundCall}>
+                <Content minWidth={this.props.minWidth} 
+                         maxWidth={this.props.maxWidth} 
+                         minHeight={this.props.minHeight} 
+                         onClick={this.stopBackgroundCall}
+                >
                     {this.props.title ? <h1>{this.props.title}</h1> : null}
                     {this.props.content ? (this.props.content instanceof String ? <p>{this.props.content}</p> : this.props.content) : null}
                 </Content>

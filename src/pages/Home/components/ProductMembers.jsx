@@ -89,10 +89,9 @@ export default class ProductMembers extends React.PureComponent {
     }
   }
 
-  componentDidMount() {
-    this.props.getMembers(this.props.products[this.props.productIndex].id).then(function(members) {
-      this.setState({members: members})
-    }.bind(this))
+  async componentDidMount() {
+    let members = await this.props.getMembers(this.props.products[this.props.productIndex].id)
+    this.setState({members: members})
   }
 
   static Member = (props) => (
@@ -100,7 +99,11 @@ export default class ProductMembers extends React.PureComponent {
         <MemberCardContent>
            <Left>
              <ProfilePicture src={props.profilePicture ? props.profilePicture : BlankProfilePicture} />
-             <Name>{props.firstname.charAt(0).toUpperCase() + props.firstname.slice(1) + " " + props.lastname}</Name>
+             <Name>
+               {
+                 props.firstname.charAt(0).toUpperCase() + props.firstname.slice(1) + " " + props.lastname
+               }
+              </Name>
            </Left>
            <Options>
              <DotsHorizontalRounded size="1em" />
@@ -126,7 +129,13 @@ export default class ProductMembers extends React.PureComponent {
         </Header>
         <Body>
           <MemberList>
-            {this.state.members && this.state.members.map((member, index) => <ProductMembers.Member key={index} profilePicture={member.profile_picture} firstname={member.firstname} lastname={member.lastname} />)}
+            {this.state.members && this.state.members.map((member, index) => 
+                                                            <ProductMembers.Member key={index} 
+                                                                                   profilePicture={member.profile_picture} 
+                                                                                   firstname={member.firstname} 
+                                                                                   lastname={member.lastname} />
+                                                          )
+            }
           </MemberList>
         </Body>  
       </Wrapper>

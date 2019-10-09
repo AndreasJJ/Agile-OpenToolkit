@@ -109,37 +109,50 @@ class Sprints extends React.PureComponent {
     this.setState({loading: false})
   }
 
-  getSprints() {
+  async getSprints() {
     let ref;
     if(this.state.activeTab === 0) {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").where("dueDate", "<", new Date()).orderBy("dueDate", 'desc')
+      ref = this.props.firebase
+                      .db
+                      .collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("sprints")
+                      .where("dueDate", "<", new Date())
+                      .orderBy("dueDate", 'desc')
     }else if(this.state.activeTab === 1) {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").where("dueDate", ">=", new Date()).orderBy("dueDate", 'asc')
+      ref = this.props.firebase
+                      .db
+                      .collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("sprints")
+                      .where("dueDate", ">=", new Date())
+                      .orderBy("dueDate", 'asc')
     } else {
-      ref = this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").where("startDate", ">", new Date()).orderBy("startDate", 'asc')
+      ref = this.props.firebase
+                      .db
+                      .collection("products")
+                      .doc(this.props.products[this.props.selectedProduct].id)
+                      .collection("sprints")
+                      .where("startDate", ">", new Date())
+                      .orderBy("startDate", 'asc')
     }
+    let querySnapshot = ref.get()
+    let sprints = querySnapshot.map((doc) => {
+      let obj = doc.data()
+      obj.id = doc.id
+      return obj
+    })
 
-    return ref.get().then(function(snapshot) {
-      let tempArray = [];
-      snapshot.forEach(function (doc) {
-        let tempObj = doc.data()
-        tempObj.id = doc.id
+    if(this.state.activeTab === 1) {
+      sprints = sprints.filter((obj) => new Date(obj.startDate.nanoseconds/1000000 + obj.startDate.seconds*1000) <= new Date())
+    } 
 
-        tempArray.push(tempObj)
-      })
-
-      if(this.state.activeTab === 1) {
-        tempArray = tempArray.filter((obj) => new Date(obj.startDate.nanoseconds/1000000 + obj.startDate.seconds*1000) <= new Date())
-      } 
-
-      this.setState({sprints: tempArray})
-    }.bind(this))
+    this.setState({sprints: sprints})
   }
 
-  tabClicked(e) {
-    this.setState({activeTab: parseInt(e.target.dataset.index)}, function() {
-      this.getSprints()
-    }.bind(this))
+  async tabClicked(e) {
+    await this.setState({activeTab: parseInt(e.target.dataset.index)})
+    this.getSprints()
   }
 
   closeModal() {
@@ -147,7 +160,12 @@ class Sprints extends React.PureComponent {
   }
 
   createSprint(sprint) {
-    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("sprints").add(sprint)
+    return this.props.firebase
+                     .db
+                     .collection("products")
+                     .doc(this.props.products[this.props.selectedProduct].id)
+                     .collection("sprints")
+                     .add(sprint)
   }
 
   render() {
@@ -156,29 +174,54 @@ class Sprints extends React.PureComponent {
           {
             this.state.showModal
             ?
-            <Modal content={<CreateSprint exit={this.closeModal} createSprint={this.createSprint} />} minWidth={"800px"} exitModalCallback={this.closeModal} />
+              <Modal content={<CreateSprint exit={this.closeModal} 
+                                            createSprint={this.createSprint} />
+                              } 
+                      minWidth={"800px"} 
+                      exitModalCallback={this.closeModal} />
             :
-            null
+              null
           }
           <Content>
             <Header> 
               <Controls> 
                 <StateTabs> 
-                  <Tab activeIndex={this.state.activeTab} index={0} data-index={0} onClick={this.tabClicked}>Past</Tab>
-                  <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>Current</Tab>
-                  <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>Future</Tab>
+                  <Tab activeIndex={this.state.activeTab} index={0} data-index={0} onClick={this.tabClicked}>
+                    Past
+                  </Tab>
+                  <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>
+                    Current
+                  </Tab>
+                  <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>
+                    Future
+                  </Tab>
                 </StateTabs>
-                <NewSprint onClick={(e) => {this.setState({showModal: true})}}>New Sprint</NewSprint>
+                <NewSprint onClick={(e) => {this.setState({showModal: true})}}>
+                  New Sprint
+                </NewSprint>
               </Controls>
             </Header>
             <Body>
               {
                 this.state.loading
                 ?
-                  <SprintCard skeleton={true} key={"skeletonSprintCard"} sprintId={""} title={"This is a skeleton sprint title"} startDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} dueDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} totalIssues={1} finishedIssues={0} />
+                  <SprintCard skeleton={true} 
+                              key={"skeletonSprintCard"} 
+                              sprintId={""} 
+                              title={"This is a skeleton sprint title"} 
+                              startDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
+                              dueDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
+                              totalIssues={1} 
+                              finishedIssues={0} />
                 :
                   this.state.sprints && this.state.sprints.map((sprint, index) =>
-                    <SprintCard key={index} sprintId={sprint.id} title={sprint.title} startDate={new Date(sprint.startDate.nanoseconds/1000000 + sprint.startDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} dueDate={new Date(sprint.dueDate.nanoseconds/1000000 + sprint.dueDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} totalIssues={sprint.totalIssues} finishedIssues={sprint.finishedIssues} />
+                    <SprintCard key={index} 
+                                sprintId={sprint.id} 
+                                title={sprint.title} 
+                                startDate={new Date(sprint.startDate.nanoseconds/1000000 + sprint.startDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
+                                dueDate={new Date(sprint.dueDate.nanoseconds/1000000 + sprint.dueDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
+                                totalIssues={sprint.totalIssues} 
+                                finishedIssues={sprint.finishedIssues} />
                   )
               }
             </Body>
