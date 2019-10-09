@@ -59,13 +59,21 @@ class Task extends React.PureComponent {
   }
 
   componentDidMount() {
-
+    console.log(this.props.issueId)
+    console.log(this.props.taskId)
   }
 
   updateTaskStatus() {
-    return this.props.firebase.db.collection("products").doc(this.props.products[this.props.selectedProduct].id).collection("stories").doc(this.props.issueId).collection("tasks").doc(this.props.taskId).update({
-      status: !this.state.checked ? "CLOSED" : "OPEN"
-    })
+    return this.props.firebase
+                     .db.collection("products")
+                     .doc(this.props.products[this.props.selectedProduct].id)
+                     .collection("stories")
+                     .doc(this.props.issueId)
+                     .collection("tasks")
+                     .doc(this.props.taskId)
+                     .update({
+                        status: !this.state.checked ? "CLOSED" : "OPEN"
+                     })
   }
 
   handleCheckboxChange(e) {

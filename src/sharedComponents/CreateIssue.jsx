@@ -181,7 +181,7 @@ export default class CreateIssue extends React.Component {
   }
 
   async getLabels() {
-    let docSnapshot = this.props.firebase
+    let docSnapshot = await this.props.firebase
                             .db.collection("products")
                             .doc(this.props.products[this.props.selectedProduct].id)
                             .collection("labels")

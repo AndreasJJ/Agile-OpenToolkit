@@ -136,8 +136,8 @@ class Sprints extends React.PureComponent {
                       .where("startDate", ">", new Date())
                       .orderBy("startDate", 'asc')
     }
-    let querySnapshot = ref.get()
-    let sprints = querySnapshot.map((doc) => {
+    let querySnapshot = await ref.get()
+    let sprints = querySnapshot.docs.map((doc) => {
       let obj = doc.data()
       obj.id = doc.id
       return obj

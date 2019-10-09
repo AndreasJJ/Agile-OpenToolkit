@@ -117,7 +117,8 @@ class Labels extends React.PureComponent {
                       .collection("labels")
                       .doc("list")
     }
-    docSnapshot = ref.get()
+    let docSnapshot = await ref.get()
+
     if(!docSnapshot.data()) {
       this.setState({labels: docSnapshot.data().list, loading: false})
     }
