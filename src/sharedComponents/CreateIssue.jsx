@@ -176,6 +176,7 @@ export default class CreateIssue extends React.Component {
                             .db.collection("products")
                             .doc(this.props.products[this.props.selectedProduct].id)
                             .collection("sprints")
+                            .where('dueDate','>',new Date())
                             .get()
     let sprints = querySnapshot.docs.map((doc) => doc.data())
     this.setState({sprints: sprints})

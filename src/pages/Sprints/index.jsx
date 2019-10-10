@@ -159,13 +159,14 @@ class Sprints extends React.PureComponent {
     this.setState({showModal: false})
   }
 
-  createSprint(sprint) {
-    return this.props.firebase
+  async createSprint(sprint) {
+    await this.props.firebase
                      .db
                      .collection("products")
                      .doc(this.props.products[this.props.selectedProduct].id)
                      .collection("sprints")
                      .add(sprint)
+    await this.getSprints()
   }
 
   render() {
