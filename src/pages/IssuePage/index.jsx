@@ -39,6 +39,7 @@ class IssuePage extends React.PureComponent {
       title: "",
       description: "",
       tasks: [],
+      sprints: [],
       sprint: "",
       dueDate: new Date(),
       labels: [],
@@ -70,6 +71,7 @@ class IssuePage extends React.PureComponent {
     await this.getData()
     await this.getTasks()
     await this.getAllLables()
+    await this.getAllSprints()
     this.props.finishLoading()
   }
 
@@ -85,6 +87,7 @@ class IssuePage extends React.PureComponent {
         title: "",
         description: "",
         tasks: [],
+        sprints: [],
         sprint: "",
         dueDate: new Date(),
         labels: [],
@@ -96,6 +99,7 @@ class IssuePage extends React.PureComponent {
       await this.getData()
       await this.getTasks()
       await this.getAllLables()
+      await this.getAllSprints()
       this.props.finishLoading()
     }
   }
@@ -179,12 +183,14 @@ class IssuePage extends React.PureComponent {
                      .db.collection("products")
                      .doc(this.props.products[this.props.selectedProduct].id)
                      .collection("sprints")
+                     .where('dueDate','>',new Date())
                      .get()
-    return querySnapshot.docs.map((doc) => {
+    let sprints = querySnapshot.docs.map((doc) => {
       let obj = doc.data()
       obj.id = doc.id
       return obj
     })
+    await this.setState({sprints: sprints})
   }
 
   issueStatusChange() {
@@ -366,7 +372,7 @@ class IssuePage extends React.PureComponent {
             onChangeDescription={this.onChangeDescription}
           />
           <SideBar status={this.state.status} 
-                   sprints={this.getAllSprints} 
+                   sprints={this.state.sprints} 
                    selectedSprint={this.state.sprint} 
                    dueDate={this.state.dueDate} 
                    labels={this.state.labels} 

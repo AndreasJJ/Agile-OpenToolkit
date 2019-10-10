@@ -75,12 +75,24 @@ export default class Sidebar extends React.PureComponent {
   }
 
   async componentDidMount() {
-
+    if(this.props.sprints) {
+      let index = this.props.sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
+      index = index === -1 ? 0 : index+1
+      this.setState({sprints: this.props.sprints, selectedSprint: index})
+    }
   }
 
   async componentDidUpdate(prevProps) {
     if (this.props.dueDate !== prevProps.dueDate) {
       this.setState({dueDate: this.props.dueDate})
+    }
+
+    if(this.props.sprints !== prevProps.sprints) {
+      if(this.props.sprints) {
+        let index = this.props.sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
+        index = index === -1 ? 0 : index+1
+        this.setState({sprints: this.props.sprints, selectedSprint: index})
+      }
     }
 
     if(this.props.selectedSprint !== prevProps.selectedSprint) {
