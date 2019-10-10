@@ -152,8 +152,7 @@ class Labels extends React.PureComponent {
   }
 
   tabClicked(e) {
-    this.setState({activeTab: parseInt(e.target.dataset.index)}, function() {
-    }.bind(this))
+    this.setState({activeTab: parseInt(e.target.dataset.index)})
   }
 
   closeModal() {
@@ -199,6 +198,10 @@ class Labels extends React.PureComponent {
   }
 
   render() {
+      let labels = this.state.labels
+      if(this.state.activeTab == 1) {
+        labels = this.state.labels.filter((label) => this.state.subscribedLabels.indexOf(label[0]) > -1)
+      }
       return (
         <Wrapper>
         {
@@ -237,7 +240,7 @@ class Labels extends React.PureComponent {
                 ?
                   <LabelCard name={"skeleton"} skeleton={true}/>
                 :
-                  this.state.labels && this.state.labels.map((label, index) =>
+                  labels && labels.map((label, index) =>
                     <LabelCard key={label[0]} 
                                name={label[0]} 
                                description={label[1].description} 
