@@ -32,8 +32,10 @@ const Name = styled.span`
   background-color: ${props => props.skeleton ? "lightgray" : props.bgc};
 `
 
-const IssuesWrapper = styled.div`
-
+const Description = styled.div`
+  flex: 1;
+  margin: 0px 10px;
+  overflow: auto;
 `
 
 const ControlsWrapper = styled.div`
@@ -61,9 +63,9 @@ export default class LabelCard extends React.Component {
             {this.props.name}
           </Name>
         </NameWrapper>
-        <IssuesWrapper>
-
-        </IssuesWrapper>
+        <Description>
+          {this.props.description}
+        </Description>
         <ControlsWrapper>
 
         </ControlsWrapper>

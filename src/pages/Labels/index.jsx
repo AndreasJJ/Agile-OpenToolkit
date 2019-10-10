@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
-import LabelCard from './components/LabelCard'
+import Modal from '../../sharedComponents/Modal';
+import { CreateLabel } from './components/CreateLabel';
+
+import LabelCard from './components/LabelCard';
 
 import styled from 'styled-components';
 
@@ -88,12 +91,14 @@ class Labels extends React.PureComponent {
     super(props)
 
     this.state = {
+      showModal: false,
       loading: true,
       activeTab: 0,
       labels: []
     };
     this.tabClicked = this.tabClicked.bind(this)
     this.getLabels = this.getLabels.bind(this)
+    this.closeModal = this.closeModal.bind(this)
   }
 
  async componentDidMount() {
@@ -118,9 +123,14 @@ class Labels extends React.PureComponent {
                       .doc("list")
     }
     let docSnapshot = await ref.get()
-
-    if(!docSnapshot.data()) {
-      this.setState({labels: docSnapshot.data().list, loading: false})
+    if(docSnapshot.data()) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
+        tempArray.push([key, value])
+      }
+      this.setState({labels: tempArray, loading: false})
+    } else {
+      this.setState({labels: [], loading: false})
     }
   }
 
@@ -129,10 +139,27 @@ class Labels extends React.PureComponent {
     }.bind(this))
   }
 
+  closeModal() {
+    this.setState({showModal: false})
+  }
 
   render() {
       return (
         <Wrapper>
+        {
+            this.state.showModal
+            ?
+              <Modal content={<CreateLabel 
+                                exit={this.closeModal}
+                                finished={this.getLabels}
+                              />
+                              } 
+                     minWidth={"800px"} 
+                     exitModalCallback={this.closeModal} 
+              />
+            :
+              null
+          }
           <Content>
             <Header> 
               <Controls> 
@@ -156,7 +183,7 @@ class Labels extends React.PureComponent {
                   <LabelCard name={"skeleton"} skeleton={true}/>
                 :
                   this.state.labels && this.state.labels.map((label, index) =>
-                    <LabelCard name={label} bgc={"#ff6961"} />
+                    <LabelCard key={label[0]} name={label[0]} description={label[1].description} bgc={label[1].color} />
                   )
             }
             </List>

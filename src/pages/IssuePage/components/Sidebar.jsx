@@ -47,6 +47,12 @@ const LabelSelect = styled.select`
   width: 100%;
 `
 
+const Option = styled.option`
+  width: 100%;
+  background-color: ${props => props.backgroundColor ? props.backgroundColor : "none"}
+  color: black;
+`
+
 export default class Sidebar extends React.PureComponent {
 
   constructor(props) {
@@ -55,9 +61,10 @@ export default class Sidebar extends React.PureComponent {
       editingSection: [],
       sprints: [],
       labels: [],
+      originalSelectedLabels: [],
+      selectedLabels: [],
       selectedSprint: 0,
-      dueDate: this.props.dueDate,
-      selectedLabels: this.props.selectedLabels.map(label => this.state.labels.indexOf(label))
+      dueDate: this.props.dueDate
     }
     this.onChangeSprint = this.onChangeSprint.bind(this)
     this.onChangeDuedate = this.onChangeDuedate.bind(this)
@@ -68,16 +75,10 @@ export default class Sidebar extends React.PureComponent {
   }
 
   async componentDidMount() {
-    let sprints = await this.props.sprints()
-    let index = sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
-    index = index === -1 ? 0 : index+1
-    this.setState({sprints: sprints, selectedSprint: index})
 
-    let labels = await this.props.labels()
-    this.setState({labels: labels})
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     if (this.props.dueDate !== prevProps.dueDate) {
       this.setState({dueDate: this.props.dueDate})
     }
@@ -88,9 +89,19 @@ export default class Sidebar extends React.PureComponent {
       this.setState({selectedSprint: index})
     }
 
-    if (this.props.selectedLabels !== prevProps.selectedLabels) {
+    if (this.props.selectedLabels !== prevProps.selectedLabels || this.props.labels !== prevProps.labels) {
       let selectedLabels = this.props.selectedLabels ? this.props.selectedLabels : []
-      this.setState({selectedLabels: selectedLabels.map(label => this.state.labels.indexOf(label))})
+
+      let tempArray = []
+      for (var i = 0; i < this.props.selectedLabels.length; i++) {
+        for (var j = 0; j < this.props.labels.length; i++) {
+          if(this.props.labels[i][0] == this.props.selectedLabels[j][0]) {
+            tempArray.push(i)
+            break
+          }
+        }
+      }
+      this.setState({labels: this.props.labels, originalSelectedLabels: selectedLabels, selectedLabels: tempArray})
     }
   }
 
@@ -128,13 +139,14 @@ export default class Sidebar extends React.PureComponent {
   }
 
   saveLabels() {
-    let selectedLabels = this.state.selectedLabels.map(i => this.state.labels[i])
-    if(!this.props.selectedLabels) {
+    let selectedLabels = this.state.selectedLabels.map((i) => this.state.labels[i])
+    if(!this.state.originalSelectedLabels) {
       return
     }
-    if(this.props.selectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
+    if(this.state.originalSelectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
       return
     }
+    selectedLabels = Object.fromEntries(selectedLabels)
     this.props.updateLabels(selectedLabels);
   }
 
@@ -241,13 +253,13 @@ export default class Sidebar extends React.PureComponent {
               ?
                 <LabelSelect multiple onChange={this.onChangeLabels} value={this.state.selectedLabels}>
                   {
-                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <option key={label} value={index}>{label}</option>)
+                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
                   }
                 </LabelSelect>
               :
                 <LabelSelect multiple value={this.state.selectedLabels} disabled>
                   {
-                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <option key={label} value={index}>{label}</option>)
+                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
                   }
                 </LabelSelect>
             }

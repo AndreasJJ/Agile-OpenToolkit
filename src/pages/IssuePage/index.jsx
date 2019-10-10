@@ -69,6 +69,7 @@ class IssuePage extends React.PureComponent {
   async componentDidMount() {
     await this.getData()
     await this.getTasks()
+    await this.getAllLables()
     this.props.finishLoading()
   }
 
@@ -87,12 +88,14 @@ class IssuePage extends React.PureComponent {
         sprint: "",
         dueDate: new Date(),
         labels: [],
+        selectedLabels: [],
         editingIssue: false,
         originalTitle: "",
         originalDescription: ""
       })
-      this.getData()
-      this.getTasks()
+      await this.getData()
+      await this.getTasks()
+      await this.getAllLables()
       this.props.finishLoading()
     }
   }
@@ -113,6 +116,11 @@ class IssuePage extends React.PureComponent {
                                     let issue = doc.data()
                                     issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000)
                                     issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000)
+                                    let tempArray = []
+                                    for (const [key, value] of Object.entries(issue.labels)) {
+                                      tempArray.push([key, value])
+                                    }
+                                    issue.labels = tempArray
                                     this.setState({status: issue.status, 
                                                    creationTimestamp: issue.timestamp, 
                                                    editedTimestamp: issue.lastUpdateTimestamp, 
@@ -122,8 +130,9 @@ class IssuePage extends React.PureComponent {
                                                    description: issue.description, 
                                                    originalTitle: issue.title, 
                                                    originalDescription: issue.description, 
-                                                   sprint: issue.sprint, 
-                                                   dueDate: new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000), labels: issue.labels
+                                                   sprint: issue.sprint,
+                                                   selectedLabels: issue.labels,
+                                                   dueDate: new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000)
                                                  });
                                   }.bind(this))
   }
@@ -155,9 +164,13 @@ class IssuePage extends React.PureComponent {
                      .doc("list")
                      .get()
     if(docSnapshot.data()) {
-      return docSnapshot.data().list
+      let tempArray = []
+      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
+        tempArray.push([key, value])
+      }
+      this.setState({labels: tempArray})
     } else {
-      return []
+      this.setState({labels: []})
     }
   }
 
@@ -356,8 +369,8 @@ class IssuePage extends React.PureComponent {
                    sprints={this.getAllSprints} 
                    selectedSprint={this.state.sprint} 
                    dueDate={this.state.dueDate} 
-                   labels={this.getAllLables} 
-                   selectedLabels={this.state.labels} 
+                   labels={this.state.labels} 
+                   selectedLabels={this.state.selectedLabels} 
                    updateSprint={this.updateSprint} 
                    updateDueDate={this.updateDueDate} 
                    updateLabels={this.updateLabels} 

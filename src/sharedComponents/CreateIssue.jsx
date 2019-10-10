@@ -104,6 +104,7 @@ const LabelsSelect = styled.select`
 
 const Option = styled.option`
   width: 100%;
+  background-color: ${props => props.backgroundColor ? props.backgroundColor : "none"}
 `
 
 const DueDateWrapper = styled.div`
@@ -187,8 +188,15 @@ export default class CreateIssue extends React.Component {
                             .collection("labels")
                             .doc("list")
                             .get()
-    let labels = docSnapshot.data().list
-    this.setState({labels: labels})
+    if(docSnapshot.data()) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
+        tempArray.push([key, value])
+      }
+      this.setState({labels: tempArray})
+    } else {
+      this.setState({labels: []})
+    }
   }
 
   onChangeTitle(e) {
@@ -240,7 +248,8 @@ export default class CreateIssue extends React.Component {
       }
     }
     if(this.state.labels.length > 0) {
-      issue.labels = this.state.selectedLabels.map(i => this.state.labels[i])
+      let labels = this.state.selectedLabels.map(i => this.state.labels[i])
+      issue.labels = Object.fromEntries(labels)
     }
 
 
@@ -316,7 +325,7 @@ export default class CreateIssue extends React.Component {
                 }
                 {
                   this.state.labels && this.state.labels.map((label, index) => 
-                                                              <Option key={index} value={index}>{label}</Option>
+                                                              <Option key={index} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
                                                              )
                 }
               </LabelsSelect>
