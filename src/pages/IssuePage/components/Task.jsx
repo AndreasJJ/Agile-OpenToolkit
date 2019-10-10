@@ -59,8 +59,7 @@ class Task extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log(this.props.issueId)
-    console.log(this.props.taskId)
+
   }
 
   updateTaskStatus() {
@@ -72,7 +71,13 @@ class Task extends React.PureComponent {
                      .collection("tasks")
                      .doc(this.props.taskId)
                      .update({
-                        status: !this.state.checked ? "CLOSED" : "OPEN"
+                        status: !this.state.checked ? "CLOSED" : "OPEN",
+                        lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                        lastEditer: {
+                          firstname: this.props.user.firstname,
+                          lastname: this.props.user.lastname,
+                          uid: this.props.user.uid
+                        }
                      })
   }
 
