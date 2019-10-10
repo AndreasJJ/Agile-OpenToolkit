@@ -94,14 +94,20 @@ class Labels extends React.PureComponent {
       showModal: false,
       loading: true,
       activeTab: 0,
-      labels: []
+      labels: [],
+      subscribedLabels: []
     };
     this.tabClicked = this.tabClicked.bind(this)
     this.getLabels = this.getLabels.bind(this)
+    this.getSubscribedLabels = this.getSubscribedLabels.bind(this)
     this.closeModal = this.closeModal.bind(this)
+    this.deleteLabel = this.deleteLabel.bind(this)
+    this.subscribeToLabel = this.subscribeToLabel.bind(this)
+    this.unsubscribeToLabel = this.unsubscribeToLabel.bind(this)
   }
 
  async componentDidMount() {
+    await this.getSubscribedLabels()
     await this.getLabels()
     this.props.finishLoading()
   }
@@ -134,6 +140,17 @@ class Labels extends React.PureComponent {
     }
   }
 
+  async getSubscribedLabels() {
+    let memberInfo = await this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("members")
+              .doc(this.props.uid)
+              .get()
+    await this.setState({subscribedLabels: memberInfo.data().subscribedLabels});
+  }
+
   tabClicked(e) {
     this.setState({activeTab: parseInt(e.target.dataset.index)}, function() {
     }.bind(this))
@@ -141,6 +158,44 @@ class Labels extends React.PureComponent {
 
   closeModal() {
     this.setState({showModal: false})
+  }
+
+  async deleteLabel(name) {
+    await this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("labels")
+              .doc("list")
+              .update({["list." + name] : this.props.firebase.db.app.firebase_.firestore.FieldValue.delete()})
+    this.getLabels()
+  }
+
+  async subscribeToLabel(name) {
+   await this.props.firebase
+            .db
+            .collection("products")
+            .doc(this.props.products[this.props.selectedProduct].id)
+            .collection("members")
+            .doc(this.props.uid)
+            .update({
+              subscribedLabels: this.props.firebase.db.app.firebase_.firestore.FieldValue.arrayUnion(name)
+            })
+    await this.getSubscribedLabels()
+
+  }
+
+  async unsubscribeToLabel(name) {
+    await this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("members")
+              .doc(this.props.uid)
+              .update({
+                subscribedLabels: this.props.firebase.db.app.firebase_.firestore.FieldValue.arrayRemove(name)
+              })
+    await this.getSubscribedLabels()
   }
 
   render() {
@@ -183,7 +238,15 @@ class Labels extends React.PureComponent {
                   <LabelCard name={"skeleton"} skeleton={true}/>
                 :
                   this.state.labels && this.state.labels.map((label, index) =>
-                    <LabelCard key={label[0]} name={label[0]} description={label[1].description} bgc={label[1].color} />
+                    <LabelCard key={label[0]} 
+                               name={label[0]} 
+                               description={label[1].description} 
+                               bgc={label[1].color}
+                               subscribed={this.state.subscribedLabels ? this.state.subscribedLabels.indexOf(label[0]) > -1 : false}
+                               subscribe={this.subscribeToLabel}
+                               unsubscribe={this.unsubscribeToLabel}
+                               delete={this.deleteLabel}
+                     />
                   )
             }
             </List>

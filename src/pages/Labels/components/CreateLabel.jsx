@@ -147,7 +147,6 @@ class CreateLabel extends React.PureComponent {
         description: this.state.description
       }
     }
-    console.log(label)
      await this.props.firebase
               .db
               .collection("products")
