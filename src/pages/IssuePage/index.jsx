@@ -34,14 +34,14 @@ class IssuePage extends React.PureComponent {
       status: "OPEN",
       creationTimestamp: new Date(),
       editedTimestamp: new Date(),
-      creator: "Andreas Jonassen",
-      lastEditer: "Andreas Jonassen",
+      creator: "",
+      lastEditer: "",
       title: "",
       description: "",
       tasks: [],
       sprints: [],
       sprint: "",
-      dueDate: new Date(),
+      dueDate: null,
       labels: [],
       editingIssue: false,
       originalTitle: "",
@@ -120,6 +120,7 @@ class IssuePage extends React.PureComponent {
                                     let issue = doc.data()
                                     issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000)
                                     issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000)
+                                    issue.dueDate = issue.dueDate == null ? null : new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000)
                                     let tempArray = []
                                     for (const [key, value] of Object.entries(issue.labels)) {
                                       tempArray.push([key, value])
@@ -136,7 +137,7 @@ class IssuePage extends React.PureComponent {
                                                    originalDescription: issue.description, 
                                                    sprint: issue.sprint,
                                                    selectedLabels: issue.labels,
-                                                   dueDate: new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000)
+                                                   dueDate: issue.dueDate
                                                  });
                                   }.bind(this))
   }

@@ -39,6 +39,7 @@ const Text = styled.div`
 
 const Title = styled.div`
   font-weight: bold;
+  text-decoration: ${props => props.status == "CLOSED" ? "line-through" : "none"};
 `
 
 export default class Task extends React.Component {
@@ -50,7 +51,7 @@ export default class Task extends React.Component {
   }
 
   componentDidMount() {
-
+    console.log(this.props.status)
   }
 
   render () {
@@ -65,7 +66,7 @@ export default class Task extends React.Component {
                 null
             }
           <Text>
-            <Title>
+            <Title status={this.props.status}>
               {this.props.title}
             </Title>
             <div>

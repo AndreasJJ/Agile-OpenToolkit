@@ -10,6 +10,8 @@ import styled from 'styled-components';
 const TaskWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  margin-bottom: 5px;
+  align-items: center;
 `
 
 const TaskInfo = styled.div`
@@ -18,8 +20,7 @@ const TaskInfo = styled.div`
 
 const TaskHeader = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 `
 
 const TaskTitle = styled.h3`

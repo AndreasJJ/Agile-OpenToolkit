@@ -168,7 +168,7 @@ export default class Issue extends React.Component {
         <Tasks displaying={this.state.taskVisible}>
           {
             this.state.tasks && this.state.tasks.map((task, index) => 
-                                                      <Task key={index} title={task.title} assigne={task.assignee} />
+                                                      <Task key={index} title={task.title} assigne={task.assignee} status={task.status} />
                                                     )
           }
         </Tasks>

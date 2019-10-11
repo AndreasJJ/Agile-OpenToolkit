@@ -112,10 +112,14 @@ const DueDateWrapper = styled.div`
 `
 
 const DueDate = styled.label`
-
+  margin-right: 5px;
 `
 
 const DateInput = styled.input`
+
+`
+
+const EnableDueDateInput = styled.input`
 
 `
 
@@ -149,6 +153,7 @@ export default class CreateIssue extends React.Component {
     this.state = {
       title: "",
       description: "",
+      dueDateEnabled: false,
       dueDate: new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
       selectedSprint: 0,
       selectedLabels: [],
@@ -163,6 +168,7 @@ export default class CreateIssue extends React.Component {
     this.onChangeDueDate = this.onChangeDueDate.bind(this)
     this.onChangeSprintSelect = this.onChangeSprintSelect.bind(this)
     this.onChangeLabelsSelect = this.onChangeLabelsSelect.bind(this)
+    this.onDueDateEnabledChange = this.onDueDateEnabledChange.bind(this)
     this.sendIssue = this.sendIssue.bind(this)
   }
 
@@ -228,11 +234,15 @@ export default class CreateIssue extends React.Component {
     this.setState({selectedLabels: selectedValue})
   }
 
+  onDueDateEnabledChange() {
+    this.setState({dueDateEnabled: !this.state.dueDateEnabled})
+  }
+
   sendIssue() {
     let issue = {
       title: this.state.title,
       description: this.state.description,
-      dueDate: new Date(this.state.dueDate),
+      dueDate: this.state.dueDateEnabled ? new Date(this.state.dueDate) : null,
       sprint: (this.state.sprints.length <= this.state.selectedSprint) ? null : (this.state.selectedSprint > 0 ? this.state.sprints[this.state.selectedSprint-1].id : null),
       status: "OPEN",
       timestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
@@ -333,7 +343,9 @@ export default class CreateIssue extends React.Component {
             </LabelsWrapper>
             <DueDateWrapper>
               <DueDate>Due Date</DueDate>
-              <DateInput type="date" 
+              <EnableDueDateInput type="checkbox" defaultChecked={this.state.dueDateEnabled} onChange={this.onDueDateEnabledChange} />
+              <DateInput disabled={!this.state.dueDateEnabled}
+                         type="date" 
                          value={this.state.dueDate} 
                          onChange={this.onChangeDueDate} 
                          min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
