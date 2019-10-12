@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from './../../../sharedComponents/Firebase';
+import Select from './../../../sharedComponents/select';
 
 import Checkbox from './Checkbox'
 
@@ -16,6 +17,8 @@ const TaskWrapper = styled.div`
 
 const TaskInfo = styled.div`
   flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
 `
 
 const TaskHeader = styled.div`
@@ -40,6 +43,10 @@ const TaskDescription = styled.div`
 
 `
 
+const TaskAssignation = styled.div`
+
+`
+
 const CheckBoxLabel = styled.label`
   display: flex;
   justify-content: center;
@@ -52,15 +59,51 @@ class Task extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      checked: this.props.status.toLowerCase() == "open" ? false : true
+      checked: this.props.status.toLowerCase() == "open" ? false : true,
+      members: [],
+      assigneeIndex: 0
     }
 
+    this.getMembers = this.getMembers.bind(this)
+    this.setAssigneeIndex = this.setAssigneeIndex.bind(this)
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this)
     this.updateTaskStatus = this.updateTaskStatus.bind(this)
+    this.handleSelectChange = this.handleSelectChange.bind(this)
+    this.updateTaskAssignee = this.updateTaskAssignee.bind(this)
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.getMembers()
+    await this.setAssigneeIndex()
+  }
 
+  async componentDidUpdate(prevProps, prevState) {
+    if(this.props.assignee !== prevProps.assignee) {
+       await this.setAssigneeIndex()
+    }
+  }
+
+  async getMembers() {
+    let docSnapshot = await this.props.firebase
+                                      .db.collection("products")
+                                      .doc(this.props.products[this.props.selectedProduct].id)
+                                      .collection("members")
+                                      .doc("members")
+                                      .get()
+    let members = docSnapshot.data().list.map((member) => {
+      return {uid: Object.keys(member)[0], firstname: Object.values(member)[0].firstname, lastname: Object.values(member)[0].lastname,profilePicture: Object.values(member)[0].profilePicture ,name: Object.values(member)[0].firstname + " " + Object.values(member)[0].lastname}
+    })
+    await this.setState({members: members})
+  }
+
+  async setAssigneeIndex() {
+    let index = 0
+    for (var i = 0; i < this.state.members.length; i++) {
+      if(this.props.assignee && (this.state.members[i].uid == this.props.assignee.uid)) {
+        index = i+1
+      }
+    }
+    await this.setState({assigneeIndex: index})
   }
 
   updateTaskStatus() {
@@ -77,7 +120,8 @@ class Task extends React.PureComponent {
                         lastEditer: {
                           firstname: this.props.user.firstname,
                           lastname: this.props.user.lastname,
-                          uid: this.props.user.uid
+                          uid: this.props.user.uid,
+
                         }
                      })
   }
@@ -88,6 +132,32 @@ class Task extends React.PureComponent {
     }).catch((err) => {
       this.setState({ checked: !this.state.checked })
     })
+  }
+
+  handleSelectChange(e) {
+     if(e.target.value == 0) {
+       this.updateTaskAssignee(null)
+     } else {
+      this.updateTaskAssignee({
+        firstname: this.state.members[e.target.value-1].firstname,
+        lastname: this.state.members[e.target.value-1].lastname,
+        uid: this.state.members[e.target.value-1].uid,
+        profilePicture: this.state.members[e.target.value-1].profilePicture ? this.state.members[e.target.value-1].profilePicture : null
+      })
+     }
+  }
+
+  updateTaskAssignee(assignee) {
+    return this.props.firebase
+                     .db.collection("products")
+                     .doc(this.props.products[this.props.selectedProduct].id)
+                     .collection("stories")
+                     .doc(this.props.issueId)
+                     .collection("tasks")
+                     .doc(this.props.taskId)
+                     .update({
+                       assignee: assignee
+                     })
   }
 
   render () {
@@ -112,6 +182,9 @@ class Task extends React.PureComponent {
         <TaskDescription>
           {this.props.description}
         </TaskDescription>
+        <TaskAssignation>
+          <Select list={this.state.members} value={this.state.assigneeIndex} onChange={this.handleSelectChange} keyName={"uid"} textName={"name"} />
+        </TaskAssignation>
       </TaskInfo>
     </TaskWrapper>
     )

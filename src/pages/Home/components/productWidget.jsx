@@ -191,13 +191,14 @@ class ProductWidget extends React.PureComponent {
   }
 
   async getMembers(productId) {
-    let querySnapshot = await this.props.firebase
+    let docSnapshot = await this.props.firebase
                                         .db
                                         .collection('products')
                                         .doc(productId)
                                         .collection('members')
+                                        .doc('members')
                                         .get()
-    return querySnapshot.docs.map((doc) => doc.data())
+    return docSnapshot.data().list
   }
 
   showMembersButtonClicked(e) {

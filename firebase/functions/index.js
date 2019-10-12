@@ -10,9 +10,20 @@ const FieldValue = require('firebase-admin').firestore.FieldValue;
 exports.addProductToUserProductList = functions.firestore
     .document('products/{product}/members/{member}')
     .onWrite((change, context) => {
+    	if(context.params.member === "members") {
+    		return "Information document doesnt need to be updated"
+    	}
+
 		if(!change.after.exists) {
-			return db.collection("users").doc(context.params.member).collection('products').doc(context.params.product).delete()
-			.catch(function(error) {
+			let batch = db.batch();
+
+			let userRef = db.collection("users").doc(context.params.member).collection('products').doc(context.params.product)
+			batch.delete(userRef)
+
+			let userInMemberListRef = db.collection('products').doc(context.params.product).collection('members').doc('members')
+			batch.update(userInMemberListRef, {list: FieldValue.arrayRemove(context.params.member)}, {merge: true})
+
+			return batch.commit().catch(function(error) {
 		    	console.error("Error removing document: ", error);
 			});
 		}
@@ -26,11 +37,22 @@ exports.addProductToUserProductList = functions.firestore
 		        }
 
               	let userProductRef = db.collection('users').doc(context.params.member).collection('products').doc(context.params.product)
-		      	return transaction.set(userProductRef, {
+		      	transaction.set(userProductRef, {
 		      		name: doc.data().name,
 		      		description: doc.data().description,
 		      		owner: doc.data().owner
 		      	})
+
+		      	let membersListRef = db.collection('products').doc(context.params.product).collection('members').doc('members')
+		      	transaction.update((membersListRef), {
+		      		list: FieldValue.arrayUnion({[context.params.member]:{
+		      			firstname: change.after.get('firstname'),
+		      			lastname: change.after.get('lastname'),
+		      			email: change.after.get('email'),
+		      			profilePicture: change.after.get('profilePicture') ? change.after.get('profilePicture') : null
+		      		}})
+		      	}, {merge: true})
+		      	return "Success"
 		    });
 		}).catch(function(error) {
 		    console.log("Transaction failed: ", error);
@@ -58,7 +80,7 @@ exports.updateProductInfo = functions.firestore
     					name: newDoc.name,
     					description: newDoc.description,
     					owner: newDoc.owner
-    				})
+    				}, {merge: true})
               	})
 		    });
 		}).catch(function(error) {
