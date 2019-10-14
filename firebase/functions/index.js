@@ -23,15 +23,15 @@ exports.addProductToUserProductList = functions.firestore
 			let userInMemberListRef = db.collection('products').doc(context.params.product).collection('members').doc('members')
 			batch.update(userInMemberListRef, {list: FieldValue.arrayRemove(context.params.member)}, {merge: true})
 
-			return batch.commit().catch(function(error) {
+			return batch.commit().catch((error) => {
 		    	console.error("Error removing document: ", error);
 			});
 		}
 
 	    let productRef = db.collection('products').doc(context.params.product)
 
-		return db.runTransaction(function(transaction) {
-		    return transaction.get(productRef).then(function(doc) {
+		return db.runTransaction((transaction) => {
+		    return transaction.get(productRef).then((doc) => {
 		        if (!doc.exists) {
 		            return
 		        }
@@ -54,7 +54,7 @@ exports.addProductToUserProductList = functions.firestore
 		      	}, {merge: true})
 		      	return "Success"
 		    });
-		}).catch(function(error) {
+		}).catch((error) => {
 		    console.log("Transaction failed: ", error);
 		});
 
@@ -67,13 +67,13 @@ exports.updateProductInfo = functions.firestore
 
     	let productRef = db.collection('products').doc(context.params.product).collection('members')
 
-		return db.runTransaction(function(transaction) {
-		    return transaction.get(productRef).then(function(snapshot) {
+		return db.runTransaction((transaction) => {
+		    return transaction.get(productRef).then((snapshot) => {
 		        if (!snapshot.exists) {
 		            return
 		        }
 
-              	return snapshot.forEach(function(member) {
+              	return snapshot.forEach((member) => {
               		let userProductRef = db.collection('users').doc(member.id).collection('products').doc(context.params.product)
 
               		transaction.update(userProductRef, {
@@ -83,7 +83,7 @@ exports.updateProductInfo = functions.firestore
     				}, {merge: true})
               	})
 		    });
-		}).catch(function(error) {
+		}).catch((error) => {
 		    console.log("Transaction failed: ", error);
 		});
     });
@@ -139,7 +139,7 @@ exports.updateSprints = functions.firestore
 	    	let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.after.data().sprint)
 			batch.update(sprintRef, {totalIssues: FieldValue.increment(1)}, {merge: true})
 
-			return batch.commit().catch(function(error) {
+			return batch.commit().catch((error) => {
 				console.error("Error removing document: ", error);
 			});
     	}
@@ -159,7 +159,7 @@ exports.updateSprints = functions.firestore
     		let countRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint)
     		batch.update(countRef, {totalIssues: FieldValue.increment(-1)}, {merge: true})
 
-    		return batch.commit().catch(function(error) {
+    		return batch.commit().catch((error) => {
 				console.error("Error removing document: ", error);
 			});
     	}
@@ -171,7 +171,7 @@ exports.updateSprints = functions.firestore
     		let afterStoryRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.after.data().sprint)
 			batch.update(afterStoryRef, {totalIssues: FieldValue.increment(1)}, {merge: true})
 
-			return batch.commit().catch(function(error) {
+			return batch.commit().catch((error) => {
 				console.error("Error removing document: ", error);
 			});
     	}
@@ -186,7 +186,7 @@ exports.updateSprints = functions.firestore
     		let afterStoryRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.after.data().sprint)
 			batch.update(afterStoryRef, {totalIssues: FieldValue.increment(1)}, {merge: true})
 
-			return batch.commit().catch(function(error) {
+			return batch.commit().catch((error) => {
 				console.error("Error removing document: ", error);
 			});
     	}

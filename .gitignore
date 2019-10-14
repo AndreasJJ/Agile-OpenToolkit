@@ -1,7 +1,10 @@
+/firebase/functions/node_modules
+/firebase/public/bundle.js
 node_modules
 /public/bundle.js
 /public/images
 .DS_Store
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

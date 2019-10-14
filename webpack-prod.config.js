@@ -1,5 +1,4 @@
 var path = require('path');
-const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const config = {
@@ -21,7 +20,7 @@ const config = {
     concatenateModules: true,
     noEmitOnErrors: true,
     checkWasmTypes: true,
-    minimize: true,
+    minimize: true
   },
   resolve: {
     extensions: ['.js', '.jsx', '.css', '.png', '.jpg', '.gif']

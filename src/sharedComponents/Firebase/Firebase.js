@@ -3,17 +3,17 @@ import 'firebase/auth';
 import 'firebase/firestore';
 
 const config = {
-  apiKey: "***REMOVED***",
-  authDomain: "***REMOVED***",
-  databaseURL: "***REMOVED***",
-  projectId: "***REMOVED***",
-  storageBucket: "***REMOVED***",
-  messagingSenderId: "***REMOVED***",
-  appId: "***REMOVED***"
+  apiKey: '***REMOVED***',
+  authDomain: '***REMOVED***',
+  databaseURL: '***REMOVED***',
+  projectId: '***REMOVED***',
+  storageBucket: '***REMOVED***',
+  messagingSenderId: '***REMOVED***',
+  appId: '***REMOVED***'
 };
 
 class Firebase {
-  constructor() {
+  constructor () {
     app.initializeApp(config);
 
     this.auth = app.auth();
@@ -53,13 +53,13 @@ class Firebase {
               emailVerified: authUser.emailVerified,
               phoneNumber: authUser.phoneNumber,
               photoURL: authUser.photoURL,
-              ...dbUser,
+              ...dbUser
             };
 
             next(authUser);
-          }).catch(function(error) {
-              console.log("Error getting document:", error);
-          });
+          });/* .catch(function (error) {
+            console.log('Error getting document:', error);
+          }); */
       } else {
         fallback();
       }

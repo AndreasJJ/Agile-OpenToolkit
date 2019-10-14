@@ -1,7 +1,6 @@
 import { userConstants } from '../constants/user';
 import { userService } from '../services/user';
 import { alertActions } from './alert';
-import { history } from '../helpers/history';
 
 export const userActions = {
   setUser
@@ -27,5 +26,3 @@ function setUser (user) {
   function success (user) { return { type: userConstants.SET_USER_SUCCESS, user }; }
   function failure (error) { return { type: userConstants.SET_USER_FAILURE, error }; }
 }
-
-

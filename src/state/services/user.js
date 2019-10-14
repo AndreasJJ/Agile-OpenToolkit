@@ -3,6 +3,5 @@ export const userService = {
 };
 
 async function setUser (user) {
-  return user
+  return user;
 }
-

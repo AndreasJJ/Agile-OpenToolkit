@@ -8,5 +8,5 @@ async function selectProduct (index) {
 }
 
 async function getProducts (products) {
-	return products;
+  return products;
 }
