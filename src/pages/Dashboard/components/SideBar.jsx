@@ -3,6 +3,7 @@ import { Link as rLink } from 'react-router-dom'
 
 import styled from 'styled-components'
 import {Home} from 'styled-icons/fa-solid/Home'
+import {Graph} from 'styled-icons/octicons/Graph'
 import {Collection} from 'styled-icons/boxicons-regular/Collection'
 import {DirectionsRun} from 'styled-icons/material/DirectionsRun'
 import {Columns} from 'styled-icons/boxicons-regular/Columns'
@@ -174,6 +175,11 @@ class SideBar extends React.Component {
               this.props.products.length > 0
               ?
                 <Menu>
+                  <MenuItem current={this.props.location.pathname} next={"/overview"}>
+                    <Link to="/overview" current={this.props.location.pathname} next={"/overview"}><Graph size="1em"/>
+                      <LeftPadding>Overview</LeftPadding>
+                    </Link>
+                  </MenuItem>
                   <MenuItem current={this.props.location.pathname} next={"/backlog"}>
                     <Link to="/backlog" current={this.props.location.pathname} next={"/backlog"}><Collection size="1em"/>
                       <LeftPadding>Product backlog</LeftPadding>

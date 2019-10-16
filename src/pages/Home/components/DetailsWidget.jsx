@@ -41,7 +41,7 @@ const Inputs = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between
+  justify-content: flex-start;
 `
 
 const FirstRow = styled.div`

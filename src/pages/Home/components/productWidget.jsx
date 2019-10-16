@@ -128,7 +128,6 @@ class ProductWidget extends React.PureComponent {
                                               })
                                               await this.setState({products: tempArray, 
                                                                    loading: false})
-                                              this.props.finishedLoading()
                                               this.props.dispatch(productActions.getProducts(tempArray))
                                             }.bind(this));
   }

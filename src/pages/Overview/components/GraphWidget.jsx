@@ -1,0 +1,77 @@
+import React from 'react';
+
+import styled from 'styled-components';
+
+const Widget = styled.div`
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+`
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 20px 0px 20px;
+  flex-grow: 1;
+`
+
+const Content = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+  -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+  background-color: #ffffff;
+`
+
+const Header = styled.div`
+  background-color: #00b8fe;
+  color: #ffffff;
+  display: flex;
+  padding: 10px;
+`
+
+const Body = styled.div`
+
+`
+
+export default class GraphWidget extends React.PureComponent {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+    };
+
+  }
+
+  componentDidMount() {
+
+  }
+
+  render () {
+    return(
+      <Widget>
+        <Wrapper>
+            <Content>
+                <Header>
+                  Graph
+                </Header>
+                <Body>
+
+                </Body>
+            </Content>
+        </Wrapper>
+      </Widget>
+    )
+  }
+}

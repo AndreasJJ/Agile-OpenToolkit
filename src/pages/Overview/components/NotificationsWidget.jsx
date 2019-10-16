@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const Widget = styled.div`
   grid-column-start: 1;
-  grid-column-end: 3;
+  grid-column-end: 1;
   grid-row-start: 2;
   grid-row-end: 3;
   display: flex;
@@ -81,7 +81,7 @@ export default class NotificationsWidget extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.finishedLoading()
+
   }
 
   render () {
