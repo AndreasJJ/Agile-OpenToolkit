@@ -10,6 +10,7 @@ import { userActions } from './state/actions/user';
 
 import { Dashboard } from './pages/Dashboard';
 import { Home } from './pages/Home';
+import { Overview } from './pages/Overview';
 import { Sprintboard } from './pages/Sprintboard';
 import { Backlog } from './pages/Backlog';
 import { Labels } from './pages/Labels';
@@ -94,6 +95,7 @@ class App extends React.Component {
 						      <OpenRoute exact path='/register' component={Register} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/logout' component={Logout} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/dashboard' component={Dashboard} content={Home} finishLoading={this.finishLoading} />
+						      <PrivateRoute exact path='/overview' component={Dashboard} content={Overview} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/backlog' component={Dashboard} content={Backlog} finishLoading={this.finishLoading} />
 						      <PrivateRoute path='/backlog/issue/:id' component={Dashboard} content={IssuePage} finishLoading={this.finishLoading} />
 						      <PrivateRoute exact path='/labels' component={Dashboard} content={Labels} finishLoading={this.finishLoading} />
