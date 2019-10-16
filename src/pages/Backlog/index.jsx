@@ -111,7 +111,9 @@ class Backlog extends React.PureComponent {
     this.state = {
       loading: true,
       labels: [],
+      selectedLabel: 0,
       issues: [],
+      originalIssues: [],
       activeTab: 0,
       showModal: false
     };
@@ -122,6 +124,8 @@ class Backlog extends React.PureComponent {
     this.getPrettyCreationDate = this.getPrettyCreationDate.bind(this)
     this.getTasks = this.getTasks.bind(this)
     this.getAllLables = this.getAllLables.bind(this)
+    this.filterIssues = this.filterIssues.bind(this)
+    this.onLabelSelectChange = this.onLabelSelectChange.bind(this)
   }
 
   async componentDidMount() {
@@ -129,7 +133,6 @@ class Backlog extends React.PureComponent {
     await this.props.finishLoading()
     await this.getAllLables()
     await this.setState({loading: false})
-    console.log(this.state.labels)
   }
 
   async getIssues() {
@@ -161,7 +164,7 @@ class Backlog extends React.PureComponent {
       obj.id = doc.id
       return obj
     })
-    this.setState({issues: issues})
+    this.setState({issues: issues, originalIssues: issues})
   }
 
   async getTasks(id) {
@@ -193,6 +196,26 @@ class Backlog extends React.PureComponent {
     } else {
       this.setState({labels: []})
     }
+  }
+
+  filterIssues() {
+    if(this.state.selectedLabel == 0) {
+      this.setState({
+        issues: this.state.originalIssues
+      })
+    } else {
+      let filtered = this.state.originalIssues.filter((issue) => {
+        if(Object.keys(issue.labels).includes(this.state.labels[this.state.selectedLabel-1].id)) {
+          return issue
+        }
+      })
+      this.setState({issues: filtered})
+    }
+  }
+
+  async onLabelSelectChange(e) {
+    await this.setState({selectedLabel: e.target.value})
+    this.filterIssues()
   }
 
   tabClicked(e) {
@@ -267,7 +290,7 @@ class Backlog extends React.PureComponent {
               </Controls>
               <Search> 
                 <SearchInput placeholder="Search..." />
-                <Select styling="height: 100%; width: 200px; margin-left: 10px;" placeholderText="Select label" list={this.state.labels} textName="id" keyName="id" />
+                <Select styling="height: 100%; width: 200px; margin-left: 10px;" placeholderText="Select label" list={this.state.labels} value={this.state.selectedLabel} onChange={this.onLabelSelectChange} textName="id" keyName="id" />
               </Search>
             </Header>
             <Body> 
