@@ -6,6 +6,7 @@ import { withFirebase } from '../../sharedComponents/Firebase';
 import Modal from '../../sharedComponents/Modal';
 import Issue from './components/Issue';
 import { CreateIssue } from '../../sharedComponents/CreateIssue';
+import Select from '../../sharedComponents/Select';
 
 import styled from 'styled-components';
 
@@ -87,6 +88,12 @@ const SearchInput = styled.input`
   flex-grow: 1;
 `
 
+const LabelSort = styled.select`
+  height: 100%;
+  width: 200px;
+  margin-left: 10px;
+`
+
 const Body = styled.div`
   width: 100%;
   flex-grow: 1;
@@ -103,6 +110,7 @@ class Backlog extends React.PureComponent {
 
     this.state = {
       loading: true,
+      labels: [],
       issues: [],
       activeTab: 0,
       showModal: false
@@ -113,12 +121,15 @@ class Backlog extends React.PureComponent {
     this.getIssues = this.getIssues.bind(this)
     this.getPrettyCreationDate = this.getPrettyCreationDate.bind(this)
     this.getTasks = this.getTasks.bind(this)
+    this.getAllLables = this.getAllLables.bind(this)
   }
 
   async componentDidMount() {
     await this.getIssues()
     await this.props.finishLoading()
+    await this.getAllLables()
     await this.setState({loading: false})
+    console.log(this.state.labels)
   }
 
   async getIssues() {
@@ -163,6 +174,25 @@ class Backlog extends React.PureComponent {
                       .orderBy("title")
                       .get()
     return querySnapshot.docs.map((doc) => doc.data())
+  }
+
+  async getAllLables() {
+    let docSnapshot = await this.props.firebase
+                     .db
+                     .collection("products")
+                     .doc(this.props.products[this.props.selectedProduct].id)
+                     .collection("labels")
+                     .doc("list")
+                     .get()
+    if(docSnapshot.data()) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
+        tempArray.push({id: key, color: value.color, description: value.description})
+      }
+      this.setState({labels: tempArray})
+    } else {
+      this.setState({labels: []})
+    }
   }
 
   tabClicked(e) {
@@ -237,6 +267,7 @@ class Backlog extends React.PureComponent {
               </Controls>
               <Search> 
                 <SearchInput placeholder="Search..." />
+                <Select styling="height: 100%; width: 200px; margin-left: 10px;" placeholderText="Select label" list={this.state.labels} textName="id" keyName="id" />
               </Search>
             </Header>
             <Body> 
