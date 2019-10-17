@@ -123,6 +123,18 @@ const EnableDueDateInput = styled.input`
 
 `
 
+const EstimateWrapper = styled.div`
+
+`
+
+const Estimate = styled.label`
+
+`
+
+const EstimateInput = styled.input`
+
+`
+
 const Action = styled.div`
   display: flex;
   justify-content: space-between;
@@ -155,6 +167,7 @@ export default class CreateIssue extends React.Component {
       description: "",
       dueDateEnabled: false,
       dueDate: new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
+      estimate: "",
       selectedSprint: 0,
       selectedLabels: [],
       submitDisabled: true,
@@ -170,6 +183,7 @@ export default class CreateIssue extends React.Component {
     this.onChangeLabelsSelect = this.onChangeLabelsSelect.bind(this)
     this.onDueDateEnabledChange = this.onDueDateEnabledChange.bind(this)
     this.sendIssue = this.sendIssue.bind(this)
+    this.onEstimateChange = this.onEstimateChange.bind(this)
   }
 
   componentDidMount() {
@@ -238,6 +252,10 @@ export default class CreateIssue extends React.Component {
     this.setState({dueDateEnabled: !this.state.dueDateEnabled})
   }
 
+  onEstimateChange(e) {
+    this.setState({estimate: e.target.value})
+  }
+
   sendIssue() {
     let issue = {
       title: this.state.title,
@@ -258,38 +276,38 @@ export default class CreateIssue extends React.Component {
         lastname: this.props.lastname
       }
     }
+
+    if(this.state.estimate && this.state.estimate !== "" && !isNaN(this.state.estimate)) {
+      issue.estimate = Number(this.state.estimate)
+    }
+
     if(this.state.labels.length > 0) {
       let labels = this.state.selectedLabels.map(i => this.state.labels[i])
       issue.labels = Object.fromEntries(labels)
     }
 
-
-    var issueRef = this.props.firebase
-                             .db.collection("products")
-                             .doc(this.props.products[this.props.selectedProduct].id)
-                             .collection("stories")
-                             .doc()
     var incrementRef = this.props.firebase
                                  .db.collection("products")
                                  .doc(this.props.products[this.props.selectedProduct].id)
                                  .collection("stories")
                                  .doc("--STATS--")
 
-    return this.props.firebase.db.runTransaction(function(transaction) {
-      return transaction.get(incrementRef).then(function(incrementValueDoc) {
+    incrementRef.get().then(function(incrementValueDoc) {
           var incrementValue = incrementValueDoc.exists ? incrementValue = incrementValueDoc.data().count : 0
 
           issue.number = incrementValue
 
-          transaction.set(issueRef, issue)
-          transaction.set(incrementRef, {count: this.props.firebase.db.app.firebase_.firestore.FieldValue.increment(1)}, {merge: true})
-      }.bind(this));
-    }.bind(this)).then(function() {
-        console.log("Transaction successfully committed!");
-        this.props.finished(issueRef.id)
+          return this.props.firebase
+                    .db.collection("products")
+                    .doc(this.props.products[this.props.selectedProduct].id)
+                    .collection("stories")
+                    .add(issue)
+    }.bind(this)).then(function(snapshot) {
+        console.log("Issue transmittion successfully committed!");
+        this.props.finished(snapshot.id)
         this.props.exit()
     }.bind(this)).catch(function(error) {
-        console.log("Transaction failed: ", error);
+        console.log("Issue transmittion failed: ", error);
         this.props.dispatch(alertActions.error("Something went wrong. We were unable to save the issue. Please try again!"));
     }.bind(this));
   }
@@ -350,6 +368,10 @@ export default class CreateIssue extends React.Component {
                          onChange={this.onChangeDueDate} 
                          min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
             </DueDateWrapper>
+            <EstimateWrapper>
+              <Estimate>Estimate</Estimate>
+              <EstimateInput type="number" min="0" value={this.state.estimate} onChange={this.onEstimateChange} />
+            </EstimateWrapper>
           </Options>
           <Action>
             <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendIssue()}>

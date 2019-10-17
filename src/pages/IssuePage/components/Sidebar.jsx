@@ -64,7 +64,8 @@ export default class Sidebar extends React.PureComponent {
       originalSelectedLabels: [],
       selectedLabels: [],
       selectedSprint: 0,
-      dueDate: this.props.dueDate
+      dueDate: this.props.dueDate,
+      estimate: ""
     }
     this.onChangeSprint = this.onChangeSprint.bind(this)
     this.onChangeDuedate = this.onChangeDuedate.bind(this)
@@ -72,6 +73,8 @@ export default class Sidebar extends React.PureComponent {
     this.saveSprint = this.saveSprint.bind(this)
     this.saveDueDate = this.saveDueDate.bind(this)
     this.saveLabels = this.saveLabels.bind(this)
+    this.saveEstimate = this.saveEstimate.bind(this)
+    this.onChangeEstimate = this.onChangeEstimate.bind(this)
   }
 
   async componentDidMount() {
@@ -83,6 +86,11 @@ export default class Sidebar extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps) {
+    if(this.props.estimate !== prevProps.estimate) {
+      let estimate = this.props.estimate ? this.props.estimate : ""
+      this.setState({estimate: estimate})
+    }
+
     if (this.props.dueDate !== prevProps.dueDate) {
       this.setState({dueDate: this.props.dueDate})
     }
@@ -133,6 +141,10 @@ export default class Sidebar extends React.PureComponent {
     this.setState({selectedLabels: selectedValue})
   }
 
+  onChangeEstimate(e) {
+    this.setState({estimate: e.target.value})
+  }
+
   saveSprint() {
     let sprint = parseInt(this.state.selectedSprint) === 0 ? null : this.state.sprints[this.state.selectedSprint-1].id
 
@@ -160,6 +172,25 @@ export default class Sidebar extends React.PureComponent {
     }
     selectedLabels = Object.fromEntries(selectedLabels)
     this.props.updateLabels(selectedLabels);
+  }
+
+  saveEstimate() {
+    let props = this.props.estimate
+    let state = this.state.estimate
+
+    if(state === "") {
+      state = null
+    }
+
+    if(props === state) {
+      return
+    }
+
+    let estimate = null
+    if(state && state !== "" && !isNaN(state)) {
+      estimate = Number(state)
+    }
+    this.props.updateEstimate(estimate)
   }
 
   render () {
@@ -276,6 +307,38 @@ export default class Sidebar extends React.PureComponent {
                     this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
                   }
                 </LabelSelect>
+            }
+          </Value>
+        </Content>
+        <Content>
+          <Info>
+            <span>Estimate</span>
+            {
+              this.props.status.toLowerCase() === "open"
+              ?
+                <span onClick={
+                  function(e) { 
+                    if(this.state.editingSection.indexOf(3) === -1) {
+                      this.setState({editingSection: this.state.editingSection.concat([3])}) 
+                    } else {
+                      this.setState({editingSection: this.state.editingSection.filter(section => section !== 3)})
+                      this.saveEstimate()
+                    }
+                  }.bind(this)
+                }>
+                  Edit
+                </span>
+              :
+                null
+            }
+          </Info>
+          <Value>
+            {
+              this.state.editingSection.includes(3)
+              ?
+                <input type="number" min="0" value={this.state.estimate} onChange={this.onChangeEstimate} />
+              :
+                this.state.estimate ? this.state.estimate : "None"
             }
           </Value>
         </Content>
