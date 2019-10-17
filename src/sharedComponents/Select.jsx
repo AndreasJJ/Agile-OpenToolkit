@@ -10,7 +10,6 @@ export default class Select extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.value)
   }
 
   render () {

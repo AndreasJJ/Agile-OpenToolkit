@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Burndown from './charts/Burndown'
+
 import styled from 'styled-components';
 
 const Widget = styled.div`
@@ -41,7 +43,9 @@ const Header = styled.div`
 `
 
 const Body = styled.div`
-
+  display: flex;
+  height: 100%;
+  width: 100%;
 `
 
 export default class GraphWidget extends React.PureComponent {
@@ -67,7 +71,7 @@ export default class GraphWidget extends React.PureComponent {
                   Graph
                 </Header>
                 <Body>
-
+                  <Burndown />
                 </Body>
             </Content>
         </Wrapper>

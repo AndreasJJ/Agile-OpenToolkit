@@ -42,6 +42,7 @@ class IssuePage extends React.PureComponent {
       sprints: [],
       sprint: "",
       dueDate: null,
+      estimate: null,
       labels: [],
       editingIssue: false,
       originalTitle: "",
@@ -60,6 +61,7 @@ class IssuePage extends React.PureComponent {
     this.updateSprint = this.updateSprint.bind(this)
     this.updateDueDate = this.updateDueDate.bind(this)
     this.updateLabels = this.updateLabels.bind(this)
+    this.updateEstimate = this.updateEstimate.bind(this)
     this.discardEdit = this.discardEdit.bind(this)
     this.onChangeTitle = this.onChangeTitle.bind(this)
     this.onChangeDescription = this.onChangeDescription.bind(this)
@@ -90,6 +92,7 @@ class IssuePage extends React.PureComponent {
         sprints: [],
         sprint: "",
         dueDate: new Date(),
+        estimate: null,
         labels: [],
         selectedLabels: [],
         editingIssue: false,
@@ -137,7 +140,8 @@ class IssuePage extends React.PureComponent {
                                                    originalDescription: issue.description, 
                                                    sprint: issue.sprint,
                                                    selectedLabels: issue.labels,
-                                                   dueDate: issue.dueDate
+                                                   dueDate: issue.dueDate,
+                                                   estimate: issue.estimate
                                                  });
                                   }.bind(this))
   }
@@ -311,6 +315,24 @@ class IssuePage extends React.PureComponent {
               })
   }
 
+  updateEstimate(estimate) {
+    this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                estimate: estimate,
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
+  }
+
   discardEdit() {
     this.setState({editingIssue: false, 
                    title: this.state.originalTitle, 
@@ -375,12 +397,14 @@ class IssuePage extends React.PureComponent {
           <SideBar status={this.state.status} 
                    sprints={this.state.sprints} 
                    selectedSprint={this.state.sprint} 
-                   dueDate={this.state.dueDate} 
+                   dueDate={this.state.dueDate}
+                   estimate={this.state.estimate}
                    labels={this.state.labels} 
                    selectedLabels={this.state.selectedLabels} 
                    updateSprint={this.updateSprint} 
                    updateDueDate={this.updateDueDate} 
-                   updateLabels={this.updateLabels} 
+                   updateLabels={this.updateLabels}
+                   updateEstimate={this.updateEstimate}
           />
         </Wrapper>
     );
