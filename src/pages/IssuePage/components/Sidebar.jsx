@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { DateToLocaleString } from '../../../sharedComponents/Utility';
+
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -265,11 +267,11 @@ export default class Sidebar extends React.PureComponent {
               ?
                 <DueDateInput type="date" 
                               onChange={this.onChangeDuedate} 
-                              value={this.state.dueDate ? this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-") : (new Date).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")}
-                              min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")}
+                              value={this.state.dueDate ? DateToLocaleString(this.state.dueDate) : DateToLocaleString(new Date())}
+                              min={DateToLocaleString(new Date())}
                  />
               :
-                this.state.dueDate ? this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-") : "None"
+                this.state.dueDate ? DateToLocaleString(this.state.dueDate) : "None"
             }
           </Value>
         </Content>
@@ -301,13 +303,19 @@ export default class Sidebar extends React.PureComponent {
               ?
                 <LabelSelect multiple onChange={this.onChangeLabels} value={this.state.selectedLabels}>
                   {
-                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
+                    this.state.labels.length > 0 
+                    && this.state.labels.map((label, index) => 
+                                              <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                                              )
                   }
                 </LabelSelect>
               :
                 <LabelSelect multiple value={this.state.selectedLabels} disabled>
                   {
-                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
+                    this.state.labels.length > 0 
+                    && this.state.labels.map((label, index) => 
+                                              <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                                             )
                   }
                 </LabelSelect>
             }

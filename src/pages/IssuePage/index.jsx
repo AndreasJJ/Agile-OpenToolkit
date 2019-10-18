@@ -7,6 +7,7 @@ import { withFirebase } from '../../sharedComponents/Firebase';
 import SideBar from './components/Sidebar';
 import { Body } from './components/Body';
 
+import { getPrettyCreationDate, FsTsToDate } from '../../sharedComponents/Utility';
 import Modal from '../../sharedComponents/Modal';
 import { CreateIssue } from '../../sharedComponents/CreateIssue';
 import { CreateTask } from './components/CreateTask';
@@ -120,9 +121,9 @@ class IssuePage extends React.PureComponent {
                                   .doc(this.props.match.params.id)
                                   .onSnapshot(function(doc) {
                                     let issue = doc.data()
-                                    issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000)
-                                    issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000)
-                                    issue.dueDate = issue.dueDate == null ? null : new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000)
+                                    issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : FsTsToDate(issue.timestamp)
+                                    issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : FsTsToDate(issue.lastUpdateTimestamp)
+                                    issue.dueDate = issue.dueDate == null ? null : FsTsToDate(issue.dueDate)
                                     let tempArray = []
                                     for (const [key, value] of Object.entries(issue.labels)) {
                                       tempArray.push([key, value])

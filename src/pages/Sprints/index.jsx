@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
+import { FsTsToDate, DateToLocaleString } from '../../sharedComponents/Utility';
 import Modal from '../../sharedComponents/Modal';
 import CreateSprint from './components/CreateSprint';
 import SprintCard from './components/SprintCard';
@@ -144,7 +145,7 @@ class Sprints extends React.PureComponent {
     })
 
     if(this.state.activeTab === 1) {
-      sprints = sprints.filter((obj) => new Date(obj.startDate.nanoseconds/1000000 + obj.startDate.seconds*1000) <= new Date())
+      sprints = sprints.filter((obj) => FsTsToDate(obj.startDate))
     } 
 
     this.setState({sprints: sprints})
@@ -210,8 +211,8 @@ class Sprints extends React.PureComponent {
                               key={"skeletonSprintCard"} 
                               sprintId={""} 
                               title={"This is a skeleton sprint title"} 
-                              startDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
-                              dueDate={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
+                              startDate={DateToLocaleString(new Date())} 
+                              dueDate={DateToLocaleString(new Date())} 
                               totalIssues={1} 
                               finishedIssues={0} />
                 :
@@ -219,8 +220,8 @@ class Sprints extends React.PureComponent {
                     <SprintCard key={index} 
                                 sprintId={sprint.id} 
                                 title={sprint.title} 
-                                startDate={new Date(sprint.startDate.nanoseconds/1000000 + sprint.startDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
-                                dueDate={new Date(sprint.dueDate.nanoseconds/1000000 + sprint.dueDate.seconds*1000).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} 
+                                startDate={DateToLocaleString(FsTsToDate(sprint.startDate))} 
+                                dueDate={DateToLocaleString(FsTsToDate(sprint.dueDate))} 
                                 totalIssues={sprint.totalIssues} 
                                 finishedIssues={sprint.finishedIssues} />
                   )

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { DateToLocaleString } from '../../../sharedComponents/Utility'
+
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -117,8 +119,8 @@ export default class CreateIssue extends React.Component {
     this.state = {
       title: "",
       description: "",
-      startDate: new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
-      dueDate: new Date(new Date().setDate((new Date).getDate() + 1)).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
+      startDate: DateToLocaleString(new Date()),
+      dueDate: DateToLocaleString(new Date(new Date().setDate((new Date).getDate() + 1))),
       submitDisabled: true
     }
     this.onChangeTitle = this.onChangeTitle.bind(this)
@@ -143,7 +145,7 @@ export default class CreateIssue extends React.Component {
 
   onChangeStartDate(e) {
     if(new Date(e.target.value) >= new Date(this.state.dueDate)) {
-      this.setState({dueDate: new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1)).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")})
+      this.setState({dueDate: DateToLocaleString(new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1)))})
     } 
     this.setState({startDate: e.target.value})
   }
@@ -185,11 +187,11 @@ export default class CreateIssue extends React.Component {
           <Options>
             <DateWrapper>
               <DateLabel>Start Date</DateLabel>
-              <DateInput type="date" value={this.state.startDate} onChange={this.onChangeStartDate} min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+              <DateInput type="date" value={this.state.startDate} onChange={this.onChangeStartDate} min={DateToLocaleString(new Date())} />
             </DateWrapper>
             <DateWrapper>
               <DateLabel>Due Date</DateLabel>
-              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={new Date(new Date().setDate((new Date(this.state.startDate)).getDate() + 1)).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={DateToLocaleString(new Date(new Date().setDate((new Date(this.state.startDate)).getDate() + 1)))} />
             </DateWrapper>
           </Options>
           <Action>

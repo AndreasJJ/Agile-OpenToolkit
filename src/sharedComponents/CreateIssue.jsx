@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from './Firebase';
 
-import { alertActions } from '..//state/actions/alert';
+import { DateToLocalString } from './Utility'
+import { alertActions } from '../state/actions/alert';
 
 import styled from 'styled-components';
 
@@ -166,7 +167,7 @@ export default class CreateIssue extends React.Component {
       title: "",
       description: "",
       dueDateEnabled: false,
-      dueDate: new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-"),
+      dueDate: DateToLocalString(new Date()),
       estimate: "",
       selectedSprint: 0,
       selectedLabels: [],
@@ -366,7 +367,7 @@ export default class CreateIssue extends React.Component {
                          type="date" 
                          value={this.state.dueDate} 
                          onChange={this.onChangeDueDate} 
-                         min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")} />
+                         min={DateToLocalString(new Date())} />
             </DueDateWrapper>
             <EstimateWrapper>
               <Estimate>Estimate</Estimate>

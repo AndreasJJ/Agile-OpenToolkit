@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
-import { getPrettyCreationDate } from '../../sharedComponents/Utility'
+import { getPrettyCreationDate, FsTsToDate } from '../../sharedComponents/Utility';
 
 import Modal from '../../sharedComponents/Modal';
 import { Issue } from './components/Issue';
@@ -221,9 +221,9 @@ class Backlog extends React.PureComponent {
                              productId={this.props.products[this.props.selectedProduct].id}
                              title={issue.title} 
                              number={issue.number} 
-                             creationDate={getPrettyCreationDate(new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000))} 
+                             creationDate={getPrettyCreationDate(FsTsToDate(issue.timestamp))} 
                              creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} 
-                             updated={getPrettyCreationDate(new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000))} 
+                             updated={getPrettyCreationDate(FsTsToDate(issue.lastUpdateTimestamp))} 
                              status={issue.status} />
                     )
               }

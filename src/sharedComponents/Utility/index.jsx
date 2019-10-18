@@ -1,5 +1,9 @@
 import getPrettyCreationDate from './GetPrettyCreationDate'
+import FsTsToDate from './FsTsToDate'
+import DateToLocaleString from './DateToLocaleString'
 
 export {
-	getPrettyCreationDate
+	getPrettyCreationDate,
+	FsTsToDate,
+	DateToLocaleString
 }

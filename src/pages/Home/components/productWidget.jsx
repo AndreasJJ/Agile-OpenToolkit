@@ -289,13 +289,14 @@ class ProductWidget extends React.PureComponent {
                                                                                                            owner={{firstname: "god", lastname: "the creator"}}/>
                                                                                   )
               :
-               this.state.products && this.state.products.map((product, index) => 
-                                                                <ProductWidget.Product key={index} 
-                                                                                       onclick={this.showMembersButtonClicked} 
-                                                                                       productIndex={index} 
-                                                                                       name={product.name} 
-                                                                                       owner={product.owner}/>
-                                                              )
+               this.state.products 
+               && this.state.products.map((product, index) => 
+                                          <ProductWidget.Product key={index} 
+                                                                 onclick={this.showMembersButtonClicked} 
+                                                                 productIndex={index} 
+                                                                 name={product.name} 
+                                                                 owner={product.owner}/>
+                                        )
             }
           </ProductList>
           <AddProductButton onClick={this.AddProductButtonClicked}>
