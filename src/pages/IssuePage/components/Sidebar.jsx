@@ -212,7 +212,8 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                Edit</span>
+                  {this.state.editingSection.includes(0) ? "Save" : "Edit"}
+                </span>
               :
                 null
             }
@@ -252,7 +253,8 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                Edit</span>
+                  {this.state.editingSection.includes(1) ? "Save" : "Edit"}
+                </span>
               :
                 null
             }
@@ -287,7 +289,8 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                Edit</span>
+                  {this.state.editingSection.includes(2) ? "Save" : "Edit"}
+                </span>
               :
                 null
             }
@@ -326,7 +329,7 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                  Edit
+                  {this.state.editingSection.includes(4) ? "Save" : "Edit"}
                 </span>
               :
                 null
