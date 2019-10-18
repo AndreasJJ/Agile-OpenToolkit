@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DateToLocaleString } from '../../../sharedComponents/Utility'
+import { DateToLocalString } from '../../../sharedComponents/Utility'
 
 import styled from 'styled-components';
 
@@ -119,8 +119,8 @@ export default class CreateIssue extends React.Component {
     this.state = {
       title: "",
       description: "",
-      startDate: DateToLocaleString(new Date()),
-      dueDate: DateToLocaleString(new Date(new Date().setDate((new Date).getDate() + 1))),
+      startDate: DateToLocalString(new Date()),
+      dueDate: DateToLocalString(new Date(new Date().setDate((new Date).getDate() + 1))),
       submitDisabled: true
     }
     this.onChangeTitle = this.onChangeTitle.bind(this)
@@ -145,7 +145,7 @@ export default class CreateIssue extends React.Component {
 
   onChangeStartDate(e) {
     if(new Date(e.target.value) >= new Date(this.state.dueDate)) {
-      this.setState({dueDate: DateToLocaleString(new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1)))})
+      this.setState({dueDate: DateToLocalString(new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1)))})
     } 
     this.setState({startDate: e.target.value})
   }
@@ -187,11 +187,11 @@ export default class CreateIssue extends React.Component {
           <Options>
             <DateWrapper>
               <DateLabel>Start Date</DateLabel>
-              <DateInput type="date" value={this.state.startDate} onChange={this.onChangeStartDate} min={DateToLocaleString(new Date())} />
+              <DateInput type="date" value={this.state.startDate} onChange={this.onChangeStartDate} min={DateToLocalString(new Date())} />
             </DateWrapper>
             <DateWrapper>
               <DateLabel>Due Date</DateLabel>
-              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={DateToLocaleString(new Date(new Date().setDate((new Date(this.state.startDate)).getDate() + 1)))} />
+              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={DateToLocalString(new Date(new Date().setDate((new Date(this.state.startDate)).getDate() + 1)))} />
             </DateWrapper>
           </Options>
           <Action>

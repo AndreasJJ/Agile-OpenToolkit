@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from './../../../sharedComponents/Firebase';
-import Select from './../../../sharedComponents/select';
+import Select from './../../../sharedComponents/Select';
 
 import Checkbox from './Checkbox'
 

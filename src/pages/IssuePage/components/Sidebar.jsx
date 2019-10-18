@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DateToLocaleString } from '../../../sharedComponents/Utility';
+import { DateToLocalString } from '../../../sharedComponents/Utility';
 
 import styled from 'styled-components';
 
@@ -267,11 +267,11 @@ export default class Sidebar extends React.PureComponent {
               ?
                 <DueDateInput type="date" 
                               onChange={this.onChangeDuedate} 
-                              value={this.state.dueDate ? DateToLocaleString(this.state.dueDate) : DateToLocaleString(new Date())}
-                              min={DateToLocaleString(new Date())}
+                              value={this.state.dueDate ? DateToLocalString(this.state.dueDate) : DateToLocalString(new Date())}
+                              min={DateToLocalString(new Date())}
                  />
               :
-                this.state.dueDate ? DateToLocaleString(this.state.dueDate) : "None"
+                this.state.dueDate ? DateToLocalString(this.state.dueDate) : "None"
             }
           </Value>
         </Content>

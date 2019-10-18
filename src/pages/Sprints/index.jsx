@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
-import { FsTsToDate, DateToLocaleString } from '../../sharedComponents/Utility';
+import { FsTsToDate, DateToLocalString } from '../../sharedComponents/Utility';
 import Modal from '../../sharedComponents/Modal';
 import CreateSprint from './components/CreateSprint';
 import SprintCard from './components/SprintCard';
@@ -211,8 +211,8 @@ class Sprints extends React.PureComponent {
                               key={"skeletonSprintCard"} 
                               sprintId={""} 
                               title={"This is a skeleton sprint title"} 
-                              startDate={DateToLocaleString(new Date())} 
-                              dueDate={DateToLocaleString(new Date())} 
+                              startDate={DateToLocalString(new Date())} 
+                              dueDate={DateToLocalString(new Date())} 
                               totalIssues={1} 
                               finishedIssues={0} />
                 :
@@ -220,8 +220,8 @@ class Sprints extends React.PureComponent {
                     <SprintCard key={index} 
                                 sprintId={sprint.id} 
                                 title={sprint.title} 
-                                startDate={DateToLocaleString(FsTsToDate(sprint.startDate))} 
-                                dueDate={DateToLocaleString(FsTsToDate(sprint.dueDate))} 
+                                startDate={DateToLocalString(FsTsToDate(sprint.startDate))} 
+                                dueDate={DateToLocalString(FsTsToDate(sprint.dueDate))} 
                                 totalIssues={sprint.totalIssues} 
                                 finishedIssues={sprint.finishedIssues} />
                   )

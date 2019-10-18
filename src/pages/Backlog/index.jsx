@@ -164,7 +164,8 @@ class Backlog extends React.PureComponent {
       obj.id = doc.id
       return obj
     })
-    this.setState({issues: issues, originalIssues: issues})
+    await this.setState({issues: issues, originalIssues: issues})
+    this.filterIssues()
   }
 
   async getAllLables() {
@@ -193,6 +194,7 @@ class Backlog extends React.PureComponent {
       })
     } else {
       let filtered = this.state.originalIssues.filter((issue) => {
+        if(!issue.labels) { return }
         if(Object.keys(issue.labels).includes(this.state.labels[this.state.selectedLabel-1].id)) {
           return issue
         }
