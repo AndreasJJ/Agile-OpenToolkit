@@ -128,10 +128,6 @@ export default class CreateIssue extends React.Component {
     this.sendSprint = this.sendSprint.bind(this)
   }
 
-  componentDidMount() {
-
-  }
-
   onChangeTitle(e) {
     let isSubmitDisabled = false
     if(e.target.value === "") {
@@ -156,7 +152,7 @@ export default class CreateIssue extends React.Component {
     this.setState({dueDate: e.target.value})
   }
 
-  sendSprint() {
+  async sendSprint() {
     let sprint = {
       title: this.state.title,
       description: this.state.description,
@@ -165,9 +161,8 @@ export default class CreateIssue extends React.Component {
       finishedIssues: 0,
       totalIssues: 0
     }
-    this.props.createSprint(sprint).then(function() {
-      this.props.exit()
-    }.bind(this))  
+    await this.props.createSprint(sprint)
+    this.props.exit()
   }
 
   render () {

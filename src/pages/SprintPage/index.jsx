@@ -1,6 +1,4 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import React, { useEffect } from 'react';
 
 import InformationWidget from './components/InformationWidget';
 import {IssuesListsWidget} from './components/IssuesListsWidget';
@@ -15,35 +13,20 @@ const Wrapper = styled.div`
   grid-template-rows: 30% 70%;
 `;
 
-class SprintPage extends React.PureComponent {
+const SprintPage = (props) => {
 
-  constructor(props) {
-    super(props)
+  useEffect(() => {
+    props.finishLoading()
+  })
 
-    this.state = {
-
-    };
-
-  }
-
-  componentDidMount() {
-    this.props.finishLoading()
-  }
-
-  render() {
-    return (
-        <Wrapper>
-          <InformationWidget />
-          <IssuesListsWidget />
-        </Wrapper>
-    );
-  }
+  return (
+      <Wrapper>
+        <InformationWidget />
+        <IssuesListsWidget />
+      </Wrapper>
+  );
 }
 
-function mapStateToProps(state) {
-    return {
-    };
+export {
+  SprintPage
 }
-
-const connectedSprintPage = withRouter(connect(mapStateToProps)(SprintPage));
-export { connectedSprintPage as SprintPage };

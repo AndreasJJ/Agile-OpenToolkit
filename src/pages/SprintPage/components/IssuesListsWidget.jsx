@@ -81,10 +81,8 @@ class IssuesListsWidget extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const { uid} = state.authentication.user;
     const { products, selectedProduct } = state.product;
     return {
-      uid,
       products,
       selectedProduct
     };

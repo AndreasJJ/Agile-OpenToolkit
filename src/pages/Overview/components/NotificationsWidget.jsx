@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import styled from 'styled-components';
 
@@ -69,50 +69,39 @@ const NavElement = styled.div`
   }
 `
 
-export default class NotificationsWidget extends React.PureComponent {
+const NotificationsWidget = (props) => {
+  const [pageNumbers, setPageNumbers] = useState([1,2,3,4,5,6,7])
 
-  constructor(props) {
-    super(props)
+  return(
+    <Widget>
+      <Wrapper>
+        <AAA>
+          <Content>
+            <WidgetHeader>
+              <tr>
+                 <Cell>Type Notification</Cell>
+                 <Cell>Time</Cell>
+                 <Cell>Status</Cell>
+                 <Cell>Descriptions</Cell>
+              </tr>
+            </WidgetHeader>
+            <WidgetBody>
 
-    this.state = {
-      pageNumbers: [1,2,3,4,5,6,7]
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  render () {
-    return(
-      <Widget>
-        <Wrapper>
-          <AAA>
-            <Content>
-              <WidgetHeader>
-                <tr>
-                   <Cell>Type Notification</Cell>
-                   <Cell>Time</Cell>
-                   <Cell>Status</Cell>
-                   <Cell>Descriptions</Cell>
-                </tr>
-              </WidgetHeader>
-              <WidgetBody>
-
-              </WidgetBody>
-            </Content>
-          </AAA>
-          <Navigation>
-            <NavElement>First page</NavElement>
-            {this.state.pageNumbers && this.state.pageNumbers.map((number) => 
-                                                                  <NavElement key={number}>{number}</NavElement>
-                                                                  )
-            }
-            <NavElement>Last page</NavElement>
-          </Navigation>
-        </Wrapper>
-      </Widget>
-    )
-  }
+            </WidgetBody>
+          </Content>
+        </AAA>
+        <Navigation>
+          <NavElement>First page</NavElement>
+          {pageNumbers 
+           && pageNumbers.map((number) => 
+                              <NavElement key={number}>{number}</NavElement>
+                              )
+          }
+          <NavElement>Last page</NavElement>
+        </Navigation>
+      </Wrapper>
+    </Widget>
+  )
 }
+
+export default NotificationsWidget

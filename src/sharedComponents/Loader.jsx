@@ -32,14 +32,9 @@ const Container = styled.div`
 	transition: opacity ${props => props.animationDuration}ms linear;
 `
 
-export default class Loader extends React.Component {
-	constructor (props) {
-	    super(props);
-	}
-
-  render() {
+const Loader = (props) => {
     return (
-		<NProgress isAnimating={this.props.isLoading} key={this.props.location.key}>
+		<NProgress isAnimating={props.isLoading} key={props.location.key}>
 		{({ isFinished, progress, animationDuration }) => (
 		  <Container isFinished={isFinished} animationDuration={animationDuration}>
 		    <Bar progress={progress} animationDuration={animationDuration}>
@@ -49,5 +44,6 @@ export default class Loader extends React.Component {
 		)}
 		</NProgress>
     );
-  }
 }
+
+export default Loader

@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import styled from 'styled-components';
 
@@ -199,23 +200,22 @@ const Slider = styled.div`
   }
 `
 
-/* eslint-disable react/prefer-stateless-function */
-export default class DetailsWidget extends React.PureComponent {
+class DetailsWidget extends React.PureComponent {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      profilePicture: this.props.profilePicture,
+      profilePicture: this.props.photoURL,
       originalGender: this.props.gender,
       originalFirstname: this.props.firstname ? this.props.firstname : "",
       originalLastname: this.props.lastname ? this.props.lastname : "",
-      originalMobile: this.props.mobile ? this.props.mobile : "",
+      originalMobile: this.props.phoneNumber ? this.props.phoneNumber : "",
       originalEmail: this.props.email ? this.props.email : "",
       gender: this.props.gender,
       firstname: this.props.firstname ? this.props.firstname : "",
       lastname: this.props.lastname ? this.props.lastname : "",
-      mobile: this.props.mobile ? this.props.mobile : "",
+      mobile: this.props.phoneNumber ? this.props.phoneNumber : "",
       email: this.props.email ? this.props.email : "",
       saveDisabled: true
     };
@@ -367,3 +367,18 @@ export default class DetailsWidget extends React.PureComponent {
     )
   }
 }
+
+function mapStateToProps(state) {
+    const { firstname, lastname, gender, email, phoneNumber, photoURL } = state.authentication.user;
+    return {
+        firstname,
+        lastname,
+        gender,
+        email,
+        phoneNumber,
+        photoURL,
+    };
+}
+
+const connectedDetailsWidget = connect(mapStateToProps)(DetailsWidget);
+export { connectedDetailsWidget as DetailsWidget };

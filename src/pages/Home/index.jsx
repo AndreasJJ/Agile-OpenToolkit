@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { ProductWidget } from './components/ProductWidget';
-import DetailsWidget from './components/DetailsWidget';
+import { DetailsWidget } from './components/DetailsWidget';
 
 import styled from 'styled-components';
 
@@ -14,11 +14,10 @@ const Wrapper = styled.div`
   grid-template-rows: 100%;
 `;
 
-class Home extends React.PureComponent {
+export class Home extends React.PureComponent {
 
  constructor(props) {
     super(props)
-
     this.state = {
     };
   }
@@ -32,28 +31,8 @@ class Home extends React.PureComponent {
       return (
         <Wrapper>
           <ProductWidget />
-          <DetailsWidget profilePicture={this.props.profile_picture} 
-                         gender={this.props.gender} 
-                         firstname={this.props.firstname} 
-                         lastname={this.props.lastname} 
-                         email={this.props.email} />
+          <DetailsWidget />
         </Wrapper>
       );
   }
 }
-
-function mapStateToProps(state) {
-    const { uid, firstname, lastname, gender, phoneNumber, email, photoURL } = state.authentication.user;
-    return {
-        uid,
-        firstname,
-        lastname,
-        gender,
-        phoneNumber,
-        email,
-        photoURL,
-    };
-}
-
-const connectedHome = connect(mapStateToProps)(Home);
-export { connectedHome as Home };

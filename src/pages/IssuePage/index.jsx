@@ -5,7 +5,7 @@ import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
 import SideBar from './components/Sidebar';
-import Body from './components/Body';
+import { Body } from './components/Body';
 
 import Modal from '../../sharedComponents/Modal';
 import { CreateIssue } from '../../sharedComponents/CreateIssue';
@@ -53,7 +53,6 @@ class IssuePage extends React.PureComponent {
     this.getTasks = this.getTasks.bind(this)
     this.getAllSprints = this.getAllSprints.bind(this)
     this.getAllLables = this.getAllLables.bind(this)
-    this.issueStatusChange = this.issueStatusChange.bind(this)
     this.showNewIssueModal = this.showNewIssueModal.bind(this)
     this.showNewTaskModal = this.showNewTaskModal.bind(this)
     this.changeToEditMode = this.changeToEditMode.bind(this)
@@ -198,24 +197,6 @@ class IssuePage extends React.PureComponent {
     await this.setState({sprints: sprints})
   }
 
-  issueStatusChange() {
-    this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                status: this.state.status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
-  }
-
   showNewIssueModal() {
     this.setState({showModal: true, modalContent: "CreateIssue"})
   }
@@ -350,7 +331,6 @@ class IssuePage extends React.PureComponent {
 
   closeModal() {
     this.setState({showModal: false})
-    console.log(this.context.history)
   }
 
   goToCreatedIssue(issueId) {
@@ -384,8 +364,8 @@ class IssuePage extends React.PureComponent {
             title={this.state.title}
             description={this.state.description}
             issueId={this.props.match.params.id}
+            productId={this.props.products[this.props.selectedProduct].id}
             tasks={this.state.tasks}
-            issueStatusChange={this.issueStatusChange}
             showNewIssueModal={this.showNewIssueModal}
             showNewTaskModal={this.showNewTaskModal}
             onChangeTitle={this.onChangeTitle}
