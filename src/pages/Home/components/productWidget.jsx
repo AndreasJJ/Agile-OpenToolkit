@@ -126,9 +126,15 @@ class ProductWidget extends React.PureComponent {
                                                 obj.id = doc.id
                                                 return obj
                                               })
-                                              await this.setState({products: tempArray, 
-                                                                   loading: false})
+                                              let globalSelectedProduct = this.props.products[this.props.selectedProduct]
+                                              let newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
+
+                                              await this.setState({products: tempArray, loading: false})
+
                                               this.props.dispatch(productActions.getProducts(tempArray))
+                                              if(this.props.selectedProduct !== newGlobalSelectedProductIndex) {
+                                                this.props.dispatch(productActions.selectProductRecalibration(newGlobalSelectedProductIndex))
+                                              }
                                             }.bind(this));
   }
 
@@ -311,11 +317,14 @@ class ProductWidget extends React.PureComponent {
 
 function mapStateToProps(state) {
     const { uid, email, firstname, lastname} = state.authentication.user;
+    const { products, selectedProduct } = state.product;
     return {
       uid,
       email,
       firstname,
-      lastname
+      lastname,
+      products,
+      selectedProduct
     };
 }
 

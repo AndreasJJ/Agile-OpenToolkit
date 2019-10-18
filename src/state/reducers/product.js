@@ -9,6 +9,13 @@ export function product (state = { selectedProduct: 0, products: [] }, action) {
       };
     case productConstants.PRODUCT_SELECT_FAILURE:
       return state;
+    case productConstants.PRODUCT_SELECT_RECALIBRATION_SUCCESS:
+      return {
+        selectedProduct: action.index,
+        products: state.products
+      };
+    case productConstants.PRODUCT_SELECT_RECALIBRATION_FAILURE:
+      return state;
     case productConstants.PRODUCT_GET_PRODUCTS_SUCCESS:
       return {
         selectedProduct: state.selectedProduct,

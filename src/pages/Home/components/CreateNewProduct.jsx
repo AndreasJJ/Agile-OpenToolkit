@@ -89,7 +89,7 @@ const CreateNewProduct = (props) => {
       return
     }
 
-    if(description.length < 3 && description != null) {
+    if(description.length < 3 && (description || description != "")) {
       dispatch(alertActions.error('The description has to either be 3 characters long or empty'));
       return
     }
