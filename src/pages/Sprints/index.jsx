@@ -233,10 +233,8 @@ class Sprints extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const { user} = state.authentication;
     const { products, selectedProduct } = state.product
     return {
-        user,
         products,
         selectedProduct
     };

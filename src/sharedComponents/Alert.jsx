@@ -66,46 +66,42 @@ const Message = styled.div`
 
 
 
-class Alert extends React.Component {
-    constructor(props) {
-        super(props)
+const Alert = (props) => {
+    let IconComponent;
+    let color = "#0a60ff";
+
+    if(props.alert.type) {
+        if(props.alert.type == "alert-danger") {
+            IconComponent = <Error />
+            color = "#d21e36"             
+        } else if(props.alert.type == "alert-success") {
+            IconComponent = <Check />
+            color = "#249b34"
+        } else if(props.alert.type == "alert-info") {
+            IconComponent = <Bell />
+        }
     }
 
-    render() {
-        let IconComponent;
-        let color = "#0a60ff";
-        if(this.props.alert.type) {
-            if(this.props.alert.type == "alert-danger") {
-                IconComponent = <Error />
-                color = "#d21e36"             
-            } else if(this.props.alert.type == "alert-success") {
-                IconComponent = <Check />
-                color = "#249b34"
-            } else if(this.props.alert.type == "alert-info") {
-                IconComponent = <Bell />
-            }
-        }
-        return (
-            <Wrapper>
-                <Content>
-                    <Exit onClick={(e) => {this.props.removeToast()}}>
-                        <Cross size="1em" />
-                    </Exit>
-                    <Icon color={color}>
-                        {IconComponent}
-                    </Icon>
-                    <AlertContent>
-                        <Type>
-                            <b>{this.props.alert.type && <Toast>{typeof this.props.alert.type === 'object' ? "" : this.props.alert.type}</Toast> }</b>
-                        </Type>
-                        <Message>
-                            {this.props.alert.message && <Toast>{typeof this.props.alert.message === 'object' ? "" : this.props.alert.message}</Toast> }
-                        </Message>
-                    </AlertContent>
-                </Content>
-            </Wrapper>
-        )
-    }
+    return (
+        <Wrapper>
+            <Content>
+                <Exit onClick={(e) => {props.removeToast()}}>
+                    <Cross size="1em" />
+                </Exit>
+                <Icon color={color}>
+                    {IconComponent}
+                </Icon>
+                <AlertContent>
+                    <Type>
+                        <b>{props.alert.type && <Toast>{typeof props.alert.type === 'object' ? "" : props.alert.type}</Toast>}</b>
+                    </Type>
+                    <Message>
+                        {props.alert.message && <Toast>{typeof props.alert.message === 'object' ? "" : props.alert.message}</Toast>}
+                    </Message>
+                </AlertContent>
+            </Content>
+        </Wrapper>
+    )
 }
 
 export default Alert;

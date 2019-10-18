@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { compose } from 'recompose';
+import { withFirebase } from '../../../sharedComponents/Firebase';
 
 import Task from './Task'
 
@@ -104,7 +106,7 @@ const TasksOpen = styled.div`
   pointer-events: ${props => props.skeleton ? "none" : null};
 `
 
-export default class Issue extends React.Component {
+class Issue extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -113,16 +115,25 @@ export default class Issue extends React.Component {
       loadedTasks: false
     }
 
+    this.getTasks = this.getTasks.bind(this)
     this.showTasks = this.showTasks.bind(this)
   }
 
-  componentDidMount() {
-
+  async getTasks() {
+    let querySnapshot = await this.props.firebase
+                      .db.collection("products")
+                      .doc(this.props.productId)
+                      .collection("stories")
+                      .doc(this.props.issueId)
+                      .collection("tasks")
+                      .orderBy("title")
+                      .get()
+    return querySnapshot.docs.map((doc) => doc.data())
   }
 
   async showTasks() {
     if(!this.state.loadedTasks) {
-      let tasks = await this.props.getTasks(this.props.id)
+      let tasks = await this.getTasks()
       this.setState({taskVisible: true, tasks: tasks, loadedTasks: true})
     } else {
       this.setState({taskVisible: !this.state.taskVisible})
@@ -136,7 +147,7 @@ export default class Issue extends React.Component {
           <IssueInfo>
             <Left skeleton={this.props.skeleton}>
               <div>
-                <ReactLink skeleton={this.props.skeleton} to={"/backlog/issue/" + this.props.id}>
+                <ReactLink skeleton={this.props.skeleton} to={"/backlog/issue/" + this.props.issueId}>
                   {this.props.title}
                 </ReactLink>
               </div>
@@ -176,3 +187,6 @@ export default class Issue extends React.Component {
     )
   }
 }
+
+const firebaseIssue = compose(withFirebase)(Issue)
+export { firebaseIssue as Issue };

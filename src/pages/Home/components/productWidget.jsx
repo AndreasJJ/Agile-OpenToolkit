@@ -320,5 +320,4 @@ function mapStateToProps(state) {
 
 const connectedProductWidget = connect(mapStateToProps)(ProductWidget);
 const firebaseProductWidget = compose(withFirebase)(connectedProductWidget)
-
 export { firebaseProductWidget as ProductWidget };

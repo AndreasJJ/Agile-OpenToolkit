@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as rLink } from 'react-router-dom'
 
 import styled from 'styled-components'
@@ -125,108 +125,101 @@ const SignIcon = styled(SignOutAlt)`
   margin-right: 5px;
 `
 
-class SideBar extends React.Component {
-  constructor(props) {
-    super(props)
+const SideBar = (props) => {
+  const [selectedIndex, setSelectedIndex] = useState(
+    props.selectedIndex
+  );
 
-    this.state = {
-      selectedPage: 0,
-      selectedIndex: this.props.selectedIndex
-    };
+  useEffect(() => {
+    if(selectedIndex !== props.selectedIndex) {
+      props.selectProduct(selectedIndex)
+    }
+  }, [selectedIndex])
 
-    this.selectChange = this.selectChange.bind(this)
+  const selectChange = async (e) => {
+    await setSelectedIndex(e.target.value)
   }
 
-  componentDidMount() {
-  }
-
-  async selectChange(e) {
-    await this.setState({selectedIndex: e.target.value})
-    this.props.selectProduct(this.state.selectedIndex)
-  }
-
-  render() {
-    return (
-      <SIDEBAR hidden={this.props.hidden} >
-        <SideBarGrid>
-          <LogoWrapper>
-            <Logo>Agile Toolkit</Logo>
-          </LogoWrapper>
-          <SideNav>
-            <Menu>
-              <MenuItem current={this.props.location.pathname} next={"/dashboard"}>
-                <Link to="/dashboard" current={this.props.location.pathname} next={"/dashboard"}>
-                  <Home size="1em"/>
-                  <LeftPadding>Home</LeftPadding>
-                </Link>
-              </MenuItem>
-            </Menu>
-            <ProductSelecter>
-                <ProductSelect onChange={this.selectChange} defaultValue={this.state.selectedIndex}>
-                    {
-                      //TODO: Handle if the stored selectedIndex in redux is higher than the number of products
-                      this.props.products && this.props.products.map((product, index) => 
-                                                                      <option key={product.id} value={index}>{product.name}</option>
-                                                                    )
-                    }
-                </ProductSelect>
-            </ProductSelecter>
-            {
-              this.props.products.length > 0
-              ?
-                <Menu>
-                  <MenuItem current={this.props.location.pathname} next={"/overview"}>
-                    <Link to="/overview" current={this.props.location.pathname} next={"/overview"}><Graph size="1em"/>
-                      <LeftPadding>Overview</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem current={this.props.location.pathname} next={"/backlog"}>
-                    <Link to="/backlog" current={this.props.location.pathname} next={"/backlog"}><Collection size="1em"/>
-                      <LeftPadding>Product backlog</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem current={this.props.location.pathname} next={"/labels"}>
-                    <Link to="/labels" current={this.props.location.pathname} next={"/labels"}><Label size="1em"/>
-                      <LeftPadding>Labels</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem current={this.props.location.pathname} next={"/sprints"}>
-                    <Link to="/sprints" current={this.props.location.pathname} next={"/sprints"}><DirectionsRun size="1em"/>
-                      <LeftPadding>Sprints</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem current={this.props.location.pathname} next={"/sprintboard"}>
-                    <Link to="/sprintboard" current={this.props.location.pathname} next={"/sprintboard"}>
-                      <Columns size="1em"/>
-                      <LeftPadding>Sprintboard</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem current={this.props.location.pathname} next={"/planning"}>
-                    <Link to="/planning" current={this.props.location.pathname} next={"/planning"}><ViewCarousel size="1em"/>
-                      <LeftPadding>Planning Poker</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                  <MenuItem current={this.props.location.pathname} next={"/retrospective"}>
-                    <Link to="/retrospective" current={this.props.location.pathname} next={"/retrospective"}>
-                      <Directions size="1em"/>
-                      <LeftPadding>Retrospective Board</LeftPadding>
-                    </Link>
-                  </MenuItem>
-                </Menu>
-              :
-                null
-            }
-          </SideNav>
-          <Logout title="Click here to logout">
-            <LogoutButton onClick={() => {this.props.onClickLogout()}}>
-              <SignIcon size="1em" />
-              <span>Logout</span>
-            </LogoutButton>
-          </Logout>
-        </SideBarGrid>
-      </SIDEBAR>
-    );
-  }
+  return (
+    <SIDEBAR hidden={props.hidden} >
+      <SideBarGrid>
+        <LogoWrapper>
+          <Logo>Agile Toolkit</Logo>
+        </LogoWrapper>
+        <SideNav>
+          <Menu>
+            <MenuItem current={props.location.pathname} next={"/dashboard"}>
+              <Link to="/dashboard" current={props.location.pathname} next={"/dashboard"}>
+                <Home size="1em"/>
+                <LeftPadding>Home</LeftPadding>
+              </Link>
+            </MenuItem>
+          </Menu>
+          <ProductSelecter>
+              <ProductSelect onChange={selectChange} defaultValue={selectedIndex}>
+                  {
+                    //TODO: Handle if the stored selectedIndex in redux is higher than the number of products
+                    props.products && props.products.map((product, index) => 
+                                                                    <option key={product.id} value={index}>{product.name}</option>
+                                                                  )
+                  }
+              </ProductSelect>
+          </ProductSelecter>
+          {
+            props.products.length > 0
+            ?
+              <Menu>
+                <MenuItem current={props.location.pathname} next={"/overview"}>
+                  <Link to="/overview" current={props.location.pathname} next={"/overview"}><Graph size="1em"/>
+                    <LeftPadding>Overview</LeftPadding>
+                  </Link>
+                </MenuItem>
+                <MenuItem current={props.location.pathname} next={"/backlog"}>
+                  <Link to="/backlog" current={props.location.pathname} next={"/backlog"}><Collection size="1em"/>
+                    <LeftPadding>Product backlog</LeftPadding>
+                  </Link>
+                </MenuItem>
+                <MenuItem current={props.location.pathname} next={"/labels"}>
+                  <Link to="/labels" current={props.location.pathname} next={"/labels"}><Label size="1em"/>
+                    <LeftPadding>Labels</LeftPadding>
+                  </Link>
+                </MenuItem>
+                <MenuItem current={props.location.pathname} next={"/sprints"}>
+                  <Link to="/sprints" current={props.location.pathname} next={"/sprints"}><DirectionsRun size="1em"/>
+                    <LeftPadding>Sprints</LeftPadding>
+                  </Link>
+                </MenuItem>
+                <MenuItem current={props.location.pathname} next={"/sprintboard"}>
+                  <Link to="/sprintboard" current={props.location.pathname} next={"/sprintboard"}>
+                    <Columns size="1em"/>
+                    <LeftPadding>Sprintboard</LeftPadding>
+                  </Link>
+                </MenuItem>
+                <MenuItem current={props.location.pathname} next={"/planning"}>
+                  <Link to="/planning" current={props.location.pathname} next={"/planning"}><ViewCarousel size="1em"/>
+                    <LeftPadding>Planning Poker</LeftPadding>
+                  </Link>
+                </MenuItem>
+                <MenuItem current={props.location.pathname} next={"/retrospective"}>
+                  <Link to="/retrospective" current={props.location.pathname} next={"/retrospective"}>
+                    <Directions size="1em"/>
+                    <LeftPadding>Retrospective Board</LeftPadding>
+                  </Link>
+                </MenuItem>
+              </Menu>
+            :
+              null
+          }
+        </SideNav>
+        <Logout title="Click here to logout">
+          <LogoutButton onClick={() => {props.onClickLogout()}}>
+            <SignIcon size="1em" />
+            <span>Logout</span>
+          </LogoutButton>
+        </Logout>
+      </SideBarGrid>
+    </SIDEBAR>
+  );
 }
 
 export default SideBar;

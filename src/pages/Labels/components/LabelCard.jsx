@@ -62,38 +62,29 @@ const SubscribeButton = styled.button`
   margin: 0px 5px;
 `
 
-export default class LabelCard extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-    }
-
-  }
-
-  componentDidMount() {
-  }
-
-
-  render () {
-    return (
-      <Wrapper>
-        <NameWrapper>
-          <Name skeleton={this.props.skeleton} bgc={this.props.bgc}>
-            {this.props.name}
-          </Name>
-        </NameWrapper>
-        <Description>
-          {this.props.description}
-        </Description>
-        <ControlsWrapper>
-          <SubscribeButton subscribed={this.props.subscribed} 
-                           onClick={(e) => this.props.subscribed ? this.props.unsubscribe(this.props.name) : this.props.subscribe(this.props.name)}
-          >
-            {this.props.subscribed ? "Unsubscribe" : "Subscribe"}
-          </SubscribeButton>
-          <DeleteButton onClick={(e) => this.props.delete(this.props.name)}>Delete</DeleteButton>
-        </ControlsWrapper>
-      </Wrapper>
-    )
-  }
+const LabelCard = (props) => {
+  const {skeleton, bgc, name, description, subscribed, 
+         unsubscribe, subscribe, deleteLabel} = props
+  return (
+    <Wrapper>
+      <NameWrapper>
+        <Name skeleton={skeleton} bgc={bgc}>
+          {name}
+        </Name>
+      </NameWrapper>
+      <Description>
+        {description}
+      </Description>
+      <ControlsWrapper>
+        <SubscribeButton subscribed={subscribed} 
+                         onClick={(e) => subscribed ? unsubscribe(name) : subscribe(name)}
+        >
+          {subscribed ? "Unsubscribe" : "Subscribe"}
+        </SubscribeButton>
+        <DeleteButton onClick={(e) => deleteLabel(name)}>Delete</DeleteButton>
+      </ControlsWrapper>
+    </Wrapper>
+  )
 }
+
+export default LabelCard

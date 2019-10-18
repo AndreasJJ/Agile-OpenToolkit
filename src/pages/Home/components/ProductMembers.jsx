@@ -129,12 +129,13 @@ export default class ProductMembers extends React.PureComponent {
         </Header>
         <Body>
           <MemberList>
-            {this.state.members && this.state.members.map((member, index) => 
-                                                            <ProductMembers.Member key={Object.keys(member)[0]} 
-                                                                                   profilePicture={Object.values(member)[0].profilePicture} 
-                                                                                   firstname={Object.values(member)[0].firstname} 
-                                                                                   lastname={Object.values(member)[0].lastname} />
-                                                          )
+            {this.state.members && 
+             this.state.members.map((member, index) => 
+                                      <ProductMembers.Member key={Object.keys(member)[0]} 
+                                                             profilePicture={Object.values(member)[0].profilePicture} 
+                                                             firstname={Object.values(member)[0].firstname} 
+                                                             lastname={Object.values(member)[0].lastname} />
+                                    )
             }
           </MemberList>
         </Body>  

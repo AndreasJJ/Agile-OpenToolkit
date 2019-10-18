@@ -48,34 +48,20 @@ const Body = styled.div`
   width: 100%;
 `
 
-export default class GraphWidget extends React.PureComponent {
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  render () {
-    return(
-      <Widget>
-        <Wrapper>
-            <Content>
-                <Header>
-                  Graph
-                </Header>
-                <Body>
-                  <Burndown />
-                </Body>
-            </Content>
-        </Wrapper>
-      </Widget>
-    )
-  }
+const GraphWidget = (props) => {
+  return(
+    <Widget>
+      <Wrapper>
+          <Content>
+              <Header>
+                Graph
+              </Header>
+              <Body>
+                <Burndown />
+              </Body>
+          </Content>
+      </Wrapper>
+    </Widget>
+  )
 }
+export default GraphWidget
