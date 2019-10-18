@@ -13,7 +13,6 @@ const Wrapper = styled.div`
   padding: 5px;
   box-sizing: border-box;
   border-top: 1px solid #c4cbd1;
-
 `
 
 const Left = styled.div`
@@ -42,48 +41,39 @@ const Title = styled.div`
   text-decoration: ${props => props.status == "CLOSED" ? "line-through" : "none"};
 `
 
-export default class Task extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-    }
-
-  }
-
-  componentDidMount() {
-    console.log(this.props.status)
-  }
-
-  render () {
-    return (
-      <Wrapper>
-        <Left>
+const Task = (props) => {
+  const {assigne, status, title} = props
+  const {profilePicture, firstname, lastname} = assigne
+  return(
+    <Wrapper>
+      <Left>
+          {
+            assigne
+            ?
+              <ProfilePicture src={profilePicture ? profilePicture : BlankProfilePicture} />
+            :
+              null
+          }
+        <Text>
+          <Title status={status}>
+            {title}
+          </Title>
+          <div>
             {
-              this.props.assigne
+              assigne
               ?
-                <ProfilePicture src={this.props.assigne.profilePicture ? this.props.assigne.profilePicture : BlankProfilePicture} />
+                "Assigne: " + firstname.charAt(0).toUpperCase() + firstname.slice(1) + " " + lastname
               :
                 null
             }
-          <Text>
-            <Title status={this.props.status}>
-              {this.props.title}
-            </Title>
-            <div>
-              {
-                this.props.assigne
-                ?
-                  "Assigne: " + this.props.assigne.firstname.charAt(0).toUpperCase() + this.props.assigne.firstname.slice(1) + " " + this.props.assigne.lastname
-                :
-                  null
-              }
-            </div>
-          </Text>
-        </Left>
-        <Right>
+          </div>
+        </Text>
+      </Left>
+      <Right>
 
-        </Right>
-      </Wrapper>
-    )
-  }
+      </Right>
+    </Wrapper>
+  )
 }
+
+export default Task

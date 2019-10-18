@@ -27,7 +27,6 @@ const Content = styled.div`
     background-color: #f2f5ff;
 `;
 
-/* eslint-disable react/prefer-stateless-function */
 class Dashboard extends React.PureComponent {
 
   constructor(props) {
@@ -40,9 +39,6 @@ class Dashboard extends React.PureComponent {
     this.collapseSideBar = this.collapseSideBar.bind(this)
     this.logout = this.logout.bind(this)
     this.selectProduct = this.selectProduct.bind(this)
-  }
-
-  componentDidMount() {
   }
 
   collapseSideBar() {

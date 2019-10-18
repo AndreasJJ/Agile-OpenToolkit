@@ -55,38 +55,27 @@ const Message = styled.div`
   padding-bottom: 20px;
 `
 
-export default class JoinProductTeam extends React.PureComponent {
-
-  constructor(props) {
-    super(props)
-    this.state = {
-    }
-  }
-
-  componentDidMount() {
-
-  }
-
-  render () {
-    return(
-      <Wrapper>
-         <Header>
-           Join Team
-         </Header>
-         <Body>
-           <Info>
-             <Envelope size="2em" />
-             <Message>To join a team please write in the invitation code that was sent to you through mail. 
-                      If you haven't recived it then please make sure to check your spam folder or 
-                      ask your invitor to invite you once more.
-              </Message>
-           </Info>
-           <Form>
-             <Input placeholder="Enter invitation code" />
-             <SubmitButton>Join Team</SubmitButton>
-           </Form>
-         </Body>
-      </Wrapper>
-    )
-  }
+const JoinProductTeam = (props) => {
+  return(
+    <Wrapper>
+       <Header>
+         Join Team
+       </Header>
+       <Body>
+         <Info>
+           <Envelope size="2em" />
+           <Message>To join a team please write in the invitation code that was sent to you through mail. 
+                    If you haven't recived it then please make sure to check your spam folder or 
+                    ask your invitor to invite you once more.
+            </Message>
+         </Info>
+         <Form>
+           <Input placeholder="Enter invitation code" />
+           <SubmitButton>Join Team</SubmitButton>
+         </Form>
+       </Body>
+    </Wrapper>
+  )
 }
+
+export default JoinProductTeam

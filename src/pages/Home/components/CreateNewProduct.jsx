@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { alertActions } from '../../../state/actions/alert';
@@ -68,30 +68,21 @@ const SubmitButton = styled.button`
     box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
 `
 
-class CreateNewProduct extends React.PureComponent {
+const CreateNewProduct = (props) => {
+  const [productName, setProductName] = useState(
+    ""
+  );
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      productName: "",
-      productDescription: ""
-    }
+  const [productDescription, setProductDescription] = useState(
+    ""
+  );
 
-    this.sendProduct = this.sendProduct.bind(this)
-    this.changeproductName = this.changeproductName.bind(this)
-    this.changeproductDescription = this.changeproductDescription.bind(this)
-  }
-
-  componentDidMount() {
-
-  }
-
-  sendProduct(e) {
+  const sendProduct = (e) => {
     e.preventDefault()
-    const { dispatch } = this.props;
+    const { dispatch } = props;
 
-    let name = this.state.productName.trim()
-    let description = this.state.productDescription.trim()
+    let name = productName.trim()
+    let description = productDescription.trim()
 
     if(name.length < 3 ) {
       dispatch(alertActions.error('The team name has to be at least 3 characters long'));
@@ -106,58 +97,45 @@ class CreateNewProduct extends React.PureComponent {
       description = null
     }
 
-    this.props.sendProduct({name: name, 
-                            description: description
-                          })
-    this.props.onclick()
+    props.sendProduct({name: name, description: description})
+    props.onclick()
   }
 
-  changeproductName(e) {
-    this.setState({
-      productName: e.target.value
-    });
+  const changeproductName = (e) => {
+    setProductName(e.target.value)
   }
 
-  changeproductDescription(e) {
-    this.setState({
-      productDescription: e.target.value
-    });
+  const changeproductDescription = (e) => {
+    setProductDescription(e.target.value)
   }
 
-  render () {
-    return(
-      <Wrapper>
-         <Header>
-           Create New Product
-         </Header>
-         <Form>
-           <InputWrapper>
-             <label>Product Name</label>
-             <Input placeholder="marvelous dog feeder" 
-                    value={this.state.productName} 
-                    onChange={this.changeproductName} />
-             <label>Short Description</label>
-             <Input placeholder="A product for the future." 
-                    value={this.state.productDescription} 
-                    onChange={this.changeproductDescription} />
-             <label>Add Members</label>
-             <TagsInput />
-           </InputWrapper>
-           <ButtonWrapper>
-            <SubmitButton onClick={this.sendProduct}> 
-             Create Product! 
-            </SubmitButton>
-           </ButtonWrapper>
-         </Form>
-      </Wrapper>
-    )
-  }
+  return(
+    <Wrapper>
+       <Header>
+         Create New Product
+       </Header>
+       <Form>
+         <InputWrapper>
+           <label>Product Name</label>
+           <Input placeholder="marvelous dog feeder" 
+                  value={productName} 
+                  onChange={changeproductName} />
+           <label>Short Description</label>
+           <Input placeholder="A product for the future." 
+                  value={productDescription} 
+                  onChange={changeproductDescription} />
+           <label>Add Members</label>
+           <TagsInput />
+         </InputWrapper>
+         <ButtonWrapper>
+          <SubmitButton onClick={sendProduct}> 
+           Create Product! 
+          </SubmitButton>
+         </ButtonWrapper>
+       </Form>
+    </Wrapper>
+  )
 }
 
-function mapStateToProps(state) {
-    return {
-    };
-}
-
-const connectedCreateNewProduct = connect(mapStateToProps)(CreateNewProduct);
+const connectedCreateNewProduct = connect()(CreateNewProduct);
 export { connectedCreateNewProduct as CreateNewProduct }; 

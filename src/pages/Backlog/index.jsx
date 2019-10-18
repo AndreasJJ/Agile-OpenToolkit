@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
+import { getPrettyCreationDate, FsTsToDate } from '../../sharedComponents/Utility';
+
 import Modal from '../../sharedComponents/Modal';
-import Issue from './components/Issue';
+import { Issue } from './components/Issue';
 import { CreateIssue } from '../../sharedComponents/CreateIssue';
 import Select from '../../sharedComponents/Select';
 
@@ -118,11 +120,9 @@ class Backlog extends React.PureComponent {
       showModal: false
     };
 
+    this.getIssues = this.getIssues.bind(this)
     this.tabClicked = this.tabClicked.bind(this)
     this.closeModal = this.closeModal.bind(this)
-    this.getIssues = this.getIssues.bind(this)
-    this.getPrettyCreationDate = this.getPrettyCreationDate.bind(this)
-    this.getTasks = this.getTasks.bind(this)
     this.getAllLables = this.getAllLables.bind(this)
     this.filterIssues = this.filterIssues.bind(this)
     this.onLabelSelectChange = this.onLabelSelectChange.bind(this)
@@ -165,18 +165,6 @@ class Backlog extends React.PureComponent {
       return obj
     })
     this.setState({issues: issues, originalIssues: issues})
-  }
-
-  async getTasks(id) {
-    let querySnapshot = await this.props.firebase
-                      .db.collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("stories")
-                      .doc(id)
-                      .collection("tasks")
-                      .orderBy("title")
-                      .get()
-    return querySnapshot.docs.map((doc) => doc.data())
   }
 
   async getAllLables() {
@@ -224,35 +212,6 @@ class Backlog extends React.PureComponent {
 
   closeModal() {
     this.setState({showModal: false})
-  }
-
-  getPrettyCreationDate(date) {
-    let deltaTime = ((new Date()).getTime() - date.getTime())
-    // less than 1 second
-    if(deltaTime < 1000) {
-      return "less than 1 second"
-    // less than 1 minute ago
-    } else if(deltaTime < 60000) {
-      return Math.floor(deltaTime/1000) + " seconds ago"
-    // less than 1 hour ago
-    } else if(deltaTime < 3600000) {
-      return Math.floor(deltaTime/60000) + " minutes ago"
-    // less than 1 day
-    } else if(deltaTime < 86400000) {
-      return Math.floor(deltaTime/3600000) + " hours ago"
-    // less than 1 week ago
-    } else if(deltaTime < 604800000) {
-      return Math.floor(deltaTime/86400000) + " days ago"
-    // less than 1 month ago
-    } else if(deltaTime < 2628000000) {
-      return Math.floor(deltaTime/604800000) + " weeks ago"
-    // less than 1 year ago
-    } else if(deltaTime < 31540000000) {
-      return Math.floor(deltaTime/2628000000) + " months ago"
-    // more than a year ago
-    } else {
-      return Math.floor(deltaTime/31540000000) + " years ago"
-    }
   }
 
   render() {
@@ -304,21 +263,21 @@ class Backlog extends React.PureComponent {
                              id={""} 
                              title={"This is a skeleton title"} 
                              number={0} 
-                             creationDate={this.getPrettyCreationDate(new Date())} 
+                             creationDate={getPrettyCreationDate(new Date())} 
                              creator={"god himself"} 
-                             updated={this.getPrettyCreationDate(new Date())} 
+                             updated={getPrettyCreationDate(new Date())} 
                              status={"OPEN"} />
                     )
                 :
                   this.state.issues && this.state.issues.map((issue, index) => 
                       <Issue key={issue.id} 
-                             getTasks={this.getTasks} 
-                             id={issue.id} 
+                             issueId={issue.id} 
+                             productId={this.props.products[this.props.selectedProduct].id}
                              title={issue.title} 
                              number={issue.number} 
-                             creationDate={this.getPrettyCreationDate(new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000))} 
+                             creationDate={getPrettyCreationDate(FsTsToDate(issue.timestamp))} 
                              creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} 
-                             updated={this.getPrettyCreationDate(new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000))} 
+                             updated={getPrettyCreationDate(FsTsToDate(issue.lastUpdateTimestamp))} 
                              status={issue.status} />
                     )
               }
@@ -330,12 +289,8 @@ class Backlog extends React.PureComponent {
 }
 
 function mapStateToProps(state) {
-    const { uid, firstname, lastname } = state.authentication.user;
     const { products, selectedProduct } = state.product;
     return {
-        uid,
-        firstname,
-        lastname,
         products,
         selectedProduct
     };

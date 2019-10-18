@@ -91,7 +91,12 @@ class Task extends React.PureComponent {
                                       .doc("members")
                                       .get()
     let members = docSnapshot.data().list.map((member) => {
-      return {uid: Object.keys(member)[0], firstname: Object.values(member)[0].firstname, lastname: Object.values(member)[0].lastname,profilePicture: Object.values(member)[0].profilePicture ,name: Object.values(member)[0].firstname + " " + Object.values(member)[0].lastname}
+      return {uid: Object.keys(member)[0], 
+              firstname: Object.values(member)[0].firstname, 
+              lastname: Object.values(member)[0].lastname,
+              profilePicture: Object.values(member)[0].profilePicture ,
+              name: Object.values(member)[0].firstname + " " + Object.values(member)[0].lastname
+             }
     })
     await this.setState({members: members})
   }

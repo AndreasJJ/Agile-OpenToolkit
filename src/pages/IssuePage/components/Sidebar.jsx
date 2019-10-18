@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { DateToLocaleString } from '../../../sharedComponents/Utility';
+
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -64,7 +66,8 @@ export default class Sidebar extends React.PureComponent {
       originalSelectedLabels: [],
       selectedLabels: [],
       selectedSprint: 0,
-      dueDate: this.props.dueDate
+      dueDate: this.props.dueDate,
+      estimate: ""
     }
     this.onChangeSprint = this.onChangeSprint.bind(this)
     this.onChangeDuedate = this.onChangeDuedate.bind(this)
@@ -72,6 +75,8 @@ export default class Sidebar extends React.PureComponent {
     this.saveSprint = this.saveSprint.bind(this)
     this.saveDueDate = this.saveDueDate.bind(this)
     this.saveLabels = this.saveLabels.bind(this)
+    this.saveEstimate = this.saveEstimate.bind(this)
+    this.onChangeEstimate = this.onChangeEstimate.bind(this)
   }
 
   async componentDidMount() {
@@ -83,6 +88,11 @@ export default class Sidebar extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps) {
+    if(this.props.estimate !== prevProps.estimate) {
+      let estimate = this.props.estimate ? this.props.estimate : ""
+      this.setState({estimate: estimate})
+    }
+
     if (this.props.dueDate !== prevProps.dueDate) {
       this.setState({dueDate: this.props.dueDate})
     }
@@ -133,6 +143,10 @@ export default class Sidebar extends React.PureComponent {
     this.setState({selectedLabels: selectedValue})
   }
 
+  onChangeEstimate(e) {
+    this.setState({estimate: e.target.value})
+  }
+
   saveSprint() {
     let sprint = parseInt(this.state.selectedSprint) === 0 ? null : this.state.sprints[this.state.selectedSprint-1].id
 
@@ -162,6 +176,25 @@ export default class Sidebar extends React.PureComponent {
     this.props.updateLabels(selectedLabels);
   }
 
+  saveEstimate() {
+    let props = this.props.estimate
+    let state = this.state.estimate
+
+    if(state === "") {
+      state = null
+    }
+
+    if(props === state) {
+      return
+    }
+
+    let estimate = null
+    if(state && state !== "" && !isNaN(state)) {
+      estimate = Number(state)
+    }
+    this.props.updateEstimate(estimate)
+  }
+
   render () {
     return(
       <Wrapper>
@@ -181,7 +214,8 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                Edit</span>
+                  {this.state.editingSection.includes(0) ? "Save" : "Edit"}
+                </span>
               :
                 null
             }
@@ -221,7 +255,8 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                Edit</span>
+                  {this.state.editingSection.includes(1) ? "Save" : "Edit"}
+                </span>
               :
                 null
             }
@@ -232,11 +267,11 @@ export default class Sidebar extends React.PureComponent {
               ?
                 <DueDateInput type="date" 
                               onChange={this.onChangeDuedate} 
-                              value={this.state.dueDate ? this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-") : (new Date).toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")}
-                              min={new Date().toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-")}
+                              value={this.state.dueDate ? DateToLocaleString(this.state.dueDate) : DateToLocaleString(new Date())}
+                              min={DateToLocaleString(new Date())}
                  />
               :
-                this.state.dueDate ? this.state.dueDate.toLocaleString("en-GB", {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, year: "numeric", month: "2-digit", day: "2-digit"}).split("/").reverse().join("-") : "None"
+                this.state.dueDate ? DateToLocaleString(this.state.dueDate) : "None"
             }
           </Value>
         </Content>
@@ -256,7 +291,8 @@ export default class Sidebar extends React.PureComponent {
                     }
                   }.bind(this)
                 }>
-                Edit</span>
+                  {this.state.editingSection.includes(2) ? "Save" : "Edit"}
+                </span>
               :
                 null
             }
@@ -267,15 +303,53 @@ export default class Sidebar extends React.PureComponent {
               ?
                 <LabelSelect multiple onChange={this.onChangeLabels} value={this.state.selectedLabels}>
                   {
-                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
+                    this.state.labels.length > 0 
+                    && this.state.labels.map((label, index) => 
+                                              <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                                              )
                   }
                 </LabelSelect>
               :
                 <LabelSelect multiple value={this.state.selectedLabels} disabled>
                   {
-                    this.state.labels.length > 0 && this.state.labels.map((label, index) => <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>)
+                    this.state.labels.length > 0 
+                    && this.state.labels.map((label, index) => 
+                                              <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                                             )
                   }
                 </LabelSelect>
+            }
+          </Value>
+        </Content>
+        <Content>
+          <Info>
+            <span>Estimate</span>
+            {
+              this.props.status.toLowerCase() === "open"
+              ?
+                <span onClick={
+                  function(e) { 
+                    if(this.state.editingSection.indexOf(3) === -1) {
+                      this.setState({editingSection: this.state.editingSection.concat([3])}) 
+                    } else {
+                      this.setState({editingSection: this.state.editingSection.filter(section => section !== 3)})
+                      this.saveEstimate()
+                    }
+                  }.bind(this)
+                }>
+                  {this.state.editingSection.includes(4) ? "Save" : "Edit"}
+                </span>
+              :
+                null
+            }
+          </Info>
+          <Value>
+            {
+              this.state.editingSection.includes(3)
+              ?
+                <input type="number" min="0" value={this.state.estimate} onChange={this.onChangeEstimate} />
+              :
+                this.state.estimate ? this.state.estimate : "None"
             }
           </Value>
         </Content>

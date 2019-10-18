@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import NotificationsWidget from './components/NotificationsWidget';
@@ -14,42 +14,20 @@ const Wrapper = styled.div`
   grid-template-rows: 60% 40%;
 `;
 
-class Overview extends React.PureComponent {
+const Overview = (props) => {
 
- constructor(props) {
-    super(props)
+  useEffect(() => {
+    props.finishLoading()
+  })
 
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-    this.props.finishLoading()
-  }
-
-  render() {
-      return (
-        <Wrapper>
-          <GraphWidget />
-          <NotificationsWidget />
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <GraphWidget />
+      <NotificationsWidget />
+    </Wrapper>
+  );
 }
 
-function mapStateToProps(state) {
-    const { uid, firstname, lastname, gender, phoneNumber, email, photoURL } = state.authentication.user;
-    return {
-        uid,
-        firstname,
-        lastname,
-        gender,
-        phoneNumber,
-        email,
-        photoURL,
-    };
+export {
+  Overview
 }
-
-const connectedOverview = connect(mapStateToProps)(Overview);
-export { connectedOverview as Overview };

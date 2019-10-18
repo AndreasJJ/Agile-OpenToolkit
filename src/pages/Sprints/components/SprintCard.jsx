@@ -64,40 +64,30 @@ const ProgressInfo = styled.div`
   }
 `
 
-export default class CreateIssue extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-    }
-
-  }
-
-  componentDidMount() {
-
-  }
-
-
-  render () {
-    return (
-      <Wrapper>
-        <Left skeleton={this.props.skeleton}>
-          <ReactLink skeleton={this.props.skeleton} to={"/sprints/" + this.props.sprintId}>{this.props.title}</ReactLink>
-          <Dates>
-            {this.props.startDate} / {this.props.dueDate}
-          </Dates>
-        </Left>
-        <ProgressWrapper>
-          <ProgressBar max={100} value={this.props.totalIssues === 0 ? 100 : (this.props.finishedIssues / this.props.totalIssues)*100}>{this.props.totalIssues === 0 ? 100 : (this.props.finishedIssues / this.props.totalIssues)*100}</ProgressBar>
-          <ProgressInfo skeleton={this.props.skeleton}>
-            <span>
-              {this.props.totalIssues} Issues
-            </span>
-            <span>
-              {this.props.totalIssues === 0 ? 100 : (this.props.finishedIssues / this.props.totalIssues)*100}%
-            </span>
-          </ProgressInfo>
-        </ProgressWrapper>
-      </Wrapper>
-    )
-  }
+const CreateIssue = (props) => {
+  const {skeleton, sprintId, title, startDate, 
+         dueDate, totalIssues, finishedIssues} = props
+  return (
+    <Wrapper>
+      <Left skeleton={skeleton}>
+        <ReactLink skeleton={skeleton} to={"/sprints/" + sprintId}>{title}</ReactLink>
+        <Dates>
+          {startDate} / {dueDate}
+        </Dates>
+      </Left>
+      <ProgressWrapper>
+        <ProgressBar max={100} value={totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}>{totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}</ProgressBar>
+        <ProgressInfo skeleton={skeleton}>
+          <span>
+            {totalIssues} Issues
+          </span>
+          <span>
+            {totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}%
+          </span>
+        </ProgressInfo>
+      </ProgressWrapper>
+    </Wrapper>
+  )
 }
+
+export default CreateIssue

@@ -37,23 +37,17 @@ const X = styled.div`
                                   supported by Chrome and Opera */
 `
 
-export default class Pill extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-    }
-  }
-
-  render () {
-    return (
-      <Wrapper>
-      	<Content>
-      		{this.props.text}
-      	</Content>
-      	<X onClick={() => this.props.onClear()}>
-      		x
-      	</X>
-      </Wrapper>
-    )
-  }
+const Pill = (props) => {
+  return (
+    <Wrapper>
+    	<Content>
+    		{props.text}
+    	</Content>
+    	<X onClick={() => props.onClear()}>
+    		x
+    	</X>
+    </Wrapper>
+  )
 }
+
+export default Pill

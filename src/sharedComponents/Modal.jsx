@@ -30,26 +30,23 @@ const Content = styled.div `
     flex-direction: column;
 `
 
-class Modal extends React.Component {
-
-    stopBackgroundCall(e) {
+const Modal = (props) => {
+    const stopBackgroundCall = (e) => {
         e.stopPropagation();
     }
 
-    render() {
-        return (
-            <Background onClick={this.props.exitModalCallback}>
-                <Content minWidth={this.props.minWidth} 
-                         maxWidth={this.props.maxWidth} 
-                         minHeight={this.props.minHeight} 
-                         onClick={this.stopBackgroundCall}
-                >
-                    {this.props.title ? <h1>{this.props.title}</h1> : null}
-                    {this.props.content ? (this.props.content instanceof String ? <p>{this.props.content}</p> : this.props.content) : null}
-                </Content>
-            </Background>
-        )
-    }
+    return (
+        <Background onClick={props.exitModalCallback}>
+            <Content minWidth={props.minWidth} 
+                     maxWidth={props.maxWidth} 
+                     minHeight={props.minHeight} 
+                     onClick={stopBackgroundCall}
+            >
+                {props.title ? <h1>{props.title}</h1> : null}
+                {props.content ? (props.content instanceof String ? <p>{props.content}</p> : props.content) : null}
+            </Content>
+        </Background>
+    )
 }
 
 export default Modal;

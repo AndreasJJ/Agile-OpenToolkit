@@ -5,8 +5,9 @@ import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
 import SideBar from './components/Sidebar';
-import Body from './components/Body';
+import { Body } from './components/Body';
 
+import { getPrettyCreationDate, FsTsToDate } from '../../sharedComponents/Utility';
 import Modal from '../../sharedComponents/Modal';
 import { CreateIssue } from '../../sharedComponents/CreateIssue';
 import { CreateTask } from './components/CreateTask';
@@ -42,6 +43,7 @@ class IssuePage extends React.PureComponent {
       sprints: [],
       sprint: "",
       dueDate: null,
+      estimate: null,
       labels: [],
       editingIssue: false,
       originalTitle: "",
@@ -52,7 +54,6 @@ class IssuePage extends React.PureComponent {
     this.getTasks = this.getTasks.bind(this)
     this.getAllSprints = this.getAllSprints.bind(this)
     this.getAllLables = this.getAllLables.bind(this)
-    this.issueStatusChange = this.issueStatusChange.bind(this)
     this.showNewIssueModal = this.showNewIssueModal.bind(this)
     this.showNewTaskModal = this.showNewTaskModal.bind(this)
     this.changeToEditMode = this.changeToEditMode.bind(this)
@@ -60,6 +61,7 @@ class IssuePage extends React.PureComponent {
     this.updateSprint = this.updateSprint.bind(this)
     this.updateDueDate = this.updateDueDate.bind(this)
     this.updateLabels = this.updateLabels.bind(this)
+    this.updateEstimate = this.updateEstimate.bind(this)
     this.discardEdit = this.discardEdit.bind(this)
     this.onChangeTitle = this.onChangeTitle.bind(this)
     this.onChangeDescription = this.onChangeDescription.bind(this)
@@ -90,6 +92,7 @@ class IssuePage extends React.PureComponent {
         sprints: [],
         sprint: "",
         dueDate: new Date(),
+        estimate: null,
         labels: [],
         selectedLabels: [],
         editingIssue: false,
@@ -118,9 +121,9 @@ class IssuePage extends React.PureComponent {
                                   .doc(this.props.match.params.id)
                                   .onSnapshot(function(doc) {
                                     let issue = doc.data()
-                                    issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : new Date(issue.timestamp.nanoseconds/1000000 + issue.timestamp.seconds*1000)
-                                    issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : new Date(issue.lastUpdateTimestamp.nanoseconds/1000000 + issue.lastUpdateTimestamp.seconds*1000)
-                                    issue.dueDate = issue.dueDate == null ? null : new Date(issue.dueDate.nanoseconds/1000000 + issue.dueDate.seconds*1000)
+                                    issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : FsTsToDate(issue.timestamp)
+                                    issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : FsTsToDate(issue.lastUpdateTimestamp)
+                                    issue.dueDate = issue.dueDate == null ? null : FsTsToDate(issue.dueDate)
                                     let tempArray = []
                                     for (const [key, value] of Object.entries(issue.labels)) {
                                       tempArray.push([key, value])
@@ -137,7 +140,8 @@ class IssuePage extends React.PureComponent {
                                                    originalDescription: issue.description, 
                                                    sprint: issue.sprint,
                                                    selectedLabels: issue.labels,
-                                                   dueDate: issue.dueDate
+                                                   dueDate: issue.dueDate,
+                                                   estimate: issue.estimate
                                                  });
                                   }.bind(this))
   }
@@ -192,24 +196,6 @@ class IssuePage extends React.PureComponent {
       return obj
     })
     await this.setState({sprints: sprints})
-  }
-
-  issueStatusChange() {
-    this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                status: this.state.status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
   }
 
   showNewIssueModal() {
@@ -311,6 +297,24 @@ class IssuePage extends React.PureComponent {
               })
   }
 
+  updateEstimate(estimate) {
+    this.props.firebase
+              .db
+              .collection("products")
+              .doc(this.props.products[this.props.selectedProduct].id)
+              .collection("stories")
+              .doc(this.props.match.params.id)
+              .update({
+                estimate: estimate,
+                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: this.props.uid,
+                  firstname: this.props.firstname,
+                  lastname: this.props.lastname
+                }
+              })
+  }
+
   discardEdit() {
     this.setState({editingIssue: false, 
                    title: this.state.originalTitle, 
@@ -328,7 +332,6 @@ class IssuePage extends React.PureComponent {
 
   closeModal() {
     this.setState({showModal: false})
-    console.log(this.context.history)
   }
 
   goToCreatedIssue(issueId) {
@@ -362,8 +365,8 @@ class IssuePage extends React.PureComponent {
             title={this.state.title}
             description={this.state.description}
             issueId={this.props.match.params.id}
+            productId={this.props.products[this.props.selectedProduct].id}
             tasks={this.state.tasks}
-            issueStatusChange={this.issueStatusChange}
             showNewIssueModal={this.showNewIssueModal}
             showNewTaskModal={this.showNewTaskModal}
             onChangeTitle={this.onChangeTitle}
@@ -375,12 +378,14 @@ class IssuePage extends React.PureComponent {
           <SideBar status={this.state.status} 
                    sprints={this.state.sprints} 
                    selectedSprint={this.state.sprint} 
-                   dueDate={this.state.dueDate} 
+                   dueDate={this.state.dueDate}
+                   estimate={this.state.estimate}
                    labels={this.state.labels} 
                    selectedLabels={this.state.selectedLabels} 
                    updateSprint={this.updateSprint} 
                    updateDueDate={this.updateDueDate} 
-                   updateLabels={this.updateLabels} 
+                   updateLabels={this.updateLabels}
+                   updateEstimate={this.updateEstimate}
           />
         </Wrapper>
     );

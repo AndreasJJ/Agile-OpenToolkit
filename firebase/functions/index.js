@@ -193,3 +193,87 @@ exports.updateSprints = functions.firestore
 
     	return null
     });
+
+exports.updateSprintEstimate = functions.firestore
+    .document('products/{product}/stories/{story}')
+    .onWrite((change, context) => {
+    	// Creation of document
+    	if(!change.before.exists) {
+    		let sprint = change.after.data().sprint
+    		let estimate = change.after.data().estimate
+    		if(!sprint || !estimate) {
+    			return null
+    		}
+    		let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(sprint)
+    		return sprintRef.update({totalEstimate: FieldValue.increment(estimate)}, {merge: true})
+    	}
+    	// Deletion of document
+    	if(!change.after.exists) {
+			let sprint = change.before.data().sprint
+    		let estimate = change.before.data().estimate
+    		if(!sprint || !estimate) {
+    			return null
+    		}
+    		let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(sprint)
+    		return sprintRef.update({totalEstimate: FieldValue.increment(-estimate)}, {merge: true})
+    	}
+    	// Sprint is removed => we must remove estimate from sprint
+    	if(change.before.data().sprint && !change.after.data().sprint && change.before.data().estimate) {
+    		let sprint = change.after.data().sprint
+    		let estimate = change.before.data().estimate
+    		let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(sprint)
+    		return sprintRef.update({totalEstimate: FieldValue.increment(-estimate)}, {merge: true})
+    	}
+    	// Sprint is added => we need to add estimate from sprint
+    	if(!change.before.data().sprint && change.after.data().sprint && change.before.data().estimate) {
+    		let sprint = change.after.data().sprint
+    		let estimate = change.before.data().estimate
+    		let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(sprint)
+    		return sprintRef.update({totalEstimate: FieldValue.increment(estimate)}, {merge: true})
+    	}
+    	// Sprint exists and is the same, but estimate changed => we must remove
+    	// old estimate and add new estimate
+    	if(change.before.data().sprint && change.after.data().sprint
+    		&& change.before.data().sprint === change.after.data().sprint
+    		&& change.before.data().estimate !== change.after.data().estimate)
+    	{
+    		let sprint = change.after.data().sprint
+    		let estimateBefore = change.before.data().estimate
+    		let estimateAfter = change.after.data().estimate
+    		let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(sprint)
+    		if(!estimateBefore && estimateAfter) {
+    			return sprintRef.update({totalEstimate: FieldValue.increment(estimateAfter)}, {merge: true})
+    		}
+    		if(estimateBefore && !estimateAfter) {
+    			return sprintRef.update({totalEstimate: FieldValue.increment(-estimateBefore)}, {merge: true})
+    		}
+    		if(estimateBefore && estimateAfter) {
+    			let difference = estimateAfter - estimateBefore
+    			return sprintRef.update({totalEstimate: FieldValue.increment(difference)}, {merge: true})
+    		}
+    	}
+    	// default return
+    	return null
+   	});
+
+// Listen to story writing to update the --STATS-- document
+exports.updateStoriesStats = functions.firestore
+    .document('products/{product}/stories/{story}')
+    .onWrite((change, context) => {
+    	if(context.params.story === "--STATS--") {
+    		return "Stats document doesnt need to be updated"
+    	}
+    	// Creation of document
+    	// Count++ in --STATS--
+    	if(!change.before.exists) {
+    		let statsRef = db.collection('products').doc(context.params.product).collection('stories').doc("--STATS--")
+    		return statsRef.update({count: FieldValue.increment(1)}, {merge: true})
+    	}
+    	// Deletion of document
+    	// Count-- in --STATS--
+    	if(!change.after.exists) {
+			let statsRef = db.collection('products').doc(context.params.product).collection('stories').doc("--STATS--")
+    		return statsRef.update({count: FieldValue.increment(-1)}, {merge: true})
+    	}
+    	return null
+   	});

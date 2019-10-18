@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Burndown from './charts/Burndown'
+
 import styled from 'styled-components';
 
 const Widget = styled.div`
@@ -41,37 +43,25 @@ const Header = styled.div`
 `
 
 const Body = styled.div`
-
+  display: flex;
+  height: 100%;
+  width: 100%;
 `
 
-export default class GraphWidget extends React.PureComponent {
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  render () {
-    return(
-      <Widget>
-        <Wrapper>
-            <Content>
-                <Header>
-                  Graph
-                </Header>
-                <Body>
-
-                </Body>
-            </Content>
-        </Wrapper>
-      </Widget>
-    )
-  }
+const GraphWidget = (props) => {
+  return(
+    <Widget>
+      <Wrapper>
+          <Content>
+              <Header>
+                Graph
+              </Header>
+              <Body>
+                <Burndown />
+              </Body>
+          </Content>
+      </Wrapper>
+    </Widget>
+  )
 }
+export default GraphWidget

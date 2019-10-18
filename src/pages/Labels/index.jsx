@@ -248,7 +248,7 @@ class Labels extends React.PureComponent {
                                subscribed={this.state.subscribedLabels ? this.state.subscribedLabels.indexOf(label[0]) > -1 : false}
                                subscribe={this.subscribeToLabel}
                                unsubscribe={this.unsubscribeToLabel}
-                               delete={this.deleteLabel}
+                               deleteLabel={this.deleteLabel}
                      />
                   )
             }

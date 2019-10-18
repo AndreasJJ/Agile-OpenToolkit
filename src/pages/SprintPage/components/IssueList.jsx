@@ -59,39 +59,27 @@ const IssueNumber = styled.div`
 
 `
 
-export default class IssueList extends React.PureComponent {
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  render () {
-    return(
-      <Wrapper margin={this.props.margin}>
-      <Content>
-        <Header>
-          {this.props.title}
-        </Header>
-        <Body>
-          {
-            this.props.issues && this.props.issues.map((issue, index) => 
-               <Issue key={issue.number}>
-                 <IssueTitle><ReactLink to={"/backlog/issue/" + issue.id}>{issue.title}</ReactLink></IssueTitle>
-                 <IssueNumber>#{issue.number}</IssueNumber>
-               </Issue>
-             )
-          }
-        </Body>
-      </Content>
-      </Wrapper>
-    )
-  }
+const IssueList = (props) => {
+  return(
+    <Wrapper margin={props.margin}>
+    <Content>
+      <Header>
+        {props.title}
+      </Header>
+      <Body>
+        {
+          props.issues 
+          && props.issues.map((issue, index) => 
+             <Issue key={issue.number}>
+               <IssueTitle><ReactLink to={"/backlog/issue/" + issue.id}>{issue.title}</ReactLink></IssueTitle>
+               <IssueNumber>#{issue.number}</IssueNumber>
+             </Issue>
+           )
+        }
+      </Body>
+    </Content>
+    </Wrapper>
+  )
 }
+
+export default IssueList
