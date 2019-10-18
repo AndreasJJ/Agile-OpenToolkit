@@ -1,4 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { withFirebase } from '../../../sharedComponents/Firebase';
+
+import { getPrettyCreationDate } from '../../../sharedComponents/Utility'
 
 import styled from 'styled-components';
 
@@ -153,139 +158,132 @@ const SubmitButton = styled.button`
   width: fit-content;
 `
 
-export default class Body extends React.PureComponent {
+const Body = (props) => {
+  const {status, editedTimestamp, lastEditer, 
+         showNewIssueModal, editingIssue, title, onChangeTitle, 
+         saveEdit, discardEdit, changeToEditMode, description,
+         issueId, productId, onChangeDescription, tasks,
+         uid, firstname, lastname} = props
 
-  constructor(props) {
-    super(props)
-    this.state = {
-
-    }
-
-    this.getPrettyCreationDate = this.getPrettyCreationDate.bind(this)
+  const issueStatusChange = () => {
+    props.firebase
+              .db
+              .collection("products")
+              .doc(productId)
+              .collection("stories")
+              .doc(issueId)
+              .update({
+                status: status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
+                lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+                lastEditer: {
+                  uid: uid,
+                  firstname: firstname,
+                  lastname: lastname
+                }
+              })
   }
 
-  async componentDidMount() {
-
-  }
-
-  getPrettyCreationDate(date) {
-    let deltaTime = ((new Date()).getTime() - date.getTime())
-    // less than 1 second
-    if(deltaTime < 1000) {
-      return "less than 1 second"
-    // less than 1 minute ago
-    } else if(deltaTime < 60000) {
-      return Math.floor(deltaTime/1000) + " seconds ago"
-    // less than 1 hour ago
-    } else if(deltaTime < 3600000) {
-      return Math.floor(deltaTime/60000) + " minutes ago"
-    // less than 1 day
-    } else if(deltaTime < 86400000) {
-      return Math.floor(deltaTime/3600000) + " hours ago"
-    // less than 1 week ago
-    } else if(deltaTime < 604800000) {
-      return Math.floor(deltaTime/86400000) + " days ago"
-    // less than 1 month ago
-    } else if(deltaTime < 2628000000) {
-      return Math.floor(deltaTime/604800000) + " weeks ago"
-    // less than 1 year ago
-    } else if(deltaTime < 31540000000) {
-      return Math.floor(deltaTime/2628000000) + " months ago"
-    // more than a year ago
-    } else {
-      return Math.floor(deltaTime/31540000000) + " years ago"
-    }
-  }
-
-  render () {
-    return(
-      <Issue>
-        <IssueContent>
-          <Header>
-            <Left>
-              <Status status={this.props.status}>{this.props.status}</Status>
-              <span>Edited {this.getPrettyCreationDate(this.props.editedTimestamp)} by </span> 
-              <b>{this.props.lastEditer ? this.props.lastEditer.firstname + " " + this.props.lastEditer.lastname : ""}</b>
-            </Left>
-            <Right>
-              <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={(e) => this.props.issueStatusChange()}>
-                {this.props.status.toLowerCase() == "open" ? "Close" : "Reopen"}
-              </Button>
-              <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={(e) => this.props.showNewIssueModal()}>
-                New Issue
-              </Button>
-            </Right>
-          </Header>
-          <InfoBody>
-            <TitleWrapper>
-              { this.props.editingIssue 
-                ? 
-                  <TitleEdit value={this.props.title} onChange={(e) => this.props.onChangeTitle()} /> 
-                : 
-                  <Title>{this.props.title}</Title>
-              }
-              {
-                this.props.status.toLowerCase() == "open" 
-                ? 
-                  this.props.editingIssue 
-                  ? 
-                    <EditButton>
-                      <Button onClick={(e) => this.props.saveEdit()} backgroundColor={"#1f78d1"} borderColor={"#16528e"}>
-                        Save
-                      </Button> 
-                      <Button onClick={(e) => this.props.discardEdit()} backgroundColor={"#dc0011"} borderColor={"#b0000e"}>
-                        Discard
-                      </Button>
-                    </EditButton> 
-                  : 
-                    <Edit onClick={(e) => this.props.changeToEditMode()} size="1em" /> 
-                : 
-                  null
-              }
-            </TitleWrapper>
-            {
-              this.props.editingIssue 
-              ?
-                <DescriptionEdit value={this.props.description} onChange={this.props.onChangeDescription} />
-              :
-              <Description>
-                {this.props.description}
-              </Description>
+  return(
+    <Issue>
+      <IssueContent>
+        <Header>
+          <Left>
+            <Status status={status}>{status}</Status>
+            <span>Edited {getPrettyCreationDate(props.editedTimestamp)} by </span> 
+            <b>{lastEditer ? lastEditer.firstname + " " + lastEditer.lastname : ""}</b>
+          </Left>
+          <Right>
+            <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={(e) => issueStatusChange()}>
+              {status.toLowerCase() == "open" ? "Close" : "Reopen"}
+            </Button>
+            <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={(e) => showNewIssueModal()}>
+              New Issue
+            </Button>
+          </Right>
+        </Header>
+        <InfoBody>
+          <TitleWrapper>
+            { editingIssue 
+              ? 
+                <TitleEdit value={title} onChange={(e) => onChangeTitle()} /> 
+              : 
+                <Title>{title}</Title>
             }
-          </InfoBody>
-          <TasksWrapper>
-            <TasksHeader>
-              <h2>Tasks</h2>
-              {
-                this.props.status.toLowerCase() === "open"
-                ?
-                  <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={() => this.props.showNewTaskModal()}>New Task</Button>
-                :
-                  null
-              }
-            </TasksHeader>
-            <Tasks>
-              {
-                this.props.tasks && this.props.tasks.map((task, index) => 
-                                                          <Task issueStatus={this.props.status} 
-                                                                key={task.id} 
-                                                                issueId={this.props.issueId} 
-                                                                taskId={task.id} 
-                                                                title={task.title} 
-                                                                description={task.description} 
-                                                                status={task.status} 
-                                                                assignee={task.assignee} 
-                                                          />
-                                                        )
-              }
-            </Tasks>
-          </TasksWrapper>
-          <Comment>
-            <TextArea />
-            <SubmitButton>Comment</SubmitButton>
-          </Comment>
-        </IssueContent>
-      </Issue>
-    )
-  }
+            {
+              status.toLowerCase() == "open" 
+              ? 
+                editingIssue 
+                ? 
+                  <EditButton>
+                    <Button onClick={(e) => saveEdit()} backgroundColor={"#1f78d1"} borderColor={"#16528e"}>
+                      Save
+                    </Button> 
+                    <Button onClick={(e) => discardEdit()} backgroundColor={"#dc0011"} borderColor={"#b0000e"}>
+                      Discard
+                    </Button>
+                  </EditButton> 
+                : 
+                  <Edit onClick={(e) => changeToEditMode()} size="1em" /> 
+              : 
+                null
+            }
+          </TitleWrapper>
+          {
+            editingIssue 
+            ?
+              <DescriptionEdit value={description} onChange={onChangeDescription} />
+            :
+            <Description>
+              {description}
+            </Description>
+          }
+        </InfoBody>
+        <TasksWrapper>
+          <TasksHeader>
+            <h2>Tasks</h2>
+            {
+              status.toLowerCase() === "open"
+              ?
+                <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={() => showNewTaskModal()}>New Task</Button>
+              :
+                null
+            }
+          </TasksHeader>
+          <Tasks>
+            {
+              tasks && tasks.map((task, index) => 
+                                                        <Task issueStatus={props.status} 
+                                                              key={task.id} 
+                                                              issueId={props.issueId} 
+                                                              taskId={task.id} 
+                                                              title={task.title} 
+                                                              description={task.description} 
+                                                              status={task.status} 
+                                                              assignee={task.assignee} 
+                                                        />
+                                                      )
+            }
+          </Tasks>
+        </TasksWrapper>
+        <Comment>
+          <TextArea />
+          <SubmitButton>Comment</SubmitButton>
+        </Comment>
+      </IssueContent>
+    </Issue>
+  )
 }
+
+
+function mapStateToProps(state) {
+    const { uid, firstname, lastname } = state.authentication.user;
+    return {
+      uid,
+      firstname,
+      lastname
+    };
+}
+
+const connectedBody = connect(mapStateToProps)(Body);
+const firebaseBody = compose(withFirebase)(connectedBody)
+export { firebaseBody as Body };

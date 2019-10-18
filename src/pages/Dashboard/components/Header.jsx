@@ -61,38 +61,29 @@ const Username = styled.span`
 
 `
 
-class Header extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  render() {
-    return (
-      <HEADER>
-        <Collapse onClick={() => {this.props.onClickCollapse()}}>
-          <Bars size="1em" />
-        </Collapse>
-        <TopBar>
-            <ProfileCard>
-              <ProfileImage src={this.props.ProfilePicture ? this.props.ProfilePicture : BlankProfilePicture}/>
-              <ProfileInfo>
-                <Username>
-                  {
-                    (this.props.firstname ? (this.props.firstname.charAt(0).toUpperCase() + this.props.firstname.slice(1)) : null) 
-                    + " " 
-                    + (this.props.lastname ? (this.props.lastname) : null)
-                  }
-                </Username>
-              </ProfileInfo>
-            </ProfileCard>
-        </TopBar>
-      </HEADER>
-    );
-  }
+const Header = (props) => {
+  const {ProfilePicture, firstname, lastname, onClickCollapse} = props
+  return (
+    <HEADER>
+      <Collapse onClick={() => {onClickCollapse()}}>
+        <Bars size="1em" />
+      </Collapse>
+      <TopBar>
+          <ProfileCard>
+            <ProfileImage src={ProfilePicture ? ProfilePicture : BlankProfilePicture}/>
+            <ProfileInfo>
+              <Username>
+                {
+                  (firstname ? (firstname.charAt(0).toUpperCase() + firstname.slice(1)) : null) 
+                  + " " 
+                  + (lastname ? (lastname) : null)
+                }
+              </Username>
+            </ProfileInfo>
+          </ProfileCard>
+      </TopBar>
+    </HEADER>
+  );
 }
 
 export default Header;

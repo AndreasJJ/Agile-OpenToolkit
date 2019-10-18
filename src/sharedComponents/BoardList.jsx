@@ -88,7 +88,6 @@ const AddStoryButton = styled.button`
     margin-right: 5px;
 `;
 
-/* eslint-disable react/prefer-stateless-function */
 export default class BoardList extends React.PureComponent {
 
   constructor(props) {

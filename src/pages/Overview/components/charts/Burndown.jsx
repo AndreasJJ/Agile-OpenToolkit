@@ -9,41 +9,28 @@ const Wrapper = styled.div`
   width: 100%;
 `
 
-export default class Burndown extends React.PureComponent {
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  render () {
-    return(
-      <Wrapper>
-        <Line
-          options={{responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: {
-                      yAxes: [{
-                        scaleLabel: {
-                          display: true,
-                          labelString: 'Story Points'
-                        },
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 100
-                        }
-                      }]
-                    }  
-                  }}
-         />
-      </Wrapper>
-    )
-  }
+const Burndown = (props) => {
+  return(
+    <Wrapper>
+      <Line
+        options={{responsive: true, 
+                  maintainAspectRatio: false,
+                  scales: {
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Story Points'
+                      },
+                      ticks: {
+                          suggestedMin: 0,
+                          suggestedMax: 100
+                      }
+                    }]
+                  }  
+                }}
+       />
+    </Wrapper>
+  )
 }
+
+export default Burndown

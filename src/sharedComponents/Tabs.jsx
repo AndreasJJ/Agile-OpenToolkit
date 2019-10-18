@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import styled from 'styled-components'
 
@@ -85,51 +85,39 @@ const ActiveTabComponent = styled.div`
   flex-grow: 1;
 `
 
-/* eslint-disable react/prefer-stateless-function */
-export default class Tabs extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    this.state = {
-      activeTabIndex: 0
-    }
+const Tabs = (props) => {
+  const [activeTabIndex, setActiveTabIndex] = useState(0)
 
-    this.tabClicked = this.tabClicked.bind(this)
+  const tabClicked = (e) => {
+    setActiveTabIndex(parseInt(e.target.dataset.index))
   }
 
-  componentDidMount () {
-
-  }
-
-  tabClicked (e) {
-    this.setState({ activeTabIndex: parseInt(e.target.dataset.index) })
-  }
-
-  render () {
-    return (
-      <Wrapper>
-        <TabMenu>
-          {
-            this.props.tabNames.map((item, index) => {
-              if (index === this.state.activeTabIndex) {
-                return (<Tab indexNumber={this.state.activeTabIndex + 1} key={index}>{item}</Tab>)
-              } else {
-                return (<Tab onClick={this.tabClicked} 
-                             indexNumber={this.state.activeTabIndex + 1} 
-                             key={index} data-index={index}
-                        >
-                          {item}
-                        </Tab>
-                        )
-              }
-            })
-          }
-        </TabMenu>
-        <ActiveTabComponent>
-          {
-            this.props.tabComponents[this.state.activeTabIndex]
-          }
-        </ActiveTabComponent>
-      </Wrapper>
-    )
-  }
+  return (
+    <Wrapper>
+      <TabMenu>
+        {
+          props.tabNames.map((item, index) => {
+            if (index === activeTabIndex) {
+              return (<Tab indexNumber={activeTabIndex + 1} key={index}>{item}</Tab>)
+            } else {
+              return (<Tab onClick={tabClicked} 
+                           indexNumber={activeTabIndex + 1} 
+                           key={index} data-index={index}
+                      >
+                        {item}
+                      </Tab>
+                      )
+            }
+          })
+        }
+      </TabMenu>
+      <ActiveTabComponent>
+        {
+          props.tabComponents[activeTabIndex]
+        }
+      </ActiveTabComponent>
+    </Wrapper>
+  )
 }
+
+export default Tabs
