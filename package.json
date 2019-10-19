@@ -16,7 +16,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run-script validate",
+      "pre-commit": "npm run-script lint",
       "pre-push": "npm run-script validate"
     }
   },
