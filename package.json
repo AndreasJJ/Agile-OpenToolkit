@@ -7,7 +7,7 @@
     "lint-fix": "eslint --fix --ignore-path .gitignore .",
     "lint": "eslint --ignore-path .gitignore .",
     "test": "echo \"Error: no test specified\"",
-    "validate": "npm-run-all --parallel test lint",
+    "validate": "npm run-script lint && npm run-script test",
     "build": "webpack -p --progress --config webpack.config.js",
     "production": "webpack -p --progress --config webpack-prod.config.js",
     "watch": "webpack --progress -d --config webpack.config.js --watch",
@@ -16,8 +16,8 @@
   },
   "husky": {
     "hooks": {
-        "precommit": "npm run validate",
-        "prepush": "npm run validate"
+      "pre-commit": "npm run-script validate",
+      "pre-push": "npm run-script validate"
     }
   },
   "author": "Andreas Jensen Jonassen",

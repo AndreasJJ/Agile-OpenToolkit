@@ -28,7 +28,7 @@ function selectProduct (index) {
 }
 
 function selectProductRecalibration (index) {
-    return dispatch => {
+  return dispatch => {
     productService.selectProductRecalibration(index)
       .then(
         index => {

@@ -33,7 +33,7 @@ exports.addProductToUserProductList = functions.firestore
 		return db.runTransaction((transaction) => {
 		    return transaction.get(productRef).then((doc) => {
 		        if (!doc.exists) {
-		            return
+		            return "No product with that id"
 		        }
 
               	let userProductRef = db.collection('users').doc(context.params.member).collection('products').doc(context.params.product)
@@ -70,7 +70,7 @@ exports.updateProductInfo = functions.firestore
 		return db.runTransaction((transaction) => {
 		    return transaction.get(productRef).then((snapshot) => {
 		        if (!snapshot.exists) {
-		            return
+		            return "no members to update"
 		        }
 
               	return snapshot.forEach((member) => {
@@ -95,7 +95,7 @@ exports.updateStoriesOnSprintDelete = functions.firestore
         return db.runTransaction((transaction) => {
             return transaction.get(storiesRef).then((snapshot) => {
                 if (!snapshot.docs) {
-                    return
+                    return "no stories to update sprint"
                 }
 
                 return snapshot.docs.forEach((doc) => {
@@ -177,7 +177,7 @@ exports.updateSprints = functions.firestore
             return db.runTransaction((transaction) => {
                 return transaction.get(countRef).then((snapshot) => {
                     if (!snapshot.exists) {
-                        return
+                        return "no sprint to update"
                     }
 
                     transaction.delete(storyRef)
