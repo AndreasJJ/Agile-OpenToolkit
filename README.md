@@ -16,14 +16,18 @@ Frontend system for Agile Toolkit
    * Cloud functions
 
 ### Linting and testing
+ * Husky
  * Eslint
- * 
+ * <todo>
 
-## Linting and codestyle
+## Linting and Testing
+Both linting and testing will run precommit and prepush (with husky) to make sure the code is of satisfactory quality.
+
+### Linting
 We use eslint with the StandardJS code style (with semicolons always).
-Run ```sudo npm run-script pretest``` to check your linting or ```sudo npm run-script lint-fix``` to make the linter auto fix.
 
-## Testing
+### Testing
+<todo>
 
 ## Screenshots
 
