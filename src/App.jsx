@@ -43,7 +43,7 @@ class App extends React.Component {
         this.state = {
 	      isLoading: true
 	    };
-
+	    .
         history.listen(function(location, action) {
             // clear alert on location change
             this.setState({isLoading: true})
