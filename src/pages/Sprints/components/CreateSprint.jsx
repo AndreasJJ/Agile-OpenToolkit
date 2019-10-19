@@ -159,9 +159,7 @@ export default class CreateIssue extends React.Component {
       title: this.state.title,
       description: this.state.description,
       startDate: new Date(this.state.startDate),
-      dueDate: new Date(this.state.dueDate),
-      finishedIssues: 0,
-      totalIssues: 0
+      dueDate: new Date(this.state.dueDate)
     }
     await this.props.createSprint(sprint)
     this.props.exit()

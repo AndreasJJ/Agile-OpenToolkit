@@ -88,6 +88,26 @@ exports.updateProductInfo = functions.firestore
 		});
     });
 
+exports.updateStoriesOnSprintDelete = functions.firestore
+    .document('products/{product}/sprints/{sprint}')
+    .onDelete((change, context) => {
+        let storiesRef = db.collection('products').doc(context.params.product).collection('stories').where('sprint', '==', context.params.sprint)
+        return db.runTransaction((transaction) => {
+            return transaction.get(storiesRef).then((snapshot) => {
+                if (!snapshot.docs) {
+                    return
+                }
+
+                return snapshot.docs.forEach((doc) => {
+                    let storyRef = db.collection('products').doc(context.params.product).collection('stories').doc(doc.id)
+                    transaction.update(storyRef, {sprint: null})
+                })
+            });
+        }).catch((error) => {
+            console.log("Transaction failed: ", error);
+        });
+    });
+
 exports.updateSprints = functions.firestore
 	.document('products/{product}/stories/{story}')
     .onWrite((change, context) => {
@@ -151,17 +171,21 @@ exports.updateSprints = functions.firestore
 
     	//totalIssues-- when a document is deleted or if the sprint field is set to null
     	if(!change.after.exists || (change.after.data().sprint === null && change.before.data().sprint !== null)) {
-    		let batch = db.batch();
+            let storyRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint).collection('stories').doc(context.params.story)
+            let countRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint)
 
-    		let storyRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint).collection('stories').doc(context.params.story)
-    		batch.delete(storyRef)
+            return db.runTransaction((transaction) => {
+                return transaction.get(countRef).then((snapshot) => {
+                    if (!snapshot.exists) {
+                        return
+                    }
 
-    		let countRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint)
-    		batch.update(countRef, {totalIssues: FieldValue.increment(-1)}, {merge: true})
-
-    		return batch.commit().catch((error) => {
-				console.error("Error removing document: ", error);
-			});
+                    transaction.delete(storyRef)
+                    return transaction.update(countRef, {totalIssues: FieldValue.increment(-1)}, {merge: true})
+                });
+            }).catch((error) => {
+                console.log("Transaction failed: ", error);
+            });
     	}
 
     	//totalIssues++ on new sprint. happens if story exists and has sprint as null, but gets assigned a sprint

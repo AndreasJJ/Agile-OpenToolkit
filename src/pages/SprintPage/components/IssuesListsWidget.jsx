@@ -43,12 +43,12 @@ class IssuesListsWidget extends React.PureComponent {
 
   async getIssues() {
     let querySnapshot = await this.props.firebase
-                                  .db
-                                  .collection("products")
-                                  .doc(this.props.products[this.props.selectedProduct].id)
-                                  .collection("stories")
-                                  .where('sprint', '==', this.props.match.params.id)
-                                  .get()
+                                        .db
+                                        .collection("products")
+                                        .doc(this.props.products[this.props.selectedProduct].id)
+                                        .collection("stories")
+                                        .where('sprint', '==', this.props.match.params.id)
+                                        .get()
     let unstartedIssues = []
     let completedIssues = []
     querySnapshot.docs.forEach(function(doc) {

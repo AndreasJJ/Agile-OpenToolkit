@@ -79,10 +79,10 @@ const CreateIssue = (props) => {
         <ProgressBar max={100} value={totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}>{totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}</ProgressBar>
         <ProgressInfo skeleton={skeleton}>
           <span>
-            {totalIssues} Issues
+            {totalIssues ? totalIssues : 0} Issues
           </span>
           <span>
-            {totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}%
+            {totalIssues === 0 ? 100 : (finishedIssues ? finishedIssues : 0  / totalIssues)*100}%
           </span>
         </ProgressInfo>
       </ProgressWrapper>

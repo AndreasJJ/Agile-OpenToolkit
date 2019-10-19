@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
-import InformationWidget from './components/InformationWidget';
-import {IssuesListsWidget} from './components/IssuesListsWidget';
+import { InformationWidget } from './components/InformationWidget';
+import { IssuesListsWidget } from './components/IssuesListsWidget';
 
 import styled from 'styled-components';
 
