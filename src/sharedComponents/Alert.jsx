@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
@@ -65,18 +65,52 @@ const Message = styled.div`
     flex-grow: 1;
 `
 
+const ProgressBar = styled.progress`
+    width: 100%;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    
+    &::-webkit-progress-bar {
+        background-color: #eeeeee;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+    }
+
+    &::-webkit-progress-value {
+        background-color: ${props => props.color};
+    }
+`
 
 const Alert = ({alert, removeToast}) => {
+    const [progress, setProgress] = useState(0)
+    useEffect(() => {
+        const id = setInterval(() => {
+            setProgress(_progress => {
+                if(_progress >= 15000) {
+                    clearInterval(id)
+                    removeToast()
+                    return _progress
+                }
+                return _progress+10
+            })
+        }, 10);
+
+        return () => clearInterval(id)
+    }, [])
+
     let IconComponent;
     let color = "#0a60ff";
+    let title = "Info";
 
     if(alert.type) {
         if(alert.type == "alert-danger") {
             IconComponent = <Error />
-            color = "#d21e36"             
+            color = "#d21e36"
+            title = "Error"        
         } else if(alert.type == "alert-success") {
             IconComponent = <Check />
             color = "#249b34"
+            title = "Success"
         } else if(alert.type == "alert-info") {
             IconComponent = <Bell />
         }
@@ -93,13 +127,14 @@ const Alert = ({alert, removeToast}) => {
                 </Icon>
                 <AlertContent>
                     <Type>
-                        <b>{alert.type && <Toast>{typeof alert.type === 'object' ? "" : alert.type}</Toast>}</b>
+                        <b>{alert.type && <Toast>{title}</Toast>}</b>
                     </Type>
                     <Message>
                         {alert.message && <Toast>{typeof alert.message === 'object' ? "" : alert.message}</Toast>}
                     </Message>
                 </AlertContent>
             </Content>
+            <ProgressBar max="15000" min="0" value={progress} color={color}></ProgressBar>
         </Wrapper>
     )
 }
