@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import { DateToLocalString } from '../../../sharedComponents/Utility'
+import { DateToLocalString } from '../../../sharedComponents/Utility';
 
 import styled from 'styled-components';
 
@@ -200,4 +201,9 @@ export default class CreateIssue extends React.Component {
       </Wrapper>
     )
   }
+}
+
+CreateIssue.proptypes = {
+  exit: PropTypes.func.isRequired,
+  createSprint: PropTypes.func.isRequired
 }

@@ -1,9 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import PropTypes from 'prop-types';
+
 import { withFirebase } from './Firebase';
 
-import { DateToLocalString } from './Utility'
+import { DateToLocalString } from './Utility';
 import { alertActions } from '../state/actions/alert';
 
 import styled from 'styled-components';
@@ -386,6 +388,15 @@ export default class CreateIssue extends React.Component {
       </Wrapper>
     )
   }
+}
+
+CreateIssue.proptypes = {
+  uid: PropTypes.string.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  selectedProduct: PropTypes.string.isRequired,
+  finished: PropTypes.func.isRequired,
+  exit: PropTypes.func.isRequired
 }
 
 function mapStateToProps(state) {

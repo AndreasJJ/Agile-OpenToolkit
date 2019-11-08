@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import styled from 'styled-components'
+import styled from 'styled-components';
 
-import { Error } from 'styled-icons/boxicons-solid/Error'
-import { Bell } from 'styled-icons/boxicons-solid/Bell'
-import { Check } from 'styled-icons/boxicons-regular/Check'
-import { Cross } from 'styled-icons/icomoon/Cross'
+import { Error } from 'styled-icons/boxicons-solid/Error';
+import { Bell } from 'styled-icons/boxicons-solid/Bell';
+import { Check } from 'styled-icons/boxicons-regular/Check';
+import { Cross } from 'styled-icons/icomoon/Cross';
 
 const Wrapper = styled.div`
     position: absolute;
@@ -65,19 +66,18 @@ const Message = styled.div`
 `
 
 
-
-const Alert = (props) => {
+const Alert = ({alert, removeToast}) => {
     let IconComponent;
     let color = "#0a60ff";
 
-    if(props.alert.type) {
-        if(props.alert.type == "alert-danger") {
+    if(alert.type) {
+        if(alert.type == "alert-danger") {
             IconComponent = <Error />
             color = "#d21e36"             
-        } else if(props.alert.type == "alert-success") {
+        } else if(alert.type == "alert-success") {
             IconComponent = <Check />
             color = "#249b34"
-        } else if(props.alert.type == "alert-info") {
+        } else if(alert.type == "alert-info") {
             IconComponent = <Bell />
         }
     }
@@ -85,7 +85,7 @@ const Alert = (props) => {
     return (
         <Wrapper>
             <Content>
-                <Exit onClick={(e) => {props.removeToast()}}>
+                <Exit onClick={(e) => {removeToast()}}>
                     <Cross size="1em" />
                 </Exit>
                 <Icon color={color}>
@@ -93,15 +93,20 @@ const Alert = (props) => {
                 </Icon>
                 <AlertContent>
                     <Type>
-                        <b>{props.alert.type && <Toast>{typeof props.alert.type === 'object' ? "" : props.alert.type}</Toast>}</b>
+                        <b>{alert.type && <Toast>{typeof alert.type === 'object' ? "" : alert.type}</Toast>}</b>
                     </Type>
                     <Message>
-                        {props.alert.message && <Toast>{typeof props.alert.message === 'object' ? "" : props.alert.message}</Toast>}
+                        {alert.message && <Toast>{typeof alert.message === 'object' ? "" : alert.message}</Toast>}
                     </Message>
                 </AlertContent>
             </Content>
         </Wrapper>
     )
+}
+
+Alert.proptypes = {
+    alert: PropTypes.object.isRequired,
+    removeToast: PropTypes.func.isRequired
 }
 
 export default Alert;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {AngleDoubleDown} from 'styled-icons/fa-solid/AngleDoubleDown';
@@ -74,6 +75,12 @@ const Task = (props) => {
       </Right>
     </Wrapper>
   )
+}
+
+Task.propTypes = {
+  assigne: PropTypes.object.isRequired,
+  status: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired
 }
 
 export default Task

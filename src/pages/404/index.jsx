@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -27,4 +28,8 @@ export default class Error404 extends React.PureComponent {
       </div>
     );
   }
+}
+
+Error404.propTypes = {
+  finishLoading: PropTypes.func.isRequired,
 }

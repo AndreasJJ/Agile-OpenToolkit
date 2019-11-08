@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
 const Authenticated = (props) => {
   return (props.user ? (props.is instanceof Function ? props.is() : props.is) : props.not)
@@ -12,6 +11,10 @@ function mapStateToProps(state) {
     return {
         user
     };
+}
+
+Authenticated.proptypes = {
+    user: PropTypes.object.isRequired
 }
 
 const connectedAuthenticated = connect(mapStateToProps)(Authenticated);

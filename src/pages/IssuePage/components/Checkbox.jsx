@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -56,5 +57,10 @@ const Checkbox = ({ className, checked, ...props }) => (
 	  </StyledCheckbox>
 	</CheckboxContainer>
 )
+
+Checkbox.propTypes = {
+  className: PropTypes.string,
+  checked: PropTypes.bool.isRequired
+}
 
 export default Checkbox;

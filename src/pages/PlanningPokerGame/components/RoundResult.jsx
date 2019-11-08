@@ -1,6 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Textfit } from 'react-textfit';
 
+import PersonCard from './PersonCard';
 
 import styled, { keyframes } from 'styled-components';
 
@@ -54,70 +56,34 @@ const PeopleList = styled.div`
   overflow: auto;
 `
 
-const PersonCard = styled.div`
-  width: 100%;
-  height: 60px;
-  background-color: #F4F4F4;
-  display: flex;
-  padding: 5px;
-  box-sizing: border-box;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #e8e8e8;
-
-  &:last-child {
-    border-bottom: 1px solid #e8e8e8;
-`
-
-const Name = styled.span`
-
-`
-
-const Estimate = styled.span`
-
-`
-
-
-export default class RoundResult extends React.PureComponent {
-
-   constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  static Person = (props) => (
-      <PersonCard>
-        <Name>{props.name}</Name>
-        <Estimate>{props.estimate}</Estimate>
-      </PersonCard>
+const RoundResult = (props) => {
+  return (
+    <Wrapper>
+      <Content>
+        <Header>
+          <Story>
+            {this.props.story}
+          </Story>
+          <AverageEstimate>
+            <Textfit mode="single">
+            {this.props.averageEstimate}
+            </Textfit>
+          </AverageEstimate>
+        </Header>
+        <PeopleList>
+          {this.props.people.length > 0 && this.props.people.map((person, index) => <PersonCard key={index} name={person.name} estimate={person.estimate} />)}
+        </PeopleList>
+      </Content>
+    </Wrapper>
   );
-
-  render() {
-      return (
-        <Wrapper>
-          <Content>
-            <Header>
-              <Story>
-                {this.props.story}
-              </Story>
-              <AverageEstimate>
-                <Textfit mode="single">
-                {this.props.averageEstimate}
-                </Textfit>
-              </AverageEstimate>
-            </Header>
-            <PeopleList>
-              {this.props.people.length > 0 && this.props.people.map((person, index) => <RoundResult.Person key={index} name={person.name} estimate={person.estimate} />)}
-            </PeopleList>
-          </Content>
-        </Wrapper>
-      );
-  }
 }
+
+RoundResult.proptypes = {
+  name: PropTypes.string.isRequired,
+  estimate: PropTypes.number.isRequired,
+  story: PropTypes.string.isRequired,
+  averageEstimate: PropTypes.number.isRequired,
+  people: PropTypes.array.isRequired,
+}
+
+export default RoundResult

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Burndown from './charts/Burndown'
 
@@ -64,4 +65,9 @@ const GraphWidget = (props) => {
     </Widget>
   )
 }
+
+GraphWidget.proptypes = {
+  
+}
+
 export default GraphWidget

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import Game from './components/Game'
 
@@ -28,14 +29,9 @@ class PlanningPokerGame extends React.PureComponent {
   }
 }
 
-function mapStateToProps(state) {
-    const { user } = state.authentication;
-    const { selectedTeam } = state.teams
-    return {
-        user,
-        selectedTeam
-    };
+PlanningPokerGame.proptypes = {
+
 }
 
-const connectedPlanningPokerGame = withRouter(connect(mapStateToProps)(PlanningPokerGame));
+const connectedPlanningPokerGame = withRouter(connect()(PlanningPokerGame));
 export { connectedPlanningPokerGame as PlanningPokerGame };

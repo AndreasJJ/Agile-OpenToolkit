@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled, { keyframes } from 'styled-components';
 
@@ -95,4 +96,8 @@ export default class Game extends React.PureComponent {
         </Wrapper>
       );
   }
+}
+
+Game.proptypes = {
+  
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {Times} from 'styled-icons/fa-solid/Times';
@@ -55,7 +56,7 @@ const AddStoryButton = styled.button`
 `;
 
 /* eslint-disable react/prefer-stateless-function */
-export default class BoardList extends React.PureComponent {
+export default class NewListButton extends React.PureComponent {
 
   constructor(props) {
     super(props)
@@ -122,4 +123,8 @@ export default class BoardList extends React.PureComponent {
         </ButtonWrapper>
     );
   }
+}
+
+NewListButton.proptypes = {
+  addList: PropTypes.func.isRequired
 }

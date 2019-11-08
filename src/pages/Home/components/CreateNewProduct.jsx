@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import { alertActions } from '../../../state/actions/alert';
 
@@ -135,6 +136,11 @@ const CreateNewProduct = (props) => {
        </Form>
     </Wrapper>
   )
+}
+
+CreateNewProduct.propTypes = {
+  sendProduct: PropTypes.func.isRequired,
+  onclick: PropTypes.func.isRequired
 }
 
 const connectedCreateNewProduct = connect()(CreateNewProduct);

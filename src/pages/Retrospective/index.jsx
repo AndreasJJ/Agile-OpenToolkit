@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import PropTypes from 'prop-types';
 
 import Board from './components/Board'
 
@@ -9,25 +10,20 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
-export default class Retrospective extends React.PureComponent {
+const Retrospective = (props) => {
+  useEffect(() => {
+    props.finishLoading()
+  }, [])
 
- constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-  componentDidMount() {
-    this.props.finishLoading()
-  }
-
-
-  render() {
-      return (
-        <Wrapper>
-          <Board />
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <Board />
+    </Wrapper>
+  )
 }
+
+Retrospective.proptypes = {
+  finishLoading: PropTypes.func.isRequired
+}
+
+export default Retrospective

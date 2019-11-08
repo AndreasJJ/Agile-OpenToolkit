@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components'
 
@@ -47,6 +48,19 @@ const Modal = (props) => {
             </Content>
         </Background>
     )
+}
+
+Modal.proptypes = {
+    exitModalCallback: PropTypes.func.isRequired,
+    minWidth: PropTypes.string.isRequired,
+    maxWidth: PropTypes.string.isRequired,
+    minHeight: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    content: PropTypes.oneOfType([
+              PropTypes.string,
+              PropTypes.element
+            ])
+
 }
 
 export default Modal;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import { ProductWidget } from './components/ProductWidget';
 import { DetailsWidget } from './components/DetailsWidget';
@@ -35,4 +36,8 @@ export class Home extends React.PureComponent {
         </Wrapper>
       );
   }
+}
+
+Home.propTypes = {
+  finishLoading: PropTypes.func.isRequired
 }

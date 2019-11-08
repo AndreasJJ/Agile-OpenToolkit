@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import { InformationWidget } from './components/InformationWidget';
 import { IssuesListsWidget } from './components/IssuesListsWidget';
@@ -13,10 +14,10 @@ const Wrapper = styled.div`
   grid-template-rows: 30% 70%;
 `;
 
-const SprintPage = (props) => {
+const SprintPage = ({finishLoading}) => {
 
   useEffect(() => {
-    props.finishLoading()
+    finishLoading()
   })
 
   return (
@@ -25,6 +26,10 @@ const SprintPage = (props) => {
         <IssuesListsWidget />
       </Wrapper>
   );
+}
+
+SprintPage.propTypes = {
+  finishLoading: PropTypes.func.isRequired
 }
 
 export {

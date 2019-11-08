@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../../sharedComponents/Firebase';
 
@@ -313,6 +315,15 @@ class ProductWidget extends React.PureComponent {
     </Widget>
     )
   }
+}
+
+ProductWidget.propTypes = {
+  uid: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired
 }
 
 function mapStateToProps(state) {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -366,6 +367,15 @@ class DetailsWidget extends React.PureComponent {
       </Widget>
     )
   }
+}
+
+DetailsWidget.propTypes = {
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  gender: PropTypes.bool,
+  email: PropTypes.string.isRequired,
+  phoneNumber: PropTypes.string,
+  photoURL: PropTypes.string,
 }
 
 function mapStateToProps(state) {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import { productActions } from '../../state/actions/product';
 
@@ -71,11 +72,23 @@ class Dashboard extends React.PureComponent {
                  selectedIndex={this.props.selectedProduct}>
         </SideBar>
         <Content>
-          <this.props.content {...this.props} />
+          <this.props.content content={this.props.content}
+                              finishLoading={this.props.finishLoading}
+          />
         </Content>
       </Grid>
     );
   }
+}
+
+Dashboard.propTypes = {
+  finishLoading: PropTypes.func.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  photoURL: PropTypes.string,
+  location: PropTypes.object.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired,
 }
 
 function mapStateToProps(state) {

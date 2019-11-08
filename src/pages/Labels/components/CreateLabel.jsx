@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from './../../../sharedComponents/Firebase';
 
@@ -218,11 +220,16 @@ class CreateLabel extends React.PureComponent {
   }
 }
 
+CreateLabel.proptypes = {
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired,
+  finished: PropTypes.func.isRequired,
+  exit: PropTypes.func.isRequired
+}
+
 function mapStateToProps(state) {
-    const { user } = state.authentication;
     const { products, selectedProduct } = state.product
     return {
-        user,
         products,
         selectedProduct
     };

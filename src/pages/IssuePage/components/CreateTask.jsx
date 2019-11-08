@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from './../../../sharedComponents/Firebase';
 
@@ -174,11 +176,16 @@ class CreateTask extends React.PureComponent {
   }
 }
 
+CreateTask.propTypes = {
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired,
+  issueId: PropTypes.string.isRequired,
+  exit: PropTypes.func.isRequired
+}
+
 function mapStateToProps(state) {
-    const { user } = state.authentication;
     const { products, selectedProduct } = state.product
     return {
-        user,
         products,
         selectedProduct
     };

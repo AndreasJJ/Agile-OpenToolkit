@@ -1,15 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import Poker from './Poker';
 import RoundResult from './RoundResult';
 import FinishScreen from './FinishScreen';
 
-import styled, { keyframes } from 'styled-components';
-
-
-const keyframe = keyframes`
-
-`
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -17,44 +12,34 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
+`
 
 
-export default class Game extends React.PureComponent {
+const Game = (props) => {
 
-   constructor(props) {
-    super(props)
+  const [state, setState] = useState(0)
 
-    this.state = {
-      state: 0
-    };
+  let component;
 
+  switch(state) {
+    case 0:
+      component = <Poker />
+      break;
+    case 1:
+      component = <RoundResult story={"A Test Story"} people={[{name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5},{name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}]} averageEstimate={5} />
+      break;
+    case 2:
+      component = <FinishScreen />
+      break;
   }
 
-  componentDidMount() {
-
-  }
-
-  render() {
-      let component;
-
-      switch(this.state.state) {
-        case 0:
-          component = <Poker />
-          break;
-        case 1:
-          component = <RoundResult story={"A Test Story"} people={[{name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5},{name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}, {name: "andreas", estimate: 5}]} averageEstimate={5} />
-          break;
-        case 2:
-          component = <FinishScreen />
-          break;
+  return (
+    <Wrapper>
+      {
+        component
       }
-      return (
-        <Wrapper>
-          {
-            component
-          }
-        </Wrapper>
-      );
-  }
+    </Wrapper>
+  );
 }
+
+export default Game

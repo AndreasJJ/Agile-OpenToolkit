@@ -1,6 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
@@ -36,7 +38,7 @@ class IssuePage extends React.PureComponent {
       creationTimestamp: new Date(),
       editedTimestamp: new Date(),
       creator: "",
-      lastEditer: "",
+      lastEditer: {},
       title: "",
       description: "",
       tasks: [],
@@ -45,6 +47,7 @@ class IssuePage extends React.PureComponent {
       dueDate: null,
       estimate: null,
       labels: [],
+      selectedLabels: [],
       editingIssue: false,
       originalTitle: "",
       originalDescription: ""
@@ -390,6 +393,15 @@ class IssuePage extends React.PureComponent {
         </Wrapper>
     );
   }
+}
+
+IssuePage.propTypes = {
+  finishLoading: PropTypes.func.isRequired,
+  uid: PropTypes.string.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired,
 }
 
 function mapStateToProps(state) {

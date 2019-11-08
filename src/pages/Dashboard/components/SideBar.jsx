@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as rLink } from 'react-router-dom'
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components'
 import {Home} from 'styled-icons/fa-solid/Home'
@@ -220,6 +221,15 @@ const SideBar = (props) => {
       </SideBarGrid>
     </SIDEBAR>
   );
+}
+
+SideBar.propTypes = {
+  selectedIndex: PropTypes.string.isRequired,
+  selectProduct: PropTypes.func.isRequired,
+  hidden: PropTypes.bool.isRequired,
+  location: PropTypes.object.isRequired,
+  products: PropTypes.array.isRequired,
+  onClickLogout: PropTypes.func.isRequired
 }
 
 export default SideBar;

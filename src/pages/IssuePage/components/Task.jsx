@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from './../../../sharedComponents/Firebase';
 import Select from './../../../sharedComponents/Select';
@@ -123,9 +125,9 @@ class Task extends React.PureComponent {
                         status: !this.state.checked ? "CLOSED" : "OPEN",
                         lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
                         lastEditer: {
-                          firstname: this.props.user.firstname,
-                          lastname: this.props.user.lastname,
-                          uid: this.props.user.uid,
+                          firstname: this.props.firstname,
+                          lastname: this.props.lastname,
+                          uid: this.props.uid,
 
                         }
                      })
@@ -196,11 +198,28 @@ class Task extends React.PureComponent {
   }
 }
 
+Task.propTypes = {
+  issueStatus: PropTypes.string.isRequired,
+  issueId: PropTypes.string.isRequired,
+  taskId: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  status: PropTypes.string.isRequired,
+  assignee: PropTypes.object.isRequired,
+  uid: PropTypes.string.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired
+}
+
 function mapStateToProps(state) {
-    const { user } = state.authentication;
+    const { uid, firstname, lastname } = state.authentication.user;
     const { products, selectedProduct } = state.product
     return {
-        user,
+        uid,
+        firstname,
+        lastname,
         products,
         selectedProduct
     };

@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import styled, {keyframes } from 'styled-components';
 
@@ -22,26 +23,22 @@ const Content = styled.div`
   background-color: #ffffff;
 `
 
-export default class Planning extends React.PureComponent {
+const Planning = (props) => {
+  useEffect(() => {
+    props.finishLoading()
+  }, [])
 
-   constructor(props) {
-    super(props)
+  return (
+    <Wrapper>
+      <Content>
 
-    this.state = {
-    };
-  }
-
-  componentDidMount() {
-    this.props.finishLoading()
-  }
-
-  render() {
-      return (
-        <Wrapper>
-          <Content>
-
-          </Content>
-        </Wrapper>
-      );
-  }
+      </Content>
+    </Wrapper>
+  );
 }
+
+Planning.proptypes = {
+  finishLoading: PropTypes.func.isRequired
+}
+
+export default Planning

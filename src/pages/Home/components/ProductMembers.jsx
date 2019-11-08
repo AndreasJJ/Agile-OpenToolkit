@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {PersonAdd} from 'styled-icons/material/PersonAdd';
@@ -130,6 +131,7 @@ export default class ProductMembers extends React.PureComponent {
         <Body>
           <MemberList>
             {this.state.members && 
+             this.state.members.length > 0 &&
              this.state.members.map((member, index) => 
                                       <ProductMembers.Member key={Object.keys(member)[0]} 
                                                              profilePicture={Object.values(member)[0].profilePicture} 
@@ -142,4 +144,18 @@ export default class ProductMembers extends React.PureComponent {
       </Wrapper>
     )
   }
+}
+
+ProductMembers.defaultProps = {
+  firstname: "",
+  lastname: ""
+}
+
+ProductMembers.propTypes = {
+  getMembers: PropTypes.func.isRequired,
+  products: PropTypes.array.isRequired,
+  productIndex: PropTypes.string.isRequired,
+  profilePicture: PropTypes.string,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired
 }

@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 
@@ -231,6 +233,12 @@ class Sprints extends React.PureComponent {
         </Wrapper>
     );
   }
+}
+
+Sprints.proptypes = {
+  finishLoading: PropTypes.func.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired
 }
 
 function mapStateToProps(state) {

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -37,17 +38,22 @@ const X = styled.div`
                                   supported by Chrome and Opera */
 `
 
-const Pill = (props) => {
+const Pill = ({text, onClear}) => {
   return (
     <Wrapper>
     	<Content>
-    		{props.text}
+    		{text}
     	</Content>
-    	<X onClick={() => props.onClear()}>
+    	<X onClick={() => onClear()}>
     		x
     	</X>
     </Wrapper>
   )
+}
+
+Pill.proptypes = {
+  text: PropTypes.string.isRequired,
+  onClear: PropTypes.func.isRequired
 }
 
 export default Pill

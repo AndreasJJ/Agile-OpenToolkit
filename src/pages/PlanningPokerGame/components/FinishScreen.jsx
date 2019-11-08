@@ -1,11 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 
-import styled, { keyframes } from 'styled-components';
-
-
-const keyframe = keyframes`
-
-`
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -16,25 +11,12 @@ const Wrapper = styled.div`
 `;
 
 
-export default class FinishScreen extends React.PureComponent {
+const FinishScreen = (props) => {
+  return (
+    <Wrapper>
 
-   constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-
-  componentDidMount() {
-
-  }
-
-  render() {
-      return (
-        <Wrapper>
-
-        </Wrapper>
-      );
-  }
+    </Wrapper>
+  );
 }
+
+export default FinishScreen

@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
@@ -272,7 +274,8 @@ class Backlog extends React.PureComponent {
                     )
                 :
                   this.state.issues && this.state.issues.map((issue, index) => 
-                      <Issue key={issue.id} 
+                      <Issue skeleton={false} 
+                             key={issue.id} 
                              issueId={issue.id} 
                              productId={this.props.products[this.props.selectedProduct].id}
                              title={issue.title} 
@@ -288,6 +291,12 @@ class Backlog extends React.PureComponent {
         </Wrapper>
       );
   }
+}
+
+Backlog.propTypes = {
+  finishLoading: PropTypes.func.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired
 }
 
 function mapStateToProps(state) {

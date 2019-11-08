@@ -55,7 +55,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-	   	const {dispatch, user} = this.props
+	   	const {dispatch} = this.props
 
 	    this.listener = this.props.firebase.onAuthUserListener(
 	      authUser => {
@@ -119,10 +119,8 @@ class App extends React.Component {
 
 function mapStateToProps(state) {
     const { alert } = state;
-    const { user } = state.authentication;
     return {
-        alert,
-        user
+        alert
     };
 }
 

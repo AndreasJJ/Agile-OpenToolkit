@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -15,6 +16,19 @@ const Select = (props) => {
       }
     </StyledSelect>
   )
+}
+
+Select.proptypes = {
+    styling: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    value: PropTypes.oneOfType([
+              PropTypes.string,
+              PropTypes.number
+            ]),
+    placeholderText: PropTypes.string.isRequired,
+    list: PropTypes.array.isRequired,
+    keyName: PropTypes.string.isRequired,
+    textName: PropTypes.string.isRequired
 }
 
 export default Select

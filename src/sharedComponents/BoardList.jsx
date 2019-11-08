@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {Add} from 'styled-icons/material/Add';
@@ -176,4 +177,10 @@ export default class BoardList extends React.PureComponent {
      </List>
     );
   }
+}
+
+BoardList.proptypes = {
+  sendStory: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  list: PropTypes.array.isRequired
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -59,17 +60,17 @@ const IssueNumber = styled.div`
 
 `
 
-const IssueList = (props) => {
+const IssueList = ({margin, title, issues}) => {
   return(
-    <Wrapper margin={props.margin}>
+    <Wrapper margin={margin}>
     <Content>
       <Header>
-        {props.title}
+        {title}
       </Header>
       <Body>
         {
-          props.issues 
-          && props.issues.map((issue, index) => 
+          issues 
+          && issues.map((issue, index) => 
              <Issue key={issue.number}>
                <IssueTitle><ReactLink to={"/backlog/issue/" + issue.id}>{issue.title}</ReactLink></IssueTitle>
                <IssueNumber>#{issue.number}</IssueNumber>
@@ -80,6 +81,12 @@ const IssueList = (props) => {
     </Content>
     </Wrapper>
   )
+}
+
+IssueList.proptypes = {
+  margin: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  issues: PropTypes.array.isRequired
 }
 
 export default IssueList

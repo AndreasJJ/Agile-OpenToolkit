@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -118,6 +119,11 @@ const Tabs = (props) => {
       </ActiveTabComponent>
     </Wrapper>
   )
+}
+
+Tabs.proptypes = {
+  tabNames: PropTypes.arrayOf(PropTypes.string).isRequired,
+  tabComponents: PropTypes.arrayOf(PropTypes.element).isRequired
 }
 
 export default Tabs

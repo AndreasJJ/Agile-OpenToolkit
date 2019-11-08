@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {Bars, SignOutAlt} from 'styled-icons/fa-solid'
@@ -84,6 +85,13 @@ const Header = (props) => {
       </TopBar>
     </HEADER>
   );
+}
+
+Header.propTypes = {
+  ProfilePicture: PropTypes.string,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  onClickCollapse: PropTypes.func.isRequired
 }
 
 export default Header;

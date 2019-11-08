@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import PropTypes from 'prop-types';
 
 import Card from './Card';
 import AddCard from './AddCard'
@@ -71,69 +72,60 @@ const AddButton = styled.button`
   width: 100%;
 `
 
-export default class Board extends React.PureComponent {
+const Board = (props) => {
+  const [wellCards, setWellCards] = useState([])
+  const [improvementCards, setImprovementCards] = useState([])
+  const [actionCards, setActionCards] = useState([])
 
- constructor(props) {
-    super(props)
-
-    this.state = {
-      wellCards: [],
-      improvementCards: [],
-      actionCards: []
-    };
-
-    this.clickedAddButton = this.clickedAddButton.bind(this)
-  }
-  componentDidMount() {
-    
-  }
-
-  clickedAddButton(e) {
+  const clickedAddButton = (e) => {
     switch(e.target.parentNode.parentNode.dataset.name) {
       case "well":
-        this.setState({wellCards: [...this.state.wellCards, <Card color={"#77dd77"} content={<AddCard />} />]})
+        setWellCards([...wellCards, <Card color={"#77dd77"} content={<AddCard />} />])
         break;
       case "improvements":
-        this.setState({improvementCards: [...this.state.improvementCards, <Card color={"#ff6961"} content={<AddCard />} />]})
+        setImprovementCards([...improvementCards, <Card color={"#ff6961"} content={<AddCard />} />])
         break;
       case "actions":
-        this.setState({actionCards: [...this.state.actionCards, <Card color={"#aec6cf"} content={<AddCard />} />]})
+        setActionCards([...actionCards, <Card color={"#aec6cf"} content={<AddCard />} />])
         break;
     }
   }
 
-  render() {
-      const {wellCards, improvementCards, actionCards} = this.state;
-      return (
-        <Wrapper>
-          <WellBoard data-name={"well"}>
-            <BoardHeader> 
-              <HeaderTitle color={"#77dd77"}>Went Well</HeaderTitle>
-              <AddButton onClick={this.clickedAddButton}><b>+</b></AddButton>
-            </BoardHeader>
-            <BoardBody>
-              {wellCards.length > 0 && wellCards.map((card, index) => card)}
-            </BoardBody>
-          </WellBoard>
-          <ImprovementsBoard data-name={"improvements"}>
-            <BoardHeader>
-              <HeaderTitle color={"#ff6961"}>Could've Been Better</HeaderTitle>
-              <AddButton onClick={this.clickedAddButton}><b>+</b></AddButton>
-            </BoardHeader>
-            <BoardBody>
-              {improvementCards.length > 0 && improvementCards.map((card, index) => card)}
-            </BoardBody>
-          </ImprovementsBoard>
-          <ActionsBoard data-name={"actions"}>
-            <BoardHeader>
-              <HeaderTitle color={"#aec6cf"}>Actions For Improvements</HeaderTitle>
-              <AddButton onClick={this.clickedAddButton}><b>+</b></AddButton>
-            </BoardHeader>
-            <BoardBody>
-              {actionCards.length > 0 && actionCards.map((card, index) => card)}
-            </BoardBody>
-          </ActionsBoard>
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <WellBoard data-name={"well"}>
+        <BoardHeader> 
+          <HeaderTitle color={"#77dd77"}>Went Well</HeaderTitle>
+          <AddButton onClick={clickedAddButton}><b>+</b></AddButton>
+        </BoardHeader>
+        <BoardBody>
+          {wellCards.length > 0 && wellCards.map((card, index) => card)}
+        </BoardBody>
+      </WellBoard>
+      <ImprovementsBoard data-name={"improvements"}>
+        <BoardHeader>
+          <HeaderTitle color={"#ff6961"}>Could've Been Better</HeaderTitle>
+          <AddButton onClick={clickedAddButton}><b>+</b></AddButton>
+        </BoardHeader>
+        <BoardBody>
+          {improvementCards.length > 0 && improvementCards.map((card, index) => card)}
+        </BoardBody>
+      </ImprovementsBoard>
+      <ActionsBoard data-name={"actions"}>
+        <BoardHeader>
+          <HeaderTitle color={"#aec6cf"}>Actions For Improvements</HeaderTitle>
+          <AddButton onClick={clickedAddButton}><b>+</b></AddButton>
+        </BoardHeader>
+        <BoardBody>
+          {actionCards.length > 0 && actionCards.map((card, index) => card)}
+        </BoardBody>
+      </ActionsBoard>
+    </Wrapper>
+  );
 }
+
+Board.proptypes = {
+
+}
+
+export default Board

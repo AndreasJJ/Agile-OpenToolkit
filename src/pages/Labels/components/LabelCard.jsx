@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -85,6 +86,17 @@ const LabelCard = (props) => {
       </ControlsWrapper>
     </Wrapper>
   )
+}
+
+LabelCard.proptypes = {
+  skeleton: PropTypes.bool.isRequired,
+  bgc: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  subscribed: PropTypes.bool.isRequired, 
+  unsubscribe: PropTypes.func.isRequired,
+  subscribe: PropTypes.func.isRequired,
+  deleteLabel: PropTypes.func.isRequired
 }
 
 export default LabelCard

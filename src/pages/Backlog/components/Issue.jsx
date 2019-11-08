@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../../sharedComponents/Firebase';
 
@@ -186,6 +188,22 @@ class Issue extends React.Component {
       </Wrapper>
     )
   }
+}
+
+Issue.defaultProps = {
+  productId: "",
+  issueId: ""
+}
+
+Issue.propTypes = {
+  skeleton: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  number: PropTypes.number.isRequired,
+  creationDate: PropTypes.string.isRequired,
+  status: PropTypes.string.isRequired,
+  updated: PropTypes.string.isRequired,
+  productId: PropTypes.string.isRequired,
+  issueId: PropTypes.string.isRequired
 }
 
 const firebaseIssue = compose(withFirebase)(Issue)

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {TrashAlt} from 'styled-icons/fa-solid/TrashAlt';
@@ -40,19 +41,8 @@ const RemoveButton = styled(TrashAlt)`
   background-color: transparent;
 `
 
-export default class Retrospective extends React.PureComponent {
-
- constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-    this.handleKeyDown = this.handleKeyDown.bind(this)
-  }
-  componentDidMount() {
-  }
-
-  handleKeyDown(e) {
+const Retrospective = (props) => {
+  const handleKeyDown = (e) => {
     // Reset field height
     e.target.style.height = 'inherit';
     // Get the computed styles for the element
@@ -66,15 +56,19 @@ export default class Retrospective extends React.PureComponent {
     e.target.style.height = `${height}px`;
   }
 
-  render() {
-      return (
-        <Wrapper>
-          <Input onKeyDown={this.handleKeyDown} />
-          <Controls> 
-            <AddButton> Add </AddButton>
-            <RemoveButton size="1.5em" />
-          </Controls>
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <Input onKeyDown={handleKeyDown} />
+      <Controls> 
+        <AddButton> Add </AddButton>
+        <RemoveButton size="1.5em" />
+      </Controls>
+    </Wrapper>
+  );
 }
+
+Retrospective.proptypes = {
+
+}
+
+export default Retrospective

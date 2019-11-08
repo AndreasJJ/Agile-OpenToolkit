@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { DateToLocalString } from '../../../sharedComponents/Utility';
 
@@ -67,7 +68,7 @@ export default class Sidebar extends React.PureComponent {
       selectedLabels: [],
       selectedSprint: 0,
       dueDate: this.props.dueDate,
-      estimate: ""
+      estimate: null
     }
     this.onChangeSprint = this.onChangeSprint.bind(this)
     this.onChangeDuedate = this.onChangeDuedate.bind(this)
@@ -356,4 +357,18 @@ export default class Sidebar extends React.PureComponent {
       </Wrapper>
     )
   }
+}
+
+Sidebar.propTypes = {
+  status: PropTypes.string.isRequired,
+  sprints: PropTypes.array.isRequired,
+  selectedSprint: PropTypes.string.isRequired,
+  dueDate: PropTypes.instanceOf(Date),
+  estimate: PropTypes.number,
+  labels: PropTypes.array.isRequired,
+  selectedLabels: PropTypes.array.isRequired,
+  updateSprint: PropTypes.func.isRequired,
+  updateDueDate: PropTypes.func.isRequired,
+  updateLabels: PropTypes.func.isRequired,
+  updateEstimate: PropTypes.func.isRequired
 }

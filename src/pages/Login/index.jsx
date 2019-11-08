@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 import { history } from '../../state/helpers/history';
@@ -170,8 +172,7 @@ class Login extends React.PureComponent {
     this.setCookie = this.setCookie.bind(this)
     this.login = this.login.bind(this)
     this.toRegister = this.toRegister.bind(this)
-    this.changeEmailInputValue = this.changeEmailInputValue.bind(this)
-    this.changePasswordInputValue = this.changePasswordInputValue.bind(this)
+    this.onChange = this.onChange.bind(this)
   }
 
   componentDidMount() {
@@ -206,15 +207,9 @@ class Login extends React.PureComponent {
     history.push('/register');
   }
 
-  changeEmailInputValue(value) {
+  onChange(e) {
     this.setState({
-      email: value
-    });
-  }
-
-  changePasswordInputValue(value) {
-    this.setState({
-      password: value
+      [e.target.name]: e.target.value
     });
   }
 
@@ -234,7 +229,7 @@ class Login extends React.PureComponent {
                               tabIndex={1} 
                               name="email" 
                               value={this.state.email} 
-                              onChange={e => this.changeEmailInputValue(e.target.value)} 
+                              onChange={this.onChange} 
                               placeholder="email" 
                               required />
                 </InputWrapper>
@@ -247,7 +242,7 @@ class Login extends React.PureComponent {
                                  tabIndex={2} 
                                  name="password" 
                                  value={this.state.password} 
-                                 onChange={e => this.changePasswordInputValue(e.target.value)} 
+                                 onChange={this.onChange} 
                                  placeholder="Password" 
                                  required />
                 </InputWrapper>
@@ -255,12 +250,12 @@ class Login extends React.PureComponent {
               <ButtonsWrapper>
                 <ToRegisterButton type="button" 
                                   tabIndex={4} 
-                                  onClick={e => this.toRegister(e)}>
+                                  onClick={this.toRegister}>
                     To Register
                 </ToRegisterButton>
                 <LoginButton type="submit" 
                              tabIndex={3} 
-                             onClick={e => this.login(e)}
+                             onClick={this.login}
                 >
                     Login
                 </LoginButton>
@@ -278,13 +273,10 @@ class Login extends React.PureComponent {
   }
 }
 
-function mapStateToProps(state) {
-    const { loggingIn } = state.authentication;
-    return {
-        loggingIn
-    };
+Login.proptypes = {
+  finishLoading: PropTypes.func.isRequired
 }
 
-const connectedLoginPage = connect(mapStateToProps)(Login);
+const connectedLoginPage = connect()(Login);
 const firebaseLoginPage = compose(withFirebase)(connectedLoginPage)
 export { firebaseLoginPage as Login }; 

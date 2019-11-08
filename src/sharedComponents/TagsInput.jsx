@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import Pill from './Pill'
+import Pill from './Pill';
 
 import styled from 'styled-components';
 
@@ -98,4 +99,8 @@ export default class TagsInput extends React.Component {
       </div>
     )
   }
+}
+
+TagsInput.proptypes = {
+  
 }

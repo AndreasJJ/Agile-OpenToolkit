@@ -1,5 +1,7 @@
-import { NProgress } from '@tanem/react-nprogress'
-import React from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import { NProgress } from '@tanem/react-nprogress';
 
 import styled from 'styled-components';
 
@@ -44,6 +46,11 @@ const Loader = (props) => {
 		)}
 		</NProgress>
     );
+}
+
+Loader.proptypes = {
+    isLoading: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired
 }
 
 export default Loader

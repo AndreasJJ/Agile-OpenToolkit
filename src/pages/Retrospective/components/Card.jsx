@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -15,25 +16,17 @@ const Wrapper = styled.div`
   box-sizing: border-box;
 `;
 
-export default class Card extends React.PureComponent {
-
- constructor(props) {
-    super(props)
-
-    this.state = {
-    };
-
-  }
-  componentDidMount() {
-    
-  }
-
-
-  render() {
-      return (
-        <Wrapper color={this.props.color}>
-          {this.props.content}
-        </Wrapper>
-      );
-  }
+const Card = ({color, content}) => {
+  return (
+    <Wrapper color={color}>
+      {content}
+    </Wrapper>
+  );
 }
+
+Card.proptypes = {
+  color: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired
+}
+
+export default Card

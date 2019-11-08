@@ -1,10 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect} from 'react';
+import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import BoardList from './../../sharedComponents/BoardList';
 import NewListButton from './../../sharedComponents/NewListButton';
-
-import io from 'socket.io-client';
 
 import styled from 'styled-components';
 
@@ -34,62 +33,59 @@ const ListWrapper = styled.div`
   white-space: nowrap;
 `;
 
-class Sprintboard extends React.PureComponent {
+const Sprintboard = ({finishLoading}) => {
+  const [listData, setListData] = useState({})
+  const [loading, setLoading] = useState(true)
+  const counter = useSelector(state => state.counter)
 
- constructor(props) {
-    super(props)
+  useEffect(() => {
+    finishLoading()
+  }, [])
 
-    this.state = {
-      listData: {},
-      loading: true
-    };
-  }
-
-  componentDidMount() {
-    this.props.finishLoading()
-  }
-
-  sendStory(data) {
+  const sendStory = (data) => {
 
   }
 
-  addList(list) {
+  const addList = (list) => {
     console.log(list)
   }
 
-  render() {
-      return (
-        <Wrapper>
-          <Board>
-            {
-              "lists" in this.state.listData
-              ?
-              this.state.listData["lists"].map((item, index) => {
-                return( 
-                <ListWrapper>
-                  <BoardList name={item.name} sendStory={this.sendStory} list={item.stories} key={index} />
-                </ListWrapper>)
-              })
-              :
-              this.state.loading ? <BoardList name="loading" list={[]} /> : null
-            }
-            <ListWrapper>
-              <NewListButton addList={this.addList} />
-            </ListWrapper>
-          </Board>
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <Board>
+        {
+          "lists" in listData
+          ?
+          listData["lists"].map((item, index) => {
+            return( 
+              <ListWrapper>
+                <BoardList name={item.name} 
+                           sendStory={sendStory} 
+                           list={item.stories} 
+                           key={index} 
+                />
+              </ListWrapper>
+            )
+          })
+          :
+            loading 
+            ? 
+              <BoardList name="loading" list={[]} /> 
+            : 
+              null
+        }
+        <ListWrapper>
+          <NewListButton addList={addList} />
+        </ListWrapper>
+      </Board>
+    </Wrapper>
+  );
 }
 
-function mapStateToProps(state) {
-    const { teams } = state.authentication.user;
-    const { selectedProduct } = state.product
-    return {
-        teams,
-        selectedProduct
-    };
+Sprintboard.propTypes = {
+  finishLoading: PropTypes.func.isRequired
 }
 
-const connectedSprintboard = connect(mapStateToProps)(Sprintboard);
-export { connectedSprintboard as Sprintboard }; 
+export { 
+  Sprintboard 
+} 

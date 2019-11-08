@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../../sharedComponents/Firebase';
 
@@ -160,7 +162,7 @@ const SubmitButton = styled.button`
 
 const Body = (props) => {
   const {status, editedTimestamp, lastEditer, 
-         showNewIssueModal, editingIssue, title, onChangeTitle, 
+         showNewIssueModal, showNewTaskModal, editingIssue, title, onChangeTitle, 
          saveEdit, discardEdit, changeToEditMode, description,
          issueId, productId, onChangeDescription, tasks,
          uid, firstname, lastname} = props
@@ -252,16 +254,16 @@ const Body = (props) => {
           <Tasks>
             {
               tasks && tasks.map((task, index) => 
-                                                        <Task issueStatus={props.status} 
-                                                              key={task.id} 
-                                                              issueId={props.issueId} 
-                                                              taskId={task.id} 
-                                                              title={task.title} 
-                                                              description={task.description} 
-                                                              status={task.status} 
-                                                              assignee={task.assignee} 
-                                                        />
-                                                      )
+                                  <Task issueStatus={props.status} 
+                                        key={task.id} 
+                                        issueId={props.issueId} 
+                                        taskId={task.id} 
+                                        title={task.title} 
+                                        description={task.description} 
+                                        status={task.status} 
+                                        assignee={task.assignee} 
+                                  />
+                                )
             }
           </Tasks>
         </TasksWrapper>
@@ -274,6 +276,28 @@ const Body = (props) => {
   )
 }
 
+Body.propTypes = {
+  status: PropTypes.string.isRequired,
+  issueId: PropTypes.string.isRequired,
+  showNewIssueModal: PropTypes.func.isRequired,
+  showNewTaskModal: PropTypes.func.isRequired,
+  editingIssue: PropTypes.bool.isRequired, 
+  title: PropTypes.string.isRequired, 
+  onChangeTitle: PropTypes.func.isRequired, 
+  saveEdit: PropTypes.func.isRequired, 
+  discardEdit: PropTypes.func.isRequired, 
+  changeToEditMode: PropTypes.func.isRequired, 
+  description: PropTypes.string.isRequired,
+  issueId: PropTypes.string.isRequired, 
+  productId: PropTypes.string.isRequired,
+  onChangeDescription: PropTypes.func.isRequired,
+  tasks: PropTypes.array.isRequired,
+  editedTimestamp: PropTypes.object.isRequired,
+  lastEditer: PropTypes.object.isRequired, 
+  uid: PropTypes.string.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired
+}
 
 function mapStateToProps(state) {
     const { uid, firstname, lastname } = state.authentication.user;

@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../sharedComponents/Firebase';
 import { history } from '../../state/helpers/history';
@@ -244,9 +246,7 @@ class Register extends React.PureComponent {
 
     this.setCookie = this.setCookie.bind(this)
     this.register = this.register.bind(this)
-    this.changeEmailInputValue = this.changeEmailInputValue.bind(this)
-    this.changePasswordInputValue = this.changePasswordInputValue.bind(this)
-    this.changeConfirmPasswordInputValue = this.changeConfirmPasswordInputValue.bind(this)
+    this.onChange = this.onChange.bind(this)
     this.validateEmail = this.validateEmail.bind(this)
     this.validateName = this.validateName.bind(this)
   }
@@ -319,33 +319,9 @@ class Register extends React.PureComponent {
     return re.test(name);
   } 
 
-  changeEmailInputValue(value) {
+  onChange(e) {
     this.setState({
-      email: value
-    });
-  }
-
-  changePasswordInputValue(value) {
-    this.setState({
-      password: value
-    });
-  }
-
-  changeConfirmPasswordInputValue(value) {
-    this.setState({
-      confirmPassword: value
-    });
-  }
-
-  changeFirstnameInputValue(value) {
-    this.setState({
-      firstname: value
-    });
-  }
-
-  changeLastnameInputValue(value) {
-    this.setState({
-      lastname: value
+      [e.target.name]: e.target.value
     });
   }
 
@@ -371,7 +347,7 @@ class Register extends React.PureComponent {
                                 tabIndex={1} 
                                 name="email" 
                                 value={this.state.eamil} 
-                                onChange={e => this.changeEmailInputValue(e.target.value)} 
+                                onChange={this.onChange} 
                                 placeholder="Email" 
                                 minlength="3" 
                                 maxlength="12" 
@@ -385,9 +361,9 @@ class Register extends React.PureComponent {
                       <User size="1em" />
                       <FirstnameInput type="text" 
                                       tabIndex={2} 
-                                      name="fistname" 
+                                      name="firstname" 
                                       value={this.state.firstname} 
-                                      onChange={e => this.changeFirstnameInputValue(e.target.value)} 
+                                      onChange={this.onChange} 
                                       placeholder="Firstname" 
                                       minlength="3" 
                                       required />
@@ -401,7 +377,7 @@ class Register extends React.PureComponent {
                                      tabIndex={3} 
                                      name="lastname" 
                                      value={this.state.lastname} 
-                                     onChange={e => this.changeLastnameInputValue(e.target.value)} 
+                                     onChange={this.onChange} 
                                      placeholder="Lastname" 
                                      minlength="3" 
                                      required />
@@ -416,7 +392,7 @@ class Register extends React.PureComponent {
                                    tabIndex={4} 
                                    name="password" 
                                    value={this.state.password} 
-                                   onChange={e => this.changePasswordInputValue(e.target.value)} 
+                                   onChange={this.onChange} 
                                    placeholder="Password" 
                                    minlength="6" 
                                    maxlength="32" 
@@ -429,9 +405,9 @@ class Register extends React.PureComponent {
                     <UnlockAlt size="1em" />
                     <ConfirmPasswordInput type="password" 
                                           tabIndex={5} 
-                                          name="confirm_password" 
+                                          name="confirmPassword" 
                                           value={this.state.confirmPassword} 
-                                          onChange={e => this.changeConfirmPasswordInputValue(e.target.value)} 
+                                          onChange={this.onChange} 
                                           placeholder="Confirm password" 
                                           minlength="6" 
                                           maxlength="32" 
@@ -441,13 +417,13 @@ class Register extends React.PureComponent {
                 <ButtonsWrapper>
                   <ToLoginButton type="button" 
                                  tabIndex={7} 
-                                 onClick={e => this.toLogin(e)}
+                                 onClick={this.toLogin}
                   >
                     To Login
                   </ToLoginButton>
                   <RegisterButton type="submit" 
                                   tabIndex={6} 
-                                  onClick={e => this.register(e)}
+                                  onClick={this.register}
                   >
                       Register
                   </RegisterButton>
@@ -465,13 +441,10 @@ class Register extends React.PureComponent {
   }
 }
 
-function mapStateToProps(state) {
-    const { loggingIn } = state.authentication;
-    return {
-        loggingIn
-    };
+Register.proptypes = {
+  finishLoading: PropTypes.func.isRequired
 }
 
-const connectedRegisterPage = connect(mapStateToProps)(Register);
+const connectedRegisterPage = connect()(Register);
 const firebaseRegisterPage = compose(withFirebase)(connectedRegisterPage)
 export { firebaseRegisterPage as Register }; 

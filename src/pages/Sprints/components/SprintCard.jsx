@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -88,6 +89,16 @@ const CreateIssue = (props) => {
       </ProgressWrapper>
     </Wrapper>
   )
+}
+
+CreateIssue.proptypes = {
+  skeleton: PropTypes.string.isRequired,
+  sprintId: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  startDate: PropTypes.string.isRequired,
+  dueDate: PropTypes.string.isRequired,
+  totalIssues: PropTypes.number.isRequired,
+  finishedIssues: PropTypes.number.isRequired
 }
 
 export default CreateIssue

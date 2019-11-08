@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import NotificationsWidget from './components/NotificationsWidget';
 import GraphWidget from './components/GraphWidget';
@@ -26,6 +27,10 @@ const Overview = (props) => {
       <NotificationsWidget />
     </Wrapper>
   );
+}
+
+Overview.proptypes = {
+  finishLoading: PropTypes.func.isRequired
 }
 
 export {

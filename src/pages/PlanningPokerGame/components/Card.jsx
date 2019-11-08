@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 
@@ -70,24 +71,23 @@ const BottomRight = styled.div`
   transform: rotate(180deg);
 `
 
-
-
-export default class Card extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-    }
-  }
-
-  render () {
-    return (
-      <PlayingCard selectedIndex={this.props.selectedCard} data-index={this.props.index} onClick={this.props.onclick}>
-        <TopLeft data-index={this.props.index} onClick={this.props.onclick}>{this.props.number}</TopLeft>
-        <TopRight data-index={this.props.index} onClick={this.props.onclick}>{this.props.number}</TopRight>
-        <Middle><span data-index={this.props.index} onClick={this.props.onclick}>{this.props.number}</span></Middle>
-        <BottomLeft data-index={this.props.index} onClick={this.props.onclick}>{this.props.number}</BottomLeft>
-        <BottomRight data-index={this.props.index} onClick={this.props.onclick}>{this.props.number}</BottomRight>
-      </PlayingCard>
-    )
-  }
+const Card =({selectedCard, index, onClick, number}) => {
+  return (
+    <PlayingCard selectedIndex={selectedCard} data-index={onclick} onClick={onclick}>
+      <TopLeft data-index={index} onClick={onclick}>{number}</TopLeft>
+      <TopRight data-index={index} onClick={onclick}>{number}</TopRight>
+      <Middle><span data-index={index} onClick={onclick}>{number}</span></Middle>
+      <BottomLeft data-index={index} onClick={onclick}>{number}</BottomLeft>
+      <BottomRight data-index={index} onClick={onclick}>{number}</BottomRight>
+    </PlayingCard>
+  )
 }
+
+Card.proptypes = {
+  selectedCard: PropTypes.string.isRequired,
+  index: PropTypes.string.isRequired,
+  onclick: PropTypes.func.isRequired,
+  number: PropTypes.string.isRequired
+}
+
+export default Card

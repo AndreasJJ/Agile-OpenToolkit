@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import {EnvelopeOpen} from 'styled-icons/fa-solid/EnvelopeOpen';
@@ -77,5 +78,10 @@ const JoinProductTeam = (props) => {
     </Wrapper>
   )
 }
+
+JoinProductTeam.propTypes = {
+
+}
+
 
 export default JoinProductTeam

@@ -1,6 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../../sharedComponents/Firebase';
 
@@ -127,10 +129,7 @@ class InformationWidget extends React.PureComponent {
     this.onEditButtonClick = this.onEditButtonClick.bind(this)
     this.onDeleteButtonClick = this.onDeleteButtonClick.bind(this)
     this.onSaveButtonClick = this.onSaveButtonClick.bind(this)
-    this.onTitleChange = this.onTitleChange.bind(this)
-    this.onDescriptionChange = this.onDescriptionChange.bind(this)
-    this.onStartDateChange = this.onStartDateChange.bind(this)
-    this.onDueDateChange = this.onDueDateChange.bind(this)
+    this.onChange = this.onChange.bind(this)
   }
 
   async componentDidMount() {
@@ -212,20 +211,18 @@ class InformationWidget extends React.PureComponent {
     this.setState({editing: false})
   }
 
-  onTitleChange(e) {
-    this.setState({title: e.target.value})
-  }
-
-  onDescriptionChange(e) {
+  onChange(e) {
     this.setState({description: e.target.value})
   }
 
-  onStartDateChange(e) {
-    this.setState({startDate: new Date(e.target.value)})
-  }
-
-  onDueDateChange(e) {
-    this.setState({dueDate: new Date(e.target.value)})
+  onChange(e) {
+    let val = e.target.value
+    if(e.target.name == "startDate" || e.target.name == "dueDate") {
+      val = new Date(val)
+    }
+    this.setState({
+      [e.target.name]: val
+    })
   }
 
   render () {
@@ -236,7 +233,7 @@ class InformationWidget extends React.PureComponent {
               {
                 this.state.editing
                 ?
-                  <TitleInput type="text" value={this.state.title} onChange={this.onTitleChange} />
+                  <TitleInput name="title" type="text" value={this.state.title} onChange={this.onChange} />
                 :
                   <Title>{this.state.title}</Title>
               }
@@ -254,7 +251,7 @@ class InformationWidget extends React.PureComponent {
             {
               this.state.editing
               ?
-                <DescriptionTextArea defaultValue={this.state.description} onChange={this.onDescriptionChange} />
+                <DescriptionTextArea name="description" defaultValue={this.state.description} onChange={this.onChange} />
               :
                 this.state.description
                 ?
@@ -268,7 +265,7 @@ class InformationWidget extends React.PureComponent {
                 {
                   this.state.editing
                   ?
-                    <DateInput type="date" value={DateToLocalString(this.state.startDate)} onChange={this.onStartDateChange} />
+                    <DateInput name="startDate" type="date" value={DateToLocalString(this.state.startDate)} onChange={this.onChange} />
                   :
                     <DateText>{DateToLocalString(this.state.startDate)}</DateText>
                 }
@@ -278,7 +275,7 @@ class InformationWidget extends React.PureComponent {
                 {
                   this.state.editing
                   ?
-                    <DateInput type="date" value={DateToLocalString(this.state.dueDate)} min={DateToLocalString(new Date(new Date().setDate((this.state.startDate).getDate() + 1)))} onChange={this.onDueDateChange} />
+                    <DateInput name="dueDate" type="date" value={DateToLocalString(this.state.dueDate)} min={DateToLocalString(new Date(new Date().setDate((this.state.startDate).getDate() + 1)))} onChange={this.onChange} />
                   :
                     <DateText>{DateToLocalString(this.state.dueDate)}</DateText>
                 }    
@@ -288,6 +285,14 @@ class InformationWidget extends React.PureComponent {
       </Wrapper>
     )
   }
+}
+
+InformationWidget.proptypes = {
+  uid: PropTypes.string.isRequired,
+  firstname: PropTypes.string.isRequired,
+  lastname: PropTypes.string.isRequired,
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired
 }
 
 function mapStateToProps(state) {

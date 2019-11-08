@@ -1,6 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
 import { compose } from 'recompose';
 import { withFirebase } from '../../../sharedComponents/Firebase';
 
@@ -78,6 +80,11 @@ class IssuesListsWidget extends React.PureComponent {
       </Wrapper>
     )
   }
+}
+
+IssuesListsWidget.proptypes = {
+  products: PropTypes.array.isRequired,
+  selectedProduct: PropTypes.string.isRequired
 }
 
 function mapStateToProps(state) {

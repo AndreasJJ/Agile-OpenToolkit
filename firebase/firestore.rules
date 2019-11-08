@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getRole(product) {
+      return get(/databases/$(database)/documents/products/$(product)/roles/$(request.auth.uid)).data.role
+    }
+    
+    function getSubscription() {
+      return get(/databases/$(database)/documents/subscriptions/$(request.auth.uid)).data.tier
+    }
+    
+		function memberOfProduct(product) {
+    		return exists(/databases/$(database)/documents/products/$(product)/members/$(request.auth.uid))
+    }
+    
+    function userExists(userId) {
+    	return exists(/databases/$(database)/documents/users/$(userId))
+    }
+  
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    match /users/{userID} {
+    	allow read: if (request.auth.uid == userID);
+      
+      allow write: if (request.auth.uid == userID) && 
+                      (request.resource.data.firstname.matches('[A-Za-z]{3,}')) &&
+                      (request.resource.data.lastname.matches('[A-Za-z]{3,}')) &&
+                      (request.resource.data.keys().hasOnly(["email", "firstname", "lastname"])) &&
+                      (request.resource.data.keys().hasAll(["email", "firstname", "lastname"]));
+
+    	match /products/{product} {
+      	allow read: if request.auth.uid == userID;
+        allow write: if false;
+      }
+    }
+    
+    match /roles/{userID} {
+      allow read: if (request.auth.uid == userID);
+      allow write: if false;
+    }
+
+    match /subscriptions/{userID} {
+      allow read: if (request.auth.uid == userID);
+      allow write: if false;
+    }
+    
+    match /organizations/{organization} {
+    	allow read: if false;
+      
+      allow write: if false;
+    }
+    
+    match /products/{product} {
+    	allow read: if memberOfProduct(product);
+      allow write: if getSubscription() > 0 
+      								&& request.resource.data.keys().hasOnly(["owner", "name", "description"])
+                      && request.resource.data.keys().hasAll(["owner", "name", "description"])
+                      && request.resource.data.owner.keys().hasOnly(["uid", "firstname", "lastname"])
+                      && request.resource.data.owner.keys().hasAll(["uid", "firstname", "lastname"])
+                      && userExists(request.resource.data.owner.uid);
+    	
+      match /teams/{team} {
+      	allow read, write: if false;
+      }
+      
+      match /members/{member} {
+      	allow read: if memberOfProduct(product);
+        allow write: if (getRole(product) > 0
+        								|| getAfter(/databases/$(database)/documents/products/$(product)).data.owner.uid == request.auth.uid)
+                        && request.resource.id != "members";
+      }
+      
+      match /roles/{member} {
+      	allow read: if false;
+        allow write: if getAfter(/databases/$(database)/documents/products/$(product)).data.owner.uid == request.auth.uid;
+      }
+      //TODO: Check that lastEditer was request.auth.uid and check that the timestamp is at the current time
+      //TODO: Check that creator and lastEditer contains uid, firstname and lastname
+      match /stories/{stories} {
+      	allow read: if memberOfProduct(product);
+      	allow create: if getRole(product) > 0
+        								&& request.resource.data.keys().hasOnly(["title", "description", "dueDate", "labels", "sprint", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer", "estimate"])
+                      	&& request.resource.data.keys().hasAll(["title", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer"])
+                        && request.resource.data.creator.keys().hasOnly(["uid", "firstname", "lastname"])
+                        && request.resource.data.creator.keys().hasAll(["uid", "firstname", "lastname"])
+                        && request.resource.data.lastEditer.keys().hasOnly(["uid", "firstname", "lastname"])
+                        && request.resource.data.lastEditer.keys().hasAll(["uid", "firstname", "lastname"])
+                        && request.resource.data.lastEditer.uid == request.auth.uid
+                        && request.resource.data.lastUpdateTimestamp == request.time
+                        && ((!math.isNaN(request.resource.data.estimate) && request.resource.data.keys().hasAll(["estimate"])) || !request.resource.data.keys().hasAll(["estimate"]) || request.resource.data.estimate == null)
+                        && (request.resource.data.labels.keys().hasOnly(get(/databases/$(database)/documents/products/$(product)/labels/list).data.list.keys()) || !request.resource.data.keys().hasAll(["labels"]));
+        allow update: if memberOfProduct(product)
+        								&& request.resource.data.keys().hasOnly(["title", "description", "dueDate", "labels", "sprint", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer", "estimate"])
+                      	&& request.resource.data.keys().hasAll(["title", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer"])
+                        && request.resource.data.creator.keys().hasOnly(["uid", "firstname", "lastname"])
+                        && request.resource.data.creator.keys().hasAll(["uid", "firstname", "lastname"])
+                        && request.resource.data.lastEditer.keys().hasOnly(["uid", "firstname", "lastname"])
+                        && request.resource.data.lastEditer.keys().hasAll(["uid", "firstname", "lastname"])
+                        && request.resource.data.lastEditer.uid == request.auth.uid
+                        && request.resource.data.lastUpdateTimestamp == request.time
+                        && ((!math.isNaN(request.resource.data.estimate) && request.resource.data.keys().hasAll(["estimate"])) || !request.resource.data.keys().hasAll(["estimate"]) || request.resource.data.estimate == null)
+                        && (request.resource.data.labels.keys().hasOnly(get(/databases/$(database)/documents/products/$(product)/labels/list).data.list.keys()) || !request.resource.data.keys().hasAll(["labels"]))
+        								&& (resource.data.status == "OPEN" || (request.resource.data.keys().hasAll(["status", "lastUpdateTimestamp", "lastEditer"]) && request.resource.data.status == "OPEN"));
+        allow delete: if false;
+          
+        match /tasks/{task} {
+      		allow read: if memberOfProduct(product);
+          allow create: if getRole(product) > 0
+        								&& request.resource.data.keys().hasOnly(["title", "description", "timestamp", "assignee", "status"])
+                      	&& request.resource.data.keys().hasAll(["title", "timestamp", "status"]);
+          allow update: if memberOfProduct(product)
+          							&& request.resource.data.keys().hasOnly(["title", "description", "timestamp", "assignee", "status", "lastUpdateTimestamp", "lastEditer"])
+                      	&& request.resource.data.keys().hasAll(["title", "timestamp", "status"])
+          							&& (resource.data.status == "OPEN" || (request.resource.data.keys().hasAll(["status", "lastUpdateTimestamp", "lastEditer"]) && request.resource.data.status == "OPEN"));
+          allow delete: if false;
+      	}
+      }
+      
+      match /labels/list {
+      	allow read: if memberOfProduct(product);
+      	allow create: if getRole(product) > 0
+        allow update: if getRole(product) > 0
+        allow delete: if false;
+      }
+      
+      match /sprints/{sprint} {
+      	allow read: if memberOfProduct(product);
+      	allow create: if memberOfProduct(product)
+        						  && request.resource.data.keys().hasOnly(["title", "description", "startDate", "dueDate"])
+                      && request.resource.data.keys().hasAll(["title", "startDate", "dueDate"]);
+        allow update: if memberOfProduct(product)
+        						  && request.resource.data.keys().hasOnly(["title", "description", "startDate", "dueDate", "finishedIssues", "totalIssues", "totalEstimate", "lastUpdateTimestamp", "lastEditer"])
+                      && request.resource.data.keys().hasAll(["title", "startDate", "dueDate", "lastUpdateTimestamp", "lastEditer"])
+                      && (request.resource.data.finishedIssues == resource.data.finishedIssues || !request.resource.data.keys().hasAll(["finishedIssues"]) || request.resource.data.finishedIssues == null)
+                      && (request.resource.data.totalIssues == resource.data.totalIssues || !request.resource.data.keys().hasAll(["totalIssues"]) || request.resource.data.totalIssues == null)
+                      && (request.resource.data.totalEstimate == resource.data.totalEstimate || !request.resource.data.keys().hasAll(["totalEstimate"]) || request.resource.data.totalEstimate == null)
+                      && request.resource.data.lastEditer.keys().hasOnly(["uid", "firstname", "lastname"])
+                      && request.resource.data.lastEditer.keys().hasAll(["uid", "firstname", "lastname"])
+                      && request.resource.data.lastEditer.uid == request.auth.uid
+                      && request.resource.data.lastUpdateTimestamp == request.time;
+        allow delete: if memberOfProduct(product);
+      }
+      
+      match /sprintBoards/{board} {
+      	allow write: if false;
+      }
+      
+      match /retrospectiveBoards/{board} {
+      	allow write: if false;
+      }
+      
+      match /planningGames/{game} {
+      	allow read, write: if false;
+      }
+    }
+  }
+}
