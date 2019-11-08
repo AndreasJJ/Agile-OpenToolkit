@@ -38,6 +38,13 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: Calc(50% - 1px) 2px Calc(50% - 1px);
   grid-template-rows: 100%;
+
+  @media only screen and (max-width: 800px) {
+    display: block;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
 `;
 
 const Left = styled.div`
@@ -46,6 +53,10 @@ const Left = styled.div`
 
 const Middle = styled.div`
   border: 1px dashed #000000;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `
 
 const Right = styled.div`
@@ -54,6 +65,10 @@ const Right = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `
 
 
@@ -138,6 +153,11 @@ const RegisterButton = styled.button`
   height: 50px;
   border-radius: 25px;
   border: none;
+
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 `;
 
 const ToLoginButton = styled.button`
@@ -153,6 +173,11 @@ const ToLoginButton = styled.button`
   min-width: 150px;
   height: 50px;
   border-radius: 25px;
+
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 `
 
 const Footer = styled.div`

@@ -30,11 +30,18 @@ const Wrapper = styled.div`
   padding: 55px 55px 37px 55px;
   background-color: #ffffff;
   -webkit-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
-     -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
-          box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+   -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
   display: grid;
   grid-template-columns: Calc(50% - 1px) 2px Calc(50% - 1px);
   grid-template-rows: 100%;
+
+  @media only screen and (max-width: 800px) {
+    display: block;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
 `;
 
 const Left = styled.div`
@@ -43,6 +50,10 @@ const Left = styled.div`
 
 const Middle = styled.div`
   border: 1px dashed #000000;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `
 
 const Right = styled.div`
@@ -51,6 +62,10 @@ const Right = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `
 
 const LoginForm = styled.form`
@@ -114,6 +129,11 @@ const LoginButton = styled.button`
   height: 50px;
   border-radius: 25px;
   border: none;
+
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 `;
 
 const ToRegisterButton = styled.button`
@@ -129,22 +149,14 @@ const ToRegisterButton = styled.button`
   min-width: 150px;
   height: 50px;
   border-radius: 25px;
+
+  @media only screen and (max-width: 800px) {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 `
 
-const EmailInput = styled.input`
-  font-size: 16px;
-  color: #0000000;
-  line-height: 1.2;
-  display: block;
-  width: 100%;
-  height: 45px;
-  background: transparent;
-  padding: 0 5px 0 38px;
-  border: none;
-  outline: none;
-`;
-
-const PasswordInput = styled.input`
+const Input = styled.input`
   font-size: 16px;
   color: #000000;
   line-height: 1.2;
@@ -225,7 +237,7 @@ class Login extends React.PureComponent {
                 <span>Email</span>
                 <InputWrapper>
                   <User size="1em" />
-                  <EmailInput type="text" 
+                  <Input type="text" 
                               tabIndex={1} 
                               name="email" 
                               value={this.state.email} 
@@ -238,7 +250,7 @@ class Login extends React.PureComponent {
                 <span>Password</span>
                 <InputWrapper>
                   <UnlockAlt size="1em" />
-                  <PasswordInput type="password" 
+                  <Input type="password" 
                                  tabIndex={2} 
                                  name="password" 
                                  value={this.state.password} 
