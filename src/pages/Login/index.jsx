@@ -9,6 +9,8 @@ import { history } from '../../state/helpers/history';
 import { alertActions } from '../../state/actions/alert';
 
 import sideImage from '../../assets/login_image';
+import Modal from '../../sharedComponents/Modal';
+import ForgotPassword from './components/ForgotPassword'
 
 import styled from 'styled-components';
 import {User} from 'styled-icons/fa-solid/User';
@@ -112,9 +114,18 @@ const ButtonsWrapper = styled.div`
 
 
 const Footer = styled.div`
-  text-align: center;
+  text-align: left;
   padding-top: 90px;
 `;
+
+const ForgotPasswordLink = styled.span`
+  
+  &:hover {
+    text-decoration: underline;
+    color: #1565f0;
+    cursor: default;
+  }
+`
 
 const LoginButton = styled.button`
   font-size: 16px;
@@ -177,6 +188,7 @@ class Login extends React.PureComponent {
     this.props.finishLoading()
 
     this.state = {
+      showModal: false,
       email: '',
       password: ''
     };
@@ -185,6 +197,8 @@ class Login extends React.PureComponent {
     this.login = this.login.bind(this)
     this.toRegister = this.toRegister.bind(this)
     this.onChange = this.onChange.bind(this)
+    this.onClickForgotPassword = this.onClickForgotPassword.bind(this)
+    this.closeModal = this.closeModal.bind(this)
   }
 
   componentDidMount() {
@@ -225,10 +239,28 @@ class Login extends React.PureComponent {
     });
   }
 
+  onClickForgotPassword() {
+    this.setState({showModal: true})
+  }
+
+  closeModal() {
+    this.setState({showModal: false})
+  }
+
   render() {
 
     return (
       <Container>
+        {
+            this.state.showModal
+            ?
+              <Modal content={<ForgotPassword finished={this.closeModal} />} 
+                     minWidth={"800px"} 
+                     exitModalCallback={this.closeModal} 
+              />
+            :
+              null
+        }
         <Wrapper>
           <Left>
             <LoginForm>
@@ -272,7 +304,11 @@ class Login extends React.PureComponent {
                     Login
                 </LoginButton>
               </ButtonsWrapper>
-              <Footer></Footer>
+              <Footer>
+                <ForgotPasswordLink onClick={this.onClickForgotPassword}>
+                  Forgot password
+                </ForgotPasswordLink>
+              </Footer>
             </LoginForm>
           </Left>
           <Middle></Middle>
