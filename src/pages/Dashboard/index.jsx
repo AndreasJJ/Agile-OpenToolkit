@@ -11,7 +11,7 @@ import SideBar from './components/SideBar';
 
 const Grid = styled.div`
     display: grid;
-    grid-template-columns: ${props => props.hidden ? "100px 1fr" : "200px calc(100% - 200px)"};
+    grid-template-columns: ${props => props.hidden ? "0px 1fr" : "200px calc(100% - 200px)"};
     grid-template-rows: 80px calc(100% - 80px);
     width: 100%;
     height: 100%;
