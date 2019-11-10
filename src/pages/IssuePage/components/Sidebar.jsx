@@ -19,6 +19,13 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   background-color: #ffffff;
+
+  @media only screen and (max-width: 800px) {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
 `
 
 const Content = styled.div`

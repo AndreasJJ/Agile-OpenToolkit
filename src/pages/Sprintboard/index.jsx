@@ -69,8 +69,9 @@ const Sprintboard = ({finishLoading}) => {
           })
           :
             loading 
-            ? 
-              <BoardList name="loading" list={[]} /> 
+            ? <ListWrapper>
+                <BoardList name="loading" list={[]} /> 
+              </ListWrapper>
             : 
               null
         }

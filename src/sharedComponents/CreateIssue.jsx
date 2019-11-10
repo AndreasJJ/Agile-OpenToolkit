@@ -44,6 +44,7 @@ const TitleWrapper = styled.div`
 const Title = styled.label`
   padding: 7px 15px 7px 15px;
   width: 100px;
+  min-width: 100px;
 `
 
 const TitleInput = styled.input`
@@ -62,6 +63,7 @@ const DescriptionWrapper = styled.div`
 const Description = styled.label`
   padding: 7px 15px 7px 15px;
   width: 100px;
+  min-width: 100px;
 `
 
 const DescriptionArea = styled.textarea`
@@ -76,18 +78,40 @@ const Options = styled.div`
   justify-content: space-evenly;
   align-items: center;
   padding-top: 15px;
+
+  @media only screen and (max-width: 800px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `
 
 const SprintWrapper = styled.div`
-
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+  }
 `
 
 const Sprint = styled.label`
   margin-right: 5px;
+
+  @media only screen and (max-width: 800px) {
+    width: 100px;
+    min-width: 100px;
+    margin-right: 0;
+    padding: 0px 15px;
+  }
 `
 
 const SprintSelect = styled.select`
   min-width: 80px;
+
+  @media only screen and (max-width: 800px) {
+    margin: 0px 15px;
+    width: 100%;
+  }
 `
 
 const LabelsWrapper = styled.div`
@@ -95,14 +119,33 @@ const LabelsWrapper = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+  }
 `
 
 const Labels = styled.label`
   margin-right: 5px;
+
+  @media only screen and (max-width: 800px) {
+    width: 100px;
+    min-width: 100px;
+    margin-right: 0;
+    padding: 0px 15px;
+  }
 `
 
 const LabelsSelect = styled.select`
   min-width: 80px;
+
+  @media only screen and (max-width: 800px) {
+    margin: 0px 15px;
+    width: 100%;
+  }
 `
 
 const Option = styled.option`
@@ -111,31 +154,62 @@ const Option = styled.option`
 `
 
 const DueDateWrapper = styled.div`
-
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+  }
 `
 
 const DueDate = styled.label`
   margin-right: 5px;
+
+  @media only screen and (max-width: 800px) {
+    width: 100px;
+    min-width: 100px;
+    margin-right: 0;
+    padding: 0px 15px;
+  }
 `
 
 const DateInput = styled.input`
-
+  @media only screen and (max-width: 800px) {
+    margin-right: 15px;
+    width: 100%;
+  }
 `
 
 const EnableDueDateInput = styled.input`
-
+  @media only screen and (max-width: 800px) {
+    margin-left: 0;
+    margin-left: 15px;
+  }
 `
 
 const EstimateWrapper = styled.div`
-
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+  }
 `
 
 const Estimate = styled.label`
-
+  @media only screen and (max-width: 800px) {
+    width: 100px;
+    min-width: 100px;
+    margin-right: 0;
+    padding: 0px 15px;
+  }
 `
 
 const EstimateInput = styled.input`
-
+  @media only screen and (max-width: 800px) {
+    margin: 0px 15px;
+    width: 100%;
+  }
 `
 
 const Action = styled.div`

@@ -21,6 +21,10 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+
+  @media only screen and (max-width: 800px) {
+    padding: 0;
+  }
 `;
 
 const Content = styled.div`
@@ -37,6 +41,7 @@ const Header = styled.div`
   background-color: white;
   width: 100%;
   height: 90px;
+  min-height: 90px;
   padding: 5px;
   box-sizing: border-box;
   display: flex;
@@ -47,6 +52,7 @@ const Controls = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 5px;
+  height: 100%;
 `
 
 const StateTabs = styled.div`
@@ -75,6 +81,7 @@ const Tab = styled.div`
 const NewIssue = styled.button`
   width: 88px;
   height: 35px;
+  max-height: 100%;
   background-color: #1aaa55;
   border-color: #168f48;
   color: #ffffff;
@@ -82,6 +89,7 @@ const NewIssue = styled.button`
 `
 
 const Search = styled.div`
+  height: 100%;
   flex-grow: 1;
   display: flex;
 `

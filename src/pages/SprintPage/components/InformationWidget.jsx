@@ -16,6 +16,10 @@ const Wrapper = styled.div`
   align-items: center;
   margin: 10px 20px 0px 20px;
   flex-grow: 1;
+
+  @media only screen and (max-width: 800px) {
+    margin: 0;
+  }
 `
 
 const Content = styled.div`

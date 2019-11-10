@@ -28,19 +28,33 @@ const Name = styled.span`
   line-height: 16px;
   border-radius: 100px;
   text-align: center;
-  white-space: nowrap
+  white-space: nowrap;
   color: ${props => props.skeleton ? "transparent" : "#ffffff" };
   background-color: ${props => props.skeleton ? "lightgray" : props.bgc};
+
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    white-space: normal;
+  }
 `
 
 const Description = styled.div`
   flex: 1;
   margin: 0px 10px;
-  overflow: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `
 
 const ControlsWrapper = styled.div`
-
+  @media only screen and (max-width: 800px) {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
 `
 
 const DeleteButton = styled.button`
@@ -51,6 +65,10 @@ const DeleteButton = styled.button`
   color: #ffffff;
   border-radius: 3px;
   margin: 0px 5px;
+
+  @media only screen and (max-width: 800px) {
+    margin: 5px;
+  }
 `
 
 const SubscribeButton = styled.button`
@@ -61,6 +79,10 @@ const SubscribeButton = styled.button`
   color: #ffffff;
   border-radius: 3px;
   margin: 0px 5px;
+
+  @media only screen and (max-width: 800px) {
+    margin: 5px;
+  }
 `
 
 const LabelCard = (props) => {

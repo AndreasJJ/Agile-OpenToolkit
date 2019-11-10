@@ -11,10 +11,17 @@ const Wrapper = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, calc(100%/3)));
-  grid-template-rows: 100%
+  grid-template-rows: 100%;
   grid-column-gap: 15px;
   padding: 20px;
   box-sizing: border-box;
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 100%;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-row-gap: 15px;
+    padding: 10px;
+  }
 `;
 
 const BoardHeader = styled.div`

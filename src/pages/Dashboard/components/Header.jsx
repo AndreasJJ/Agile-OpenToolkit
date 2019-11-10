@@ -13,10 +13,15 @@ const HEADER = styled.header`
     grid-column-start: 2;
     grid-column-end: 3;
     grid-row-start: 1;
-    grid-row-end: 1;
+    grid-row-end: 2;
     background-color: #ffffff;
     border-bottom: 1px solid #cccccc;
     z-index: 9;
+
+    @media only screen and (max-width: 800px) {
+      grid-column-start: ${props => props.hidden ? "1" : "2"};
+      grid-column-end: ${props => props.hidden ? "2" : "3"};
+    }
 `;
 
 const Collapse = styled.div`
@@ -63,9 +68,9 @@ const Username = styled.span`
 `
 
 const Header = (props) => {
-  const {ProfilePicture, firstname, lastname, onClickCollapse} = props
+  const {ProfilePicture, firstname, lastname, onClickCollapse, hidden} = props
   return (
-    <HEADER>
+    <HEADER hidden={hidden}>
       <Collapse onClick={() => {onClickCollapse()}}>
         <Bars size="1em" />
       </Collapse>
@@ -91,7 +96,8 @@ Header.propTypes = {
   ProfilePicture: PropTypes.string,
   firstname: PropTypes.string.isRequired,
   lastname: PropTypes.string.isRequired,
-  onClickCollapse: PropTypes.func.isRequired
+  onClickCollapse: PropTypes.func.isRequired,
+  hidden: PropTypes.bool.isRequired
 }
 
 export default Header;

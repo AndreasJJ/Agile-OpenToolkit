@@ -23,6 +23,11 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: calc(100% - 200px) 200px;
   grid-template-rows: 100%;
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
 `;
 
 
@@ -354,7 +359,7 @@ class IssuePage extends React.PureComponent {
             this.state.showModal
             ?
               <Modal content={modalContent} 
-                     minWidth={"800px"} 
+                     minWidth={"500px"} 
                      exitModalCallback={this.closeModal} 
               />
             :

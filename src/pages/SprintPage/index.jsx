@@ -12,6 +12,11 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 30% 70%;
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 100%;
+    grid-template-rows: 0.4fr 0.6fr;
+  }
 `;
 
 const SprintPage = ({finishLoading}) => {

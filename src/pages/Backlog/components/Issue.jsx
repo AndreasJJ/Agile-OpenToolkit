@@ -35,6 +35,12 @@ const Left = styled.div`
   }
 `
 
+const MetaInfo = styled.div`
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
+`
+
 const Right = styled.div`
   height: 100%;
   display: flex;
@@ -105,6 +111,7 @@ const TasksOpen = styled.div`
   justify-content: center;
   align-items: center;
   width: 50px;
+  min-width: 50px;
   pointer-events: ${props => props.skeleton ? "none" : null};
 `
 
@@ -153,19 +160,19 @@ class Issue extends React.Component {
                   {this.props.title}
                 </ReactLink>
               </div>
-              <div>
+              <MetaInfo>
                 <Id>#{this.props.number}</Id>
                 <span> · </span>
                 <Creation>Created {this.props.creationDate} by {this.props.creator}</Creation>
-              </div>
+              </MetaInfo>
             </Left>
             <Right skeleton={this.props.skeleton}>
               <div>
                 <Status>{this.props.status}</Status>
               </div>
-              <div>
+              <MetaInfo>
                 <Updated>{this.props.updated}</Updated>
-              </div>
+              </MetaInfo>
             </Right>
           </IssueInfo>
           <TasksOpen skeleton={this.props.skeleton} onClick={this.showTasks}>

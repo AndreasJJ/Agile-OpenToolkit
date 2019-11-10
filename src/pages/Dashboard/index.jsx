@@ -11,10 +11,14 @@ import SideBar from './components/SideBar';
 
 const Grid = styled.div`
     display: grid;
-    grid-template-columns: ${props => props.hidden ? "0px 100%" : "200px calc(100% - 200px);"};
+    grid-template-columns: ${props => props.hidden ? "100px 1fr" : "200px calc(100% - 200px)"};
     grid-template-rows: 80px calc(100% - 80px);
     width: 100%;
     height: 100%;
+
+    @media only screen and (max-width: 800px) {
+      grid-template-columns: ${props => props.hidden ? "1fr 0px" : "0px 1fr"};
+    }
 `
 
 const Content = styled.div`
@@ -26,6 +30,7 @@ const Content = styled.div`
     width: 100%;
     height: 100%;
     background-color: #f2f5ff;
+    overflow: auto;
 `;
 
 class Dashboard extends React.PureComponent {
@@ -40,6 +45,33 @@ class Dashboard extends React.PureComponent {
     this.collapseSideBar = this.collapseSideBar.bind(this)
     this.logout = this.logout.bind(this)
     this.selectProduct = this.selectProduct.bind(this)
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this)
+  }
+
+  componentDidMount() {
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+  }
+
+  componentDidUpdate(prevProps) {
+    if(this.state.width < 800) {
+      if(prevProps.location.key !== this.props.location.key) {
+        this.setState({
+          hidden: false
+        })
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+  updateWindowDimensions() {
+    this.setState({ 
+      width: window.innerWidth, 
+      height: window.innerHeight 
+    });
   }
 
   collapseSideBar() {
@@ -59,7 +91,8 @@ class Dashboard extends React.PureComponent {
   render() {
     return (
       <Grid hidden={this.state.hidden} >
-        <Header onClickCollapse={this.collapseSideBar} 
+        <Header onClickCollapse={this.collapseSideBar}
+                hidden={this.state.hidden}
                 firstname={this.props.firstname} 
                 lastname={this.props.lastname} 
                 profilePic={this.props.photoURL}>
@@ -71,7 +104,7 @@ class Dashboard extends React.PureComponent {
                  products={this.props.products} 
                  selectedIndex={this.props.selectedProduct}>
         </SideBar>
-        <Content>
+        <Content hidden={this.state.hidden}>
           <this.props.content content={this.props.content}
                               finishLoading={this.props.finishLoading}
           />

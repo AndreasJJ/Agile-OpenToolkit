@@ -10,6 +10,10 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+
+  @media only screen and (max-width: 800px) {
+    padding: 0;
+  }
 `;
 
 const Content = styled.div`

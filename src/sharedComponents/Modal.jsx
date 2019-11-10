@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 const Background = styled.div `
     z-index: 1000;
@@ -22,13 +22,18 @@ const Content = styled.div `
     height: 60%;
     max-width: ${props => props.maxWidth ? props.maxWidth : "800px"};
     min-width: ${props => props.minWidth ? props.minWidth : "500px"};
-    min-height: ${props => props.minHeight ? props.minHeight : "500px"};
+    min-height: ${props => props.minHeight ? props.minHeight : "510px"};
     border-radius: 6px;
     overflow: auto;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+
+    @media only screen and (max-width: 500px) {
+        border-radius: 0;
+        min-width: 100%;
+    }
 `
 
 const Modal = (props) => {

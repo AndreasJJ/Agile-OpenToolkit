@@ -24,6 +24,12 @@ const SIDEBAR = styled.aside`
     height: 100%;
     box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
     z-index: 10;
+
+    @media only screen and (max-width: 800px) {
+      display: ${props => props.hidden ? "block" : "none"};
+      grid-row-start: ${props => props.hidden ? "2" : "1"};
+      grid-row-end: ${props => props.hidden ? "3" : "3"};
+    }
 `
 
 const SideNav = styled.div`
@@ -56,6 +62,7 @@ const Menu = styled.ul`
     padding-inline-start: 0px;
     width: 100%;
     text-align: left;
+    overflow: auto;
 `;
 
 const MenuItem = styled.li`
@@ -86,6 +93,7 @@ const LogoWrapper = styled.div`
     padding: 5px;
     justify-content: center;
     align-items: center;
+    position: relative;
 `;
 
 const Logo = styled.span`

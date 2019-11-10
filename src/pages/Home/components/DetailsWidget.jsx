@@ -17,6 +17,13 @@ const Widget = styled.div`
   -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
   box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
   background-color: #ffffff;
+
+  @media only screen and (max-width: 800px) {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
 `
 
 const Content = styled.div`

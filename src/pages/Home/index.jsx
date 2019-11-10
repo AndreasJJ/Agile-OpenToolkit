@@ -11,8 +11,13 @@ const Wrapper = styled.div`
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template-columns: 50% 50%;
-  grid-template-rows: 100%;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
 `;
 
 export class Home extends React.PureComponent {

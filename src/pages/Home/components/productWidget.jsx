@@ -31,6 +31,13 @@ const Widget = styled.div`
   -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
   box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
   background-color: #ffffff;
+
+  @media only screen and (max-width: 800px) {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+  }
 `
 
 const Content = styled.div`
@@ -50,13 +57,11 @@ const WidgetBody = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 10px
 `
 
 const ProductList = styled.div`
   flex-grow: 1;
-  height: 100%;
   overflow: auto;
 `
 
@@ -129,7 +134,14 @@ class ProductWidget extends React.PureComponent {
                                                 return obj
                                               })
                                               let globalSelectedProduct = this.props.products[this.props.selectedProduct]
-                                              let newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
+                                              
+                                              let newGlobalSelectedProductIndex;
+                                              if(globalSelectedProduct) {
+                                                newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
+                                              } else {
+                                                newGlobalSelectedProductIndex = 0
+                                              }
+                                              
 
                                               await this.setState({products: tempArray, loading: false})
 

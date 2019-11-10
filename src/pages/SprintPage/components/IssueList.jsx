@@ -9,6 +9,10 @@ const Wrapper = styled.div`
   align-items: flex-start;
   margin: ${props => props.margin ? props.margin : "none"}
   box-sizing: border-box;
+
+  @media only screen and (max-width: 800px) {
+    margin: 10px 0;
+  }
 `
 
 const Content = styled.div`

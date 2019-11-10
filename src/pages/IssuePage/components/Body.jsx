@@ -23,7 +23,11 @@ const Issue = styled.div`
   width: 100%;
   height: 100%;
   padding: 50px;
-  box-sizing: border-box
+  box-sizing: border-box;
+
+  @media only screen and (max-width: 800px) {
+    padding: 0;
+  }
 `
 
 const IssueContent = styled.div`
@@ -50,7 +54,9 @@ const Left = styled.div`
 `
 
 const Right = styled.div`
-
+  @media only screen and (max-width: 800px) {
+    margin: 0;
+  }
 `
 
 const Button = styled.button`
@@ -60,6 +66,11 @@ const Button = styled.button`
   color: #ffffff;
   border-radius: 3px;
   margin-left: 5px;
+
+  @media only screen and (max-width: 800px) {
+    width: ${props => props.responsive ? "100%" : null };
+    margin: ${props => props.responsive ? "0px 0 5px 0" : null };
+  }
 `
 
 const EditButton = styled.div`
@@ -195,10 +206,10 @@ const Body = (props) => {
             <b>{lastEditer ? lastEditer.firstname + " " + lastEditer.lastname : ""}</b>
           </Left>
           <Right>
-            <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={(e) => issueStatusChange()}>
+            <Button responsive={true} backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={(e) => issueStatusChange()}>
               {status.toLowerCase() == "open" ? "Close" : "Reopen"}
             </Button>
-            <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={(e) => showNewIssueModal()}>
+            <Button responsive={true} backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={(e) => showNewIssueModal()}>
               New Issue
             </Button>
           </Right>
@@ -246,7 +257,7 @@ const Body = (props) => {
             {
               status.toLowerCase() === "open"
               ?
-                <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={() => showNewTaskModal()}>New Task</Button>
+                <Button responsive={false} backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={() => showNewTaskModal()}>New Task</Button>
               :
                 null
             }

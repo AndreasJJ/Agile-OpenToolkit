@@ -14,15 +14,23 @@ const Wrapper = styled.div`
   display flex;
   box-sizing: border-box;
   margin: 10px 20px 10px 20px;
+
+  @media only screen and (max-width: 800px) {
+    margin: 0;
+  }
 `
 
 const Content = styled.div`
-  
   max-height: 100%;
   width: 100%;
   display: grid;  
   grid-template-columns: Calc(100% / 3) Calc(100% / 3) Calc(100% / 3);
   grid-template-rows: 100%;
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }  
 `
 
 class IssuesListsWidget extends React.PureComponent {

@@ -44,14 +44,14 @@ const Title = styled.div`
 
 const Task = (props) => {
   const {assigne, status, title} = props
-  const {profilePicture, firstname, lastname} = assigne
+
   return(
     <Wrapper>
       <Left>
           {
             assigne
             ?
-              <ProfilePicture src={profilePicture ? profilePicture : BlankProfilePicture} />
+              <ProfilePicture src={assigne.profilePicture ? assigne.profilePicture : BlankProfilePicture} />
             :
               null
           }
@@ -63,7 +63,7 @@ const Task = (props) => {
             {
               assigne
               ?
-                "Assigne: " + firstname.charAt(0).toUpperCase() + firstname.slice(1) + " " + lastname
+                "Assigne: " + assigne.firstname.charAt(0).toUpperCase() + assigne.firstname.slice(1) + " " + assigne.lastname
               :
                 null
             }

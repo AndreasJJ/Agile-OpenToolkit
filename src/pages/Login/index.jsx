@@ -110,6 +110,10 @@ const ButtonsWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+
+  @media only screen and (max-width: 800px) {
+    flex-direction: column-reverse;
+  }
 `;
 
 

@@ -46,7 +46,8 @@ const TaskDescription = styled.div`
 `
 
 const TaskAssignation = styled.div`
-
+  display: flex;
+  align-items: center;
 `
 
 const CheckBoxLabel = styled.label`

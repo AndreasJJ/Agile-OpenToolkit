@@ -40,6 +40,7 @@ const TitleWrapper = styled.div`
 const Title = styled.label`
   padding: 7px 15px 7px 15px;
   width: 100px;
+  min-width: 100px;
 `
 
 const TitleInput = styled.input`
@@ -56,6 +57,7 @@ const DescriptionWrapper = styled.div`
 const Description = styled.label`
   padding: 7px 15px 7px 15px;
   width: 100px;
+  min-width: 100px;
 `
 
 const DescriptionInput = styled.input`
@@ -73,6 +75,7 @@ const ColorSelectWrapper = styled.div`
 const ColorSelect = styled.label`
   padding: 7px 15px 7px 15px;
   width: 100px;
+  min-width: 100px;
 `
 
 const ColorInput = styled.input`
