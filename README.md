@@ -1,13 +1,16 @@
-# Agile-Toolkit-Frontend
+# Agile Toolkit
 Frontend system for Agile Toolkit
-
 
 ## Tech used
 
 ### Frontend
  * React
  * Redux
- * ... see package.json for detailed overview
+ * react-fullpage
+ * react-nprogress
+ * chart.js
+ * Styled-components
+ * ...
 
 ### Backend
  * Firebase
