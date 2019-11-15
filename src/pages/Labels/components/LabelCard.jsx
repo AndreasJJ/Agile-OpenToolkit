@@ -19,10 +19,6 @@ const Wrapper = styled.div`
   }
 `
 
-const NameWrapper = styled.div`
-
-`
-
 const Name = styled.span`
   padding: 4px 8px;
   line-height: 16px;
@@ -90,11 +86,11 @@ const LabelCard = (props) => {
          unsubscribe, subscribe, deleteLabel} = props
   return (
     <Wrapper>
-      <NameWrapper>
+      <div>
         <Name skeleton={skeleton} bgc={bgc}>
           {name}
         </Name>
-      </NameWrapper>
+      </div>
       <Description>
         {description}
       </Description>

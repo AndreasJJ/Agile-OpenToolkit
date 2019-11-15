@@ -41,10 +41,6 @@ const ReactLink = styled(Link)`
   }
 `
 
-const Dates = styled.div`
-
-`
-
 const ProgressWrapper = styled.div`
   width: 50%;
 `
@@ -72,9 +68,9 @@ const CreateIssue = (props) => {
     <Wrapper>
       <Left skeleton={skeleton}>
         <ReactLink skeleton={skeleton} to={"/sprints/" + sprintId}>{title}</ReactLink>
-        <Dates>
+        <div>
           {startDate} / {dueDate}
-        </Dates>
+        </div>
       </Left>
       <ProgressWrapper>
         <ProgressBar max={100} value={totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}>{totalIssues === 0 ? 100 : (finishedIssues / totalIssues)*100}</ProgressBar>

@@ -21,10 +21,6 @@ const Left = styled.div`
   align-items: center;
 `
 
-const Right = styled.div`
-
-`
-
 const ProfilePicture = styled.img`
   height: 40px;
   width: 40px;
@@ -70,9 +66,8 @@ const Task = (props) => {
           </div>
         </Text>
       </Left>
-      <Right>
-
-      </Right>
+      <div>
+      </div>
     </Wrapper>
   )
 }

@@ -24,10 +24,6 @@ const Body = styled.form`
   align-items: center;
 `
 
-const Form = styled.div`
-
-`
-
 const Info = styled.div`
   display: flex;
   flex-direction: column;
@@ -70,10 +66,10 @@ const JoinProductTeam = (props) => {
                     ask your invitor to invite you once more.
             </Message>
          </Info>
-         <Form>
+         <div>
            <Input placeholder="Enter invitation code" />
            <SubmitButton>Join Team</SubmitButton>
-         </Form>
+         </div>
        </Body>
     </Wrapper>
   )

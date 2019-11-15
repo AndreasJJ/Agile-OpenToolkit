@@ -69,22 +69,6 @@ const ReactLink = styled(Link)`
   }
 `
 
-const Id = styled.span`
-
-`
-
-const Creation = styled.span`
-
-`
-
-const Updated = styled.span`
-
-`
-
-const Status = styled.span`
-
-`
-
 const Card = styled.div`
   width: 100%;
   height: 60px;
@@ -161,17 +145,17 @@ class Issue extends React.Component {
                 </ReactLink>
               </div>
               <MetaInfo>
-                <Id>#{this.props.number}</Id>
+                <span>#{this.props.number}</span>
                 <span> · </span>
-                <Creation>Created {this.props.creationDate} by {this.props.creator}</Creation>
+                <span>Created {this.props.creationDate} by {this.props.creator}</span>
               </MetaInfo>
             </Left>
             <Right skeleton={this.props.skeleton}>
               <div>
-                <Status>{this.props.status}</Status>
+                <span>{this.props.status}</span>
               </div>
               <MetaInfo>
-                <Updated>{this.props.updated}</Updated>
+                <span>{this.props.updated}</span>
               </MetaInfo>
             </Right>
           </IssueInfo>
@@ -187,9 +171,13 @@ class Issue extends React.Component {
         </Card>
         <Tasks displaying={this.state.taskVisible}>
           {
-            this.state.tasks && this.state.tasks.map((task, index) => 
-                                                      <Task key={index} title={task.title} assigne={task.assignee} status={task.status} />
-                                                    )
+            this.state.tasks && 
+            this.state.tasks.map((task, index) => 
+                                  <Task key={index} 
+                                        title={task.title}
+                                        assigne={task.assignee} 
+                                        status={task.status} />
+                                )
           }
         </Tasks>
       </Wrapper>

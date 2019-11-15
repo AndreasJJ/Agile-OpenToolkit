@@ -63,10 +63,6 @@ const ProfileInfo = styled.div`
   padding: 0px 10px 0px 10px;
 `
 
-const Username = styled.span`
-
-`
-
 const Header = (props) => {
   const {ProfilePicture, firstname, lastname, onClickCollapse, hidden} = props
   return (
@@ -78,13 +74,13 @@ const Header = (props) => {
           <ProfileCard>
             <ProfileImage src={ProfilePicture ? ProfilePicture : BlankProfilePicture}/>
             <ProfileInfo>
-              <Username>
+              <span>
                 {
                   (firstname ? (firstname.charAt(0).toUpperCase() + firstname.slice(1)) : null) 
                   + " " 
                   + (lastname ? (lastname) : null)
                 }
-              </Username>
+              </span>
             </ProfileInfo>
           </ProfileCard>
       </TopBar>

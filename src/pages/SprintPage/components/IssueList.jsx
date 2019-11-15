@@ -60,10 +60,6 @@ const ReactLink = styled(Link)`
   }
 `
 
-const IssueNumber = styled.div`
-
-`
-
 const IssueList = ({margin, title, issues}) => {
   return(
     <Wrapper margin={margin}>
@@ -77,7 +73,7 @@ const IssueList = ({margin, title, issues}) => {
           && issues.map((issue, index) => 
              <Issue key={issue.number}>
                <IssueTitle><ReactLink to={"/backlog/issue/" + issue.id}>{issue.title}</ReactLink></IssueTitle>
-               <IssueNumber>#{issue.number}</IssueNumber>
+               <div>#{issue.number}</div>
              </Issue>
            )
         }

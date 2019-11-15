@@ -15,10 +15,6 @@ const Wrapper = styled.div`
   box-sizing: border-box;
 `
 
-const Header = styled.div`
-
-`
-
 const TopBarPadding = styled.div`
   padding: 10px;
   border-bottom: 2px solid #F4F4F4;
@@ -116,7 +112,7 @@ export default class ProductMembers extends React.PureComponent {
   render () {
     return(
       <Wrapper>
-        <Header>
+        <div>
           <TopBarPadding>
             <TopBar>
               <span>Members</span>
@@ -127,7 +123,7 @@ export default class ProductMembers extends React.PureComponent {
               <PersonAdd size="1em" /> Add member
             </AddMember>
           </ButtonWrapper>
-        </Header>
+        </div>
         <Body>
           <MemberList>
             {this.state.members && 
