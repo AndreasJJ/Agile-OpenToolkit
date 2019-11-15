@@ -1,13 +1,16 @@
-# Agile-Toolkit-Frontend
+# Agile Toolkit
 Frontend system for Agile Toolkit
-
 
 ## Tech used
 
 ### Frontend
  * React
  * Redux
- * ... see package.json for detailed overview
+ * react-fullpage
+ * react-nprogress
+ * chart.js
+ * Styled-components
+ * ...
 
 ### Backend
  * Firebase
@@ -15,42 +18,20 @@ Frontend system for Agile Toolkit
    * Firestore
    * Cloud functions
 
-### Linting and testing
- * Husky
- * Eslint
- * <todo>
-
 ## Linting and Testing
 Both linting and testing will run precommit and prepush (with husky) to make sure the code is of satisfactory quality.
 
+## Pre-commit and Pre-push
+* Linting will run pre-commit
+* Linting and testing will run pre-push
+
 ### Linting
-We use eslint with the StandardJS code style (with semicolons always).
+We use eslint AirBnB.
 
 ### Testing
-<todo>
+The underlying test engine is Jest for all testing.
+Testing RectJs and Redux:
+* React Testing Library
 
-## Screenshots
-
-### Splash
-![Splash](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/splash.gif?raw=true)
-
-### Login
-![Login](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/login.png?raw=true)
-
-### Register
-![Register](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/register.png?raw=true)
-
-### Overview
-![Overview](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/Overview.png?raw=true)
-
-### Backlog
-![Backlog](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/Backlog.png?raw=true)
-
-### Sprintboard
-![Sprintboard](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/sprintboard.png?raw=true)
-
-### Planning Poker
-![Planning Poker](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/planningPoker.png?raw=true)
-
-### Retrospective
-![Retrospective](https://github.com/AndreasJJ/Agile-Toolkit-Frontend/blob/master/READ_ME/Retrospective.png?raw=true)
+Testing Firebase:
+* Firebase's proprietary test SDK 
