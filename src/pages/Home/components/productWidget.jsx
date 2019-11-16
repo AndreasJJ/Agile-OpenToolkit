@@ -12,13 +12,12 @@ import { alertActions } from '../../../state/actions/alert';
 import JoinProductTeam from './JoinProductTeam';
 import { CreateNewProduct } from './CreateNewProduct';
 import ProductMembers from './ProductMembers';
+import Product from './Product'
 
 import Modal from '../../../sharedComponents/Modal';
 import Tabs from '../../../sharedComponents/Tabs';
 
 import styled from 'styled-components';
-import {People} from 'styled-icons/material/People';
-import {Crown} from 'styled-icons/fa-solid/Crown';
 
 const Widget = styled.div`
   grid-column-start: 1;
@@ -58,35 +57,12 @@ const WidgetBody = styled.div`
   display: flex;
   flex-direction: column;
   padding: 10px
+  overflow: auto;
 `
 
 const ProductList = styled.div`
   flex-grow: 1;
   overflow: auto;
-`
-
-const ProductCard = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 5px;
-  border-bottom: 0.5px solid lightgray;
-  padding-bottom: 5px;
-`
-
-const Left = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  & > span {
-    margin-bottom: 2px;
-    color: ${props => props.skeleton ? "transparent" : null} !important;
-    background-color: ${props => props.skeleton ? "lightgray" : null}
-  }
-`
-
-const Members = styled.button`
-  height: 30px;
 `
 
 const AddProductButton = styled.button`
@@ -106,6 +82,7 @@ class ProductWidget extends React.PureComponent {
     super(props)
 
     this.state = {
+      firstProductLoad: true,
       loading: true,
       products: [],
       showModal: false,
@@ -114,7 +91,6 @@ class ProductWidget extends React.PureComponent {
     };
 
     this.createProduct = this.createProduct.bind(this)
-    this.productAdded = this.productAdded.bind(this)
     this.AddProductButtonClicked = this.AddProductButtonClicked.bind(this)
     this.getMembers = this.getMembers.bind(this)
     this.showMembersButtonClicked = this.showMembersButtonClicked.bind(this)
@@ -122,34 +98,41 @@ class ProductWidget extends React.PureComponent {
   }
 
   async componentDidMount() {
+    const onSnapshot = async (querySnapshot) => {
+      let tempArray = querySnapshot.docs.map((doc) => {
+                                                let obj = doc.data()
+                                                obj.id = doc.id
+                                                return obj
+                                              })
+      let globalSelectedProduct = this.props.products[this.props.selectedProduct]
+      
+      let newGlobalSelectedProductIndex;
+      if(globalSelectedProduct) {
+        newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
+      } else {
+        newGlobalSelectedProductIndex = 0
+      }
+
+      if(tempArray.length > this.state.products.length && !this.state.loading) {
+        this.props.dispatch(alertActions.clear())
+        this.props.dispatch(alertActions.success('Product successfully added'))
+      }
+
+      await this.setState({products: tempArray, loading: false})
+
+      this.props.dispatch(productActions.getProducts(tempArray))
+      if(this.props.selectedProduct !== newGlobalSelectedProductIndex) {
+        this.props.dispatch(productActions.selectProductRecalibration(newGlobalSelectedProductIndex))
+      }
+    }
+
     this.productListener = await this.props.firebase
                                            .db
                                            .collection('users')
                                            .doc(this.props.uid)
                                            .collection('products')
-                                           .onSnapshot(async function(querySnapshot) {
-                                              let tempArray = querySnapshot.docs.map((doc) => {
-                                                let obj = doc.data()
-                                                obj.id = doc.id
-                                                return obj
-                                              })
-                                              let globalSelectedProduct = this.props.products[this.props.selectedProduct]
-                                              
-                                              let newGlobalSelectedProductIndex;
-                                              if(globalSelectedProduct) {
-                                                newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
-                                              } else {
-                                                newGlobalSelectedProductIndex = 0
-                                              }
-                                              
+                                           .onSnapshot(onSnapshot);
 
-                                              await this.setState({products: tempArray, loading: false})
-
-                                              this.props.dispatch(productActions.getProducts(tempArray))
-                                              if(this.props.selectedProduct !== newGlobalSelectedProductIndex) {
-                                                this.props.dispatch(productActions.selectProductRecalibration(newGlobalSelectedProductIndex))
-                                              }
-                                            }.bind(this));
   }
 
   componentWillUnmount() {
@@ -194,13 +177,9 @@ class ProductWidget extends React.PureComponent {
       lastname: this.props.lastname
     });
     
-    batch.commit().then(function () {
-        
+    batch.commit().then(() => {
+        this.props.dispatch(alertActions.info('Please wait while we create your new product'))
     });
-  }
-
-  productAdded() {
-    this.props.dispatch(alertActions.success('Team successfully added'))
   }
 
   AddProductButtonClicked() {
@@ -234,34 +213,6 @@ class ProductWidget extends React.PureComponent {
   closeModal() {
     this.setState({showModal: false, modalContent: ""})
   }
-
-  static Product = (props) => (
-      <ProductCard data-productindex={props.productIndex}>
-        <Left skeleton={props.skeleton}>
-          <span><b>{props.name}</b></span>
-          <span>
-            <Crown size="1em" />
-            <i>
-              {
-                props.owner.firstname 
-                ? 
-                  (" " + props.owner.firstname.charAt(0).toUpperCase() + props.owner.firstname.slice(1)) 
-                : 
-                  null 
-              }
-              {
-                props.owner.lastname 
-                ? 
-                  (" " + props.owner.lastname) 
-                : 
-                  null
-              }
-            </i>
-          </span>
-        </Left>
-        <Members onClick={props.onclick}> <People size="1em" /></Members>
-      </ProductCard>
-  );
 
   render () {
     let modal = <Modal />
@@ -300,22 +251,24 @@ class ProductWidget extends React.PureComponent {
           <ProductList>
             {this.state.loading
              ?
-               (["skeletonProduct1", "skeletonProduct2", "skeletonProduct3"]).map((key, index) => 
-                                                                                    <ProductWidget.Product skeleton={true} 
-                                                                                                           key={key} 
-                                                                                                           onclick={() => false} 
-                                                                                                           productIndex={index} 
-                                                                                                           name={"Skeleton name"} 
-                                                                                                           owner={{firstname: "god", lastname: "the creator"}}/>
-                                                                                  )
+               (["skeletonProduct1", 
+                 "skeletonProduct2", 
+                 "skeletonProduct3"]).map((key, index) => 
+                                            <Product skeleton={true} 
+                                                     key={key} 
+                                                     onclick={() => false} 
+                                                     productIndex={index} 
+                                                     name={"Skeleton name"} 
+                                                     owner={{firstname: "god", lastname: "the creator"}}/>
+                                          )
               :
                this.state.products 
                && this.state.products.map((product, index) => 
-                                          <ProductWidget.Product key={index} 
-                                                                 onclick={this.showMembersButtonClicked} 
-                                                                 productIndex={index} 
-                                                                 name={product.name} 
-                                                                 owner={product.owner}/>
+                                          <Product key={index} 
+                                                   onclick={this.showMembersButtonClicked} 
+                                                   productIndex={index} 
+                                                   name={product.name} 
+                                                   owner={product.owner}/>
                                         )
             }
           </ProductList>

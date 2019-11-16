@@ -21,6 +21,10 @@ const Wrapper = styled.div`
     -webkit-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
     -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
     box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+
+    @media only screen and (max-width: 800px) {
+        top: 0px;
+    }
 `
 
 const Content = styled.div`

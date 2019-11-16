@@ -45,12 +45,26 @@ const ProductSelecter = styled.div`
     justify-content: left;
     align-items: center;
     width: 100%;
-    padding: 15px 10px 15px 10px;
+    padding: 0px;
+    margin: 15px 0px;
     box-sizing: border-box;
 `
 
 const ProductSelect = styled.select`
     width: 100%;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    border: 0;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    -moz-appearance: none;
+    background-position: right 50%;
+    background-repeat: no-repeat;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDZFNDEwNjlGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDZFNDEwNkFGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0NkU0MTA2N0Y3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0NkU0MTA2OEY3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuGsgwQAAAA5SURBVHjaYvz//z8DOYCJgUxAf42MQIzTk0D/M+KzkRGPoQSdykiKJrBGpOhgJFYTWNEIiEeAAAMAzNENEOH+do8AAAAASUVORK5CYII=);
+    padding: 15px;
+    margin: 0px;
+    background-color: #ffffff;
 `
 
 const Menu = styled.ul`
@@ -63,6 +77,19 @@ const Menu = styled.ul`
     width: 100%;
     text-align: left;
     overflow: auto;
+`;
+
+const HomeMenu = styled.ul`
+    list-style: none;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
+    width: 100%;
+    text-align: left;
+    overflow: hidden;
+    padding: 15px 0px;
 `;
 
 const MenuItem = styled.li`
@@ -156,14 +183,14 @@ const SideBar = (props) => {
           <Logo>Agile Toolkit</Logo>
         </LogoWrapper>
         <SideNav>
-          <Menu>
+          <HomeMenu>
             <MenuItem current={props.location.pathname} next={"/dashboard"}>
               <Link to="/dashboard" current={props.location.pathname} next={"/dashboard"}>
                 <Home size="1em"/>
                 <LeftPadding>Home</LeftPadding>
               </Link>
             </MenuItem>
-          </Menu>
+          </HomeMenu>
           <ProductSelecter>
               <ProductSelect onChange={selectChange} defaultValue={selectedIndex}>
                   {

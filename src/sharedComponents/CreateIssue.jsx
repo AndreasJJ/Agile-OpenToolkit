@@ -173,17 +173,25 @@ const DueDate = styled.label`
   }
 `
 
+const DueDateInputsWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+`
+
 const DateInput = styled.input`
   @media only screen and (max-width: 800px) {
     margin-right: 15px;
     width: 100%;
+    flex: 1;
   }
 `
 
 const EnableDueDateInput = styled.input`
   @media only screen and (max-width: 800px) {
-    margin-left: 0;
     margin-left: 15px;
+    margin-right: 15px;
   }
 `
 
@@ -438,12 +446,14 @@ export default class CreateIssue extends React.Component {
             </LabelsWrapper>
             <DueDateWrapper>
               <DueDate>Due Date</DueDate>
-              <EnableDueDateInput type="checkbox" defaultChecked={this.state.dueDateEnabled} onChange={this.onDueDateEnabledChange} />
-              <DateInput disabled={!this.state.dueDateEnabled}
-                         type="date" 
-                         value={this.state.dueDate} 
-                         onChange={this.onChangeDueDate} 
-                         min={DateToLocalString(new Date())} />
+              <DueDateInputsWrapper>
+                <EnableDueDateInput type="checkbox" defaultChecked={this.state.dueDateEnabled} onChange={this.onDueDateEnabledChange} />
+                <DateInput disabled={!this.state.dueDateEnabled}
+                           type="date" 
+                           value={this.state.dueDate} 
+                           onChange={this.onChangeDueDate} 
+                           min={DateToLocalString(new Date())} />
+              </DueDateInputsWrapper>
             </DueDateWrapper>
             <EstimateWrapper>
               <Estimate>Estimate</Estimate>
