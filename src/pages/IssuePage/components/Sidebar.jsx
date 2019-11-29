@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 
 import { DateToLocalString } from '../../../sharedComponents/Utility';
@@ -63,130 +63,139 @@ const Option = styled.option`
   color: black;
 `
 
-export default class Sidebar extends React.PureComponent {
+const Sidebar = (props) => {
+  const prevProps = useRef(props)
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      editingSection: [],
-      sprints: [],
-      labels: [],
-      originalSelectedLabels: [],
-      selectedLabels: [],
-      selectedSprint: 0,
-      dueDate: this.props.dueDate,
-      estimate: null
-    }
-    this.onChangeSprint = this.onChangeSprint.bind(this)
-    this.onChangeDuedate = this.onChangeDuedate.bind(this)
-    this.onChangeLabels = this.onChangeLabels.bind(this)
-    this.saveSprint = this.saveSprint.bind(this)
-    this.saveDueDate = this.saveDueDate.bind(this)
-    this.saveLabels = this.saveLabels.bind(this)
-    this.saveEstimate = this.saveEstimate.bind(this)
-    this.onChangeEstimate = this.onChangeEstimate.bind(this)
-  }
+  const [editingSection, setEditingSection] = useState([])
+  const [sprints, setSprints] = useState([])
+  const [labels, setLabels] = useState([])
+  const [originalSelectedLabels, setOriginalSelectedLabels] = useState([])
+  const [selectedLabels, setSelectedLabels] = useState([])
+  const [selectedSprint, setSelectedSprint] = useState(0)
+  const [dueDate, setDueDate] = useState(props.dueDate)
+  const [estimate, setEstimate] = useState(null)
 
-  async componentDidMount() {
-    if(this.props.sprints) {
-      let index = this.props.sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
+  useEffect(() => {
+    if(props.sprints) {
+      let index = props.sprints.map(sprint => sprint.id).indexOf(props.selectedSprint)
       index = index === -1 ? 0 : index+1
-      this.setState({sprints: this.props.sprints, selectedSprint: index})
-    }
-  }
 
-  async componentDidUpdate(prevProps) {
-    if(this.props.estimate !== prevProps.estimate) {
-      let estimate = this.props.estimate ? this.props.estimate : ""
-      this.setState({estimate: estimate})
+      setSprints(props.sprints)
+      setSelectedSprint(index)
+    }
+  }, [])
+
+  useEffect(() => {
+    if(props.estimate !== prevProps.current.estimate) {
+      let estimate = props.estimate ? props.estimate : ""
+      setEstimate(estimate)
+
+      prevProps.current = props
     }
 
-    if (this.props.dueDate !== prevProps.dueDate) {
-      this.setState({dueDate: this.props.dueDate})
+    if (props.dueDate !== prevProps.current.dueDate) {
+      setDueDate(props.dueDate)
+
+      prevProps.current = props
     }
 
-    if(this.props.sprints !== prevProps.sprints) {
-      if(this.props.sprints) {
-        let index = this.props.sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
+    if(props.sprints !== prevProps.current.sprints) {
+      if(props.sprints) {
+        let index = props.sprints.map(sprint => sprint.id).indexOf(props.selectedSprint)
         index = index === -1 ? 0 : index+1
-        this.setState({sprints: this.props.sprints, selectedSprint: index})
+
+        setSprints(props.sprints)
+        setSelectedSprint(index)
       }
+
+      prevProps.current = props
     }
 
-    if(this.props.selectedSprint !== prevProps.selectedSprint) {
-      let index = this.state.sprints.map(sprint => sprint.id).indexOf(this.props.selectedSprint)
+    if(props.selectedSprint !== prevProps.current.selectedSprint) {
+      let index = sprints.map(sprint => sprint.id).indexOf(props.selectedSprint)
       index = index === -1 ? 0 : index+1
-      this.setState({selectedSprint: index})
+
+      setSelectedSprint(index)
+
+      prevProps.current = props
     }
 
-    if (this.props.selectedLabels !== prevProps.selectedLabels || this.props.labels !== prevProps.labels) {
-      let selectedLabels = this.props.selectedLabels ? this.props.selectedLabels : []
+    if (props.selectedLabels !== prevProps.current.selectedLabels || props.labels !== prevProps.current.labels) {
+      let selectedLabels = props.selectedLabels ? props.selectedLabels : []
 
       let tempArray = []
-      for (var i = 0; i < this.props.selectedLabels.length; i++) {
-        for (var j = 0; j < this.props.labels.length; i++) {
-          if(this.props.labels[i][0] == this.props.selectedLabels[j][0]) {
+      for (let i = 0; i < props.selectedLabels.length; i++) {
+        for (let j = 0; j < props.labels.length; j++) {
+          if(props.labels[j][0] == props.selectedLabels[i][0]) {
             tempArray.push(i)
             break
           }
         }
       }
-      this.setState({labels: this.props.labels, originalSelectedLabels: selectedLabels, selectedLabels: tempArray})
+
+      setLabels(props.labels)
+      setOriginalSelectedLabels(selectedLabels)
+      setSelectedLabels(tempArray)
+
+      prevProps.current = props
     }
+  })
+
+  const onChangeSprint = (e) => {
+    setSelectedSprint(e.target.value)
   }
 
-  onChangeSprint(e) {
-    this.setState({selectedSprint: e.target.value})
+  const onChangeDuedate = (e) => {
+    setDueDate(e.target.value)
   }
 
-  onChangeDuedate(e) {
-    this.setState({dueDate: e.target.value})
-  }
-
-  onChangeLabels(e) {
+  const onChangeLabels = (e) => {
     let newVal = e.target.value
-    let stateVal = this.state.selectedLabels
+    let stateVal = selectedLabels
 
     let selectedValue = [...e.target.options].filter(o => o.selected).map(o => o.value)
-    this.setState({selectedLabels: selectedValue})
+
+    setSelectedLabels(selectedValue)
   }
 
-  onChangeEstimate(e) {
-    this.setState({estimate: e.target.value})
+  const onChangeEstimate = (e) => {
+    setEstimate(e.target.value)
   }
 
-  saveSprint() {
-    let sprint = parseInt(this.state.selectedSprint) === 0 ? null : this.state.sprints[this.state.selectedSprint-1].id
+  const saveSprint = () => {
+    let sprint = parseInt(selectedSprint) === 0 ? null : sprints[selectedSprint-1].id
 
-    if(this.props.selectedSprint === sprint) {
+    if(props.selectedSprint === sprint) {
       return
     }
 
-    this.props.updateSprint(sprint);
+    props.updateSprint(sprint);
   }
 
-  saveDueDate() {
-    if(this.props.dueDate === this.state.dueDate) {
+  const saveDueDate = () => {
+    if(props.dueDate === dueDate) {
       return
     }
-    this.props.updateDueDate(this.state.dueDate);
+
+    props.updateDueDate(dueDate);
   }
 
-  saveLabels() {
-    let selectedLabels = this.state.selectedLabels.map((i) => this.state.labels[i])
-    if(!this.state.originalSelectedLabels) {
+  const saveLabels = () => {
+    let selectedLabels = selectedLabels.map((i) => labels[i])
+    if(!originalSelectedLabels) {
       return
     }
-    if(this.state.originalSelectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
+    if(originalSelectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
       return
     }
     selectedLabels = Object.fromEntries(selectedLabels)
-    this.props.updateLabels(selectedLabels);
+
+    props.updateLabels(selectedLabels);
   }
 
-  saveEstimate() {
-    let props = this.props.estimate
-    let state = this.state.estimate
+  const saveEstimate = () => {
+    let props = props.estimate
+    let state = estimate
 
     if(state === "") {
       state = null
@@ -200,170 +209,165 @@ export default class Sidebar extends React.PureComponent {
     if(state && state !== "" && !isNaN(state)) {
       estimate = Number(state)
     }
-    this.props.updateEstimate(estimate)
+
+    props.updateEstimate(estimate)
   }
 
-  render () {
-    return(
-      <Wrapper>
-        <Content>
-          <Info>
-            <span>Sprint</span>
-            {
-              this.props.status.toLowerCase() === "open"
-              ?
-                <span onClick={
-                  function(e) { 
-                    if(this.state.editingSection.indexOf(0) === -1) {
-                      this.setState({editingSection: this.state.editingSection.concat([0])}) 
-                    } else {
-                      this.setState({editingSection: this.state.editingSection.filter(section => section !== 0)})
-                      this.saveSprint()
-                    }
-                  }.bind(this)
-                }>
-                  {this.state.editingSection.includes(0) ? "Save" : "Edit"}
-                </span>
-              :
-                null
-            }
-          </Info>
-          <Value>
-            {
-              this.state.editingSection.includes(0)
-              ?
-                <SprintSelect onChange={this.onChangeSprint} value={this.state.selectedSprint}>
-                  <option value={0}></option>
-                  {
-                    this.state.sprints.length > 0 && this.state.sprints.map((sprint, index) => <option key={sprint.id} value={index+1}>{sprint.title}</option>)
+  return(
+    <Wrapper>
+      <Content>
+        <Info>
+          <span>Sprint</span>
+          {
+            props.status.toLowerCase() === "open"
+            ?
+              <span onClick={(e) => { 
+                  if(editingSection.indexOf(0) === -1) {
+                    setEditingSection(editingSection.concat([0]))
+                  } else {
+                    setEditingSection(editingSection.filter(section => section !== 0))
+                    saveSprint()
                   }
-                </SprintSelect>
-              :
-                <span>
-                {  
-                  this.state.sprints.length > 0 && this.state.selectedSprint > 0 ? this.state.sprints[this.state.selectedSprint-1].title : "None"
                 }
-                </span>
-            }
-          </Value>
-        </Content>
-        <Content>
-          <Info>
-            <span>Due Date</span>
-            {
-              this.props.status.toLowerCase() === "open"
-              ?
-                <span onClick={
-                  function(e) { 
-                    if(this.state.editingSection.indexOf(1) === -1) {
-                      this.setState({editingSection: this.state.editingSection.concat([1])}) 
-                    } else {
-                      this.setState({editingSection: this.state.editingSection.filter(section => section !== 1)})
-                      this.saveDueDate()
-                    }
-                  }.bind(this)
-                }>
-                  {this.state.editingSection.includes(1) ? "Save" : "Edit"}
-                </span>
-              :
-                null
-            }
-          </Info>
-          <Value>
-            {
-              this.state.editingSection.includes(1)
-              ?
-                <DueDateInput type="date" 
-                              onChange={this.onChangeDuedate} 
-                              value={this.state.dueDate ? DateToLocalString(this.state.dueDate) : DateToLocalString(new Date())}
-                              min={DateToLocalString(new Date())}
-                 />
-              :
-                this.state.dueDate ? DateToLocalString(this.state.dueDate) : "None"
-            }
-          </Value>
-        </Content>
-        <Content>
-          <Info>
-            <span>Labels</span>
-            {
-              this.props.status.toLowerCase() === "open"
-              ?
-                <span onClick={
-                  function(e) { 
-                    if(this.state.editingSection.indexOf(2) === -1) {
-                      this.setState({editingSection: this.state.editingSection.concat([2])}) 
-                    } else {
-                      this.setState({editingSection: this.state.editingSection.filter(section => section !== 2)})
-                      this.saveLabels()
-                    }
-                  }.bind(this)
-                }>
-                  {this.state.editingSection.includes(2) ? "Save" : "Edit"}
-                </span>
-              :
-                null
-            }
-          </Info>
-          <Value>
-            {
-              this.state.editingSection.includes(2)
-              ?
-                <LabelSelect multiple onChange={this.onChangeLabels} value={this.state.selectedLabels}>
-                  {
-                    this.state.labels.length > 0 
-                    && this.state.labels.map((label, index) => 
-                                              <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
-                                              )
+              }>
+                {editingSection.includes(0) ? "Save" : "Edit"}
+              </span>
+            :
+              null
+          }
+        </Info>
+        <Value>
+          {
+            editingSection.includes(0)
+            ?
+              <SprintSelect onChange={onChangeSprint} value={selectedSprint}>
+                <option value={0}></option>
+                {
+                  sprints.length > 0 && sprints.map((sprint, index) => <option key={sprint.id} value={index+1}>{sprint.title}</option>)
+                }
+              </SprintSelect>
+            :
+              <span>
+              {  
+                sprints.length > 0 && selectedSprint > 0 ? sprints[selectedSprint-1].title : "None"
+              }
+              </span>
+          }
+        </Value>
+      </Content>
+      <Content>
+        <Info>
+          <span>Due Date</span>
+          {
+            props.status.toLowerCase() === "open"
+            ?
+              <span onClick={(e) => { 
+                  if(editingSection.indexOf(1) === -1) {
+                    setEditingSection(editingSection.concat([1]))
+                  } else {
+                    setEditingSection(editingSection.filter(section => section !== 1))
+                    saveDueDate()
                   }
-                </LabelSelect>
-              :
-                <LabelSelect multiple value={this.state.selectedLabels} disabled>
-                  {
-                    this.state.labels.length > 0 
-                    && this.state.labels.map((label, index) => 
-                                              <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
-                                             )
+                }
+              }>
+                {editingSection.includes(1) ? "Save" : "Edit"}
+              </span>
+            :
+              null
+          }
+        </Info>
+        <Value>
+          {
+            editingSection.includes(1)
+            ?
+              <DueDateInput type="date" 
+                            onChange={onChangeDuedate} 
+                            value={dueDate ? DateToLocalString(dueDate) : DateToLocalString(new Date())}
+                            min={DateToLocalString(new Date())}
+               />
+            :
+              dueDate ? DateToLocalString(dueDate) : "None"
+          }
+        </Value>
+      </Content>
+      <Content>
+        <Info>
+          <span>Labels</span>
+          {
+            props.status.toLowerCase() === "open"
+            ?
+              <span onClick={(e) => { 
+                  if(editingSection.indexOf(2) === -1) {
+                    setEditingSection(editingSection.concat([2]))
+                  } else {
+                    setEditingSection(editingSection.filter(section => section !== 2))
+                    saveLabels()
                   }
-                </LabelSelect>
-            }
-          </Value>
-        </Content>
-        <Content>
-          <Info>
-            <span>Estimate</span>
-            {
-              this.props.status.toLowerCase() === "open"
-              ?
-                <span onClick={
-                  function(e) { 
-                    if(this.state.editingSection.indexOf(3) === -1) {
-                      this.setState({editingSection: this.state.editingSection.concat([3])}) 
-                    } else {
-                      this.setState({editingSection: this.state.editingSection.filter(section => section !== 3)})
-                      this.saveEstimate()
-                    }
-                  }.bind(this)
-                }>
-                  {this.state.editingSection.includes(4) ? "Save" : "Edit"}
-                </span>
-              :
-                null
-            }
-          </Info>
-          <Value>
-            {
-              this.state.editingSection.includes(3)
-              ?
-                <input type="number" min="0" value={this.state.estimate} onChange={this.onChangeEstimate} />
-              :
-                this.state.estimate ? this.state.estimate : "None"
-            }
-          </Value>
-        </Content>
-      </Wrapper>
-    )
-  }
+                }
+              }>
+                {editingSection.includes(2) ? "Save" : "Edit"}
+              </span>
+            :
+              null
+          }
+        </Info>
+        <Value>
+          {
+            editingSection.includes(2)
+            ?
+              <LabelSelect multiple onChange={onChangeLabels} value={selectedLabels}>
+                {
+                  labels.length > 0 
+                  && labels.map((label, index) => 
+                                <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                                )
+                }
+              </LabelSelect>
+            :
+              <LabelSelect multiple value={selectedLabels} disabled>
+                {
+                  labels.length > 0 
+                  && labels.map((label, index) => 
+                                <Option key={label[0]} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                               )
+                }
+              </LabelSelect>
+          }
+        </Value>
+      </Content>
+      <Content>
+        <Info>
+          <span>Estimate</span>
+          {
+            props.status.toLowerCase() === "open"
+            ?
+              <span onClick={(e) => { 
+                  if(editingSection.indexOf(3) === -1) {
+                    setEditingSection(editingSection.concat([3]))
+                  } else {
+                    setEditingSection(editingSection.filter(section => section !== 3))
+                    saveEstimate()
+                  }
+                }
+              }>
+                {editingSection.includes(4) ? "Save" : "Edit"}
+              </span>
+            :
+              null
+          }
+        </Info>
+        <Value>
+          {
+            editingSection.includes(3)
+            ?
+              <input type="number" min="0" value={estimate} onChange={onChangeEstimate} />
+            :
+              estimate ? estimate : "None"
+          }
+        </Value>
+      </Content>
+    </Wrapper>
+  )
 }
 
 Sidebar.propTypes = {
@@ -379,3 +383,5 @@ Sidebar.propTypes = {
   updateLabels: PropTypes.func.isRequired,
   updateEstimate: PropTypes.func.isRequired
 }
+
+export default Sidebar

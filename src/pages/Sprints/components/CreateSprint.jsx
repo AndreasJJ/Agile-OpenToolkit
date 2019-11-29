@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 import { DateToLocalString } from '../../../sharedComponents/Utility';
@@ -114,96 +114,89 @@ const Cancel = styled.button`
   font-weight: 400;
 `
 
-export default class CreateIssue extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      title: "",
-      description: "",
-      startDate: DateToLocalString(new Date()),
-      dueDate: DateToLocalString(new Date(new Date().setDate((new Date).getDate() + 1))),
-      submitDisabled: true
-    }
-    this.onChangeTitle = this.onChangeTitle.bind(this)
-    this.onChangeDescription = this.onChangeDescription.bind(this)
-    this.onChangeStartDate = this.onChangeStartDate.bind(this)
-    this.onChangeDueDate = this.onChangeDueDate.bind(this)
-    this.sendSprint = this.sendSprint.bind(this)
-  }
+const CreateIssue = (props) => {
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [startDate, setStartDate] = useState(DateToLocalString(new Date()))
+  const [dueDate, setDueDate] = useState(DateToLocalString(new Date(new Date().setDate((new Date).getDate() + 1))))
+  const [submitDisabled, setSubmitDisabled] = useState(true)
 
-  onChangeTitle(e) {
+  const onChangeTitle = (e) => {
     let isSubmitDisabled = false
+
     if(e.target.value === "") {
       isSubmitDisabled = true
     } 
 
-    this.setState({title: e.target.value, submitDisabled: isSubmitDisabled})
+    setTitle(e.target.value)
+    setSubmitDisabled(isSubmitDisabled)
   }
 
-  onChangeDescription(e) {
-    this.setState({description: e.target.value})
+  const onChangeDescription = (e) => {
+    setDescription(e.target.value)
   }
 
-  onChangeStartDate(e) {
-    if(new Date(e.target.value) >= new Date(this.state.dueDate)) {
-      this.setState({dueDate: DateToLocalString(new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1)))})
+  const onChangeStartDate = (e) => {
+    if(new Date(e.target.value) >= new Date(dueDate)) {
+      setDueDate(DateToLocalString(new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1))))
     } 
-    this.setState({startDate: e.target.value})
+
+    setStartDate(e.target.value)
   }
 
-  onChangeDueDate(e) {
-    this.setState({dueDate: e.target.value})
+  const onChangeDueDate = (e) => {
+    setDueDate(e.target.value)
   }
 
-  async sendSprint() {
+  const sendSprint = async () => {
     let sprint = {
-      title: this.state.title,
-      description: this.state.description,
-      startDate: new Date(this.state.startDate),
-      dueDate: new Date(this.state.dueDate)
+      title: title,
+      description: description,
+      startDate: new Date(startDate),
+      dueDate: new Date(dueDate)
     }
-    await this.props.createSprint(sprint)
-    this.props.exit()
+    await props.createSprint(sprint)
+    props.exit()
   }
 
-  render () {
-    return (
-      <Wrapper>
-        <Header>
-          <h3>New Sprint</h3>
-        </Header>
-        <Body>
-          <Info>
-            <TitleWrapper>
-              <Title>Title</Title>
-              <TitleInput placeholder="Title" value={this.state.title} onChange={this.onChangeTitle} />
-            </TitleWrapper>
-            <DescriptionWrapper>
-              <Description>Description</Description>
-              <DescriptionArea placeholder="Write a comment..." value={this.state.description} onChange={this.onChangeDescription} />
-            </DescriptionWrapper>
-          </Info>
-          <Options>
-            <DateWrapper>
-              <DateLabel>Start Date</DateLabel>
-              <DateInput type="date" value={this.state.startDate} onChange={this.onChangeStartDate} min={DateToLocalString(new Date())} />
-            </DateWrapper>
-            <DateWrapper>
-              <DateLabel>Due Date</DateLabel>
-              <DateInput type="date" value={this.state.dueDate} onChange={this.onChangeDueDate} min={DateToLocalString(new Date(new Date().setDate((new Date(this.state.startDate)).getDate() + 1)))} />
-            </DateWrapper>
-          </Options>
-          <Action>
-            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendSprint()}>Submit sprint</Submit>
-            <Cancel onClick={(e) => this.props.exit()}>Cancel</Cancel>
-          </Action>
-        </Body>
-      </Wrapper>
-    )
-  }
+  return (
+    <Wrapper>
+      <Header>
+        <h3>New Sprint</h3>
+      </Header>
+      <Body>
+        <Info>
+          <TitleWrapper>
+            <Title>Title</Title>
+            <TitleInput placeholder="Title" value={title} onChange={onChangeTitle} />
+          </TitleWrapper>
+          <DescriptionWrapper>
+            <Description>Description</Description>
+            <DescriptionArea placeholder="Write a comment..." value={description} onChange={onChangeDescription} />
+          </DescriptionWrapper>
+        </Info>
+        <Options>
+          <DateWrapper>
+            <DateLabel>Start Date</DateLabel>
+            <DateInput type="date" value={startDate} onChange={onChangeStartDate} min={DateToLocalString(new Date())} />
+          </DateWrapper>
+          <DateWrapper>
+            <DateLabel>Due Date</DateLabel>
+            <DateInput type="date" value={dueDate} onChange={onChangeDueDate} min={DateToLocalString(new Date(new Date().setDate((new Date(startDate)).getDate() + 1)))} />
+          </DateWrapper>
+        </Options>
+        <Action>
+          <Submit disabled={submitDisabled} onClick={(e) => sendSprint()}>Submit sprint</Submit>
+          <Cancel onClick={(e) => props.exit()}>Cancel</Cancel>
+        </Action>
+      </Body>
+    </Wrapper>
+  )
 }
 
 CreateIssue.proptypes = {
   exit: PropTypes.func.isRequired,
   createSprint: PropTypes.func.isRequired
 }
+
+export default CreateIssue

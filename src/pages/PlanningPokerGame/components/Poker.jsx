@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 import styled, { keyframes } from 'styled-components';
@@ -47,57 +47,51 @@ const Story = styled.h2`
   animation: ${keyframe} 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 `
 
-export default class Game extends React.PureComponent {
+const Game = (props) => {
+  const [numbers, setNumbers] = useState([0,0.5,1,2,3,5,8,13,20,40,100,'?', "☕"])
+  const [cards, setCards] = useState([])
+  const [selectedCardIndex, setSelectedCardIndex] = useState(null)
+  const [currentStory, setCurrentStory] = useState("This is a test story")
 
-   constructor(props) {
-    super(props)
+  useEffect(() => {
+    MakeDeck()
+  }, [])
 
-    this.state = {
-      numbers: [0,0.5,1,2,3,5,8,13,20,40,100,'?', "☕"],
-      cards: [],
-      selectedCardIndex: null,
-      currentStory: "This is a test story"
-    };
-    this.MakeDeck = this.MakeDeck.bind(this)
-    this.clickedCard = this.clickedCard.bind(this)
-  }
+  useEffect(() => {
+    MakeDeck()
+  }, [selectedCardIndex])
 
-  componentDidMount() {
-    this.MakeDeck()
-  }
-
-  MakeDeck() {
+  const MakeDeck = () => {
     let temp = []
-    for (var i =  0; i < this.state.numbers.length; i++) {
-      temp.push(<Card number={this.state.numbers[i]} index={i+1} key={i} selectedCard={this.state.selectedCardIndex} onclick={this.clickedCard} />)
+    for (let i =  0; i < numbers.length; i++) {
+      temp.push(<Card number={numbers[i]} index={i+1} key={i} selectedCard={selectedCardIndex} onclick={clickedCard} />)
     }
-    this.setState({cards: temp})
+    setCards(temp)
   }
 
-  clickedCard(e) {
+  const clickedCard = (e) => {
     let newIndex = parseInt(e.target.dataset.index)
-    if(newIndex === this.state.selectedCardIndex) {
+    if(newIndex === selectedCardIndex) {
       newIndex = null
     }
-    this.setState({selectedCardIndex: newIndex}, () => {
-      this.MakeDeck()
-    })
+
+    setSelectedCardIndex(newIndex)
   }
 
-  render() {
-      return (
-        <Wrapper>
-          <StoryWrapper>
-            {[this.state.currentStory].map(story => <Story key={story}>{story}</Story>)}
-          </StoryWrapper>
-          <Cards>
-            {this.state.cards.length>0 && this.state.cards.map((card, index) => card)}
-          </Cards>
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <StoryWrapper>
+        {[currentStory].map(story => <Story key={story}>{story}</Story>)}
+      </StoryWrapper>
+      <Cards>
+        {cards.length>0 && cards.map((card, index) => card)}
+      </Cards>
+    </Wrapper>
+  )
 }
 
 Game.proptypes = {
   
 }
+
+export default Game

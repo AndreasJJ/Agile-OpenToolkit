@@ -1,9 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../sharedComponents/Firebase';
+import { FirebaseContext } from '../../sharedComponents/Firebase';
 import { history } from '../../state/helpers/history';
 
 import { alertActions } from '../../state/actions/alert';
@@ -258,222 +257,210 @@ const ConfirmPasswordInput = styled.input`
   outline: none;
 `
 
-class Register extends React.PureComponent {
+const Register = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
+  const dispatch = useDispatch()
 
-    this.props.finishLoading()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [firstname, setFirstname] = useState("")
+  const [lastname, setLastname] = useState("")
 
-    this.state = {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      firstname: '',
-      lastname: ''
-    };
+  useEffect(() => {
+    props.finishLoading()
+    setCookie("visited", true)
+  },[])
 
-    this.setCookie = this.setCookie.bind(this)
-    this.register = this.register.bind(this)
-    this.onChange = this.onChange.bind(this)
-    this.validateEmail = this.validateEmail.bind(this)
-    this.validateName = this.validateName.bind(this)
-  }
-
-  componentDidMount() {
-    this.setCookie("visited", true)
-  }
-
-  setCookie(name,value,days) {
-      var expires = "";
+  const setCookie = (name,value,days) => {
+      let expires = "";
       if (days) {
-          var date = new Date();
+          let date = new Date();
           date.setTime(date.getTime() + (days*24*60*60*1000));
           expires = "; expires=" + date.toUTCString();
       }
       document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
 
-  register(e) {
+  const register = async (e) => {
     e.preventDefault();
-    const { dispatch } = this.props;
 
-    if(!this.validateEmail(this.state.email) || this.state.email == "") {
+    if(!validateEmail(email) || email == "") {
       dispatch(alertActions.error('Please provide a valid email'));
       return
     }
 
-    if(this.state.firstname.length < 2 || this.state.lastname.length < 2) {
+    if(firstname.length < 2 || lastname.length < 2) {
       dispatch(alertActions.error('Names need to be 2 characters or longer'));
       return
     }
 
-    if(!this.validateName(this.state.firstname) || !this.validateName(this.state.lastname)) {
+    if(!validateName(firstname) || !validateName(lastname)) {
       dispatch(alertActions.error('Names can only contain letters'));
       return
     }
 
-    if(this.state.password != this.state.confirmPassword) {
+    if(password != confirmPassword) {
       dispatch(alertActions.error('Your password doesnt match your confirmation password'));
       return
     }
 
-    if(this.state.password.length < 6 || this.state.confirmPassword.length < 6) {
+    if(password.length < 6 || confirmPassword.length < 6) {
       dispatch(alertActions.error('The password must be at least 6 characters long'));
       return
     }
-
-    this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password).then((user) => {
-      this.props.firebase.db.collection("users").doc(user.user.uid).set({
-        email: user.user.email,
-        firstname: this.state.firstname,
-        lastname: this.state.lastname
-      }).then(() => {
-
-      }).catch((err) => {
-        dispatch(alertActions.error(err.message));
-      })
-    }).catch((err) => {
-       dispatch(alertActions.error(err.message));
-    })
+    try {
+      let user = await firebase.doCreateUserWithEmailAndPassword(email, password)
+      firebase.db.collection("users").doc(user.user.uid).set({
+          email: user.user.email,
+          firstname: firstname,
+          lastname: lastname
+        })
+    } catch(err) {
+      dispatch(alertActions.error(err.message));
+    }
   }
 
-  validateEmail(email) {
+  const validateEmail = (email) => {
     let re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
     return re.test(email);
   }
 
-  validateName(name){
+  const validateName = (name) => {
     let re = /^[a-zA-Z]+$/;
     return re.test(name);
   } 
 
-  onChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
+  const onChange = (e) => {
+    if(e.target.name === "email") {
+      setEmail(e.target.value)
+    } else if(e.target.name === "password") {
+      setPassword(e.target.value)
+    } else if(e.target.name === "confirmPassword") {
+      setConfirmPassword(e.target.value)
+    } else if(e.target.name === "firstname") {
+      setFirstname(e.target.value)
+    } else if(e.target.name === "lastname") {
+      setLastname(e.target.value)
+    }
   }
 
-  toLogin(e) {
+  const toLogin = (e) => {
     e.preventDefault();
 
     history.push('/login');
   }
 
-  render() {
-
-    return (
-        <Container>
-          <Wrapper>
-            <Left>
-              <RegisterForm>
-                <Title>Register</Title>
-                <EmailWrapper>
-                  <span>Email</span>
+  return(
+      <Container>
+        <Wrapper>
+          <Left>
+            <RegisterForm>
+              <Title>Register</Title>
+              <EmailWrapper>
+                <span>Email</span>
+                <InputWrapper>
+                  <Envelope size="1em" />
+                  <EmailInput type="email" 
+                              tabIndex={1} 
+                              name="email" 
+                              value={email}
+                              onChange={onChange} 
+                              placeholder="Email" 
+                              minlength="3" 
+                              maxlength="12" 
+                              required />
+                </InputWrapper>
+              </EmailWrapper>
+              <NameWrapper>
+                <FirstnameWrapper>
+                  <span>Lastname</span>
                   <InputWrapper>
-                    <Envelope size="1em" />
-                    <EmailInput type="email" 
-                                tabIndex={1} 
-                                name="email" 
-                                value={this.state.eamil} 
-                                onChange={this.onChange} 
-                                placeholder="Email" 
-                                minlength="3" 
-                                maxlength="12" 
-                                required />
+                    <User size="1em" />
+                    <FirstnameInput type="text" 
+                                    tabIndex={2} 
+                                    name="firstname" 
+                                    value={firstname} 
+                                    onChange={onChange} 
+                                    placeholder="Firstname" 
+                                    minlength="3" 
+                                    required />
                   </InputWrapper>
-                </EmailWrapper>
-                <NameWrapper>
-                  <FirstnameWrapper>
-                    <span>Lastname</span>
-                    <InputWrapper>
-                      <User size="1em" />
-                      <FirstnameInput type="text" 
-                                      tabIndex={2} 
-                                      name="firstname" 
-                                      value={this.state.firstname} 
-                                      onChange={this.onChange} 
-                                      placeholder="Firstname" 
-                                      minlength="3" 
-                                      required />
-                    </InputWrapper>
-                  </FirstnameWrapper>
-                  <LastnameWrapper>
-                    <span>Lastname</span>
-                    <InputWrapper>
-                      <User size="1em" />
-                      <LastnameInput type="text" 
-                                     tabIndex={3} 
-                                     name="lastname" 
-                                     value={this.state.lastname} 
-                                     onChange={this.onChange} 
-                                     placeholder="Lastname" 
-                                     minlength="3" 
-                                     required />
-                    </InputWrapper>
-                  </LastnameWrapper>
-                </NameWrapper>
-                <PasswordWrapper>
-                  <span>Password</span>
+                </FirstnameWrapper>
+                <LastnameWrapper>
+                  <span>Lastname</span>
                   <InputWrapper>
-                    <UnlockAlt size="1em" />
-                    <PasswordInput type="password" 
-                                   tabIndex={4} 
-                                   name="password" 
-                                   value={this.state.password} 
-                                   onChange={this.onChange} 
-                                   placeholder="Password" 
-                                   minlength="6" 
-                                   maxlength="32" 
+                    <User size="1em" />
+                    <LastnameInput type="text" 
+                                   tabIndex={3} 
+                                   name="lastname" 
+                                   value={lastname} 
+                                   onChange={onChange} 
+                                   placeholder="Lastname" 
+                                   minlength="3" 
                                    required />
                   </InputWrapper>
-                </PasswordWrapper>
-                <PasswordWrapper>
-                  <span>Confirm Password</span>
-                  <InputWrapper>
-                    <UnlockAlt size="1em" />
-                    <ConfirmPasswordInput type="password" 
-                                          tabIndex={5} 
-                                          name="confirmPassword" 
-                                          value={this.state.confirmPassword} 
-                                          onChange={this.onChange} 
-                                          placeholder="Confirm password" 
-                                          minlength="6" 
-                                          maxlength="32" 
-                                          required />
-                  </InputWrapper>
-                </PasswordWrapper>
-                <ButtonsWrapper>
-                  <ToLoginButton type="button" 
-                                 tabIndex={7} 
-                                 onClick={this.toLogin}
-                  >
-                    To Login
-                  </ToLoginButton>
-                  <RegisterButton type="submit" 
-                                  tabIndex={6} 
-                                  onClick={this.register}
-                  >
-                      Register
-                  </RegisterButton>
-                </ButtonsWrapper>
-                <Footer></Footer>
-              </RegisterForm>
-            </Left>
-            <Middle></Middle>
-            <Right image={sideImage}>
+                </LastnameWrapper>
+              </NameWrapper>
+              <PasswordWrapper>
+                <span>Password</span>
+                <InputWrapper>
+                  <UnlockAlt size="1em" />
+                  <PasswordInput type="password" 
+                                 tabIndex={4} 
+                                 name="password" 
+                                 value={password} 
+                                 onChange={onChange} 
+                                 placeholder="Password" 
+                                 minlength="6" 
+                                 maxlength="32" 
+                                 required />
+                </InputWrapper>
+              </PasswordWrapper>
+              <PasswordWrapper>
+                <span>Confirm Password</span>
+                <InputWrapper>
+                  <UnlockAlt size="1em" />
+                  <ConfirmPasswordInput type="password" 
+                                        tabIndex={5} 
+                                        name="confirmPassword" 
+                                        value={confirmPassword} 
+                                        onChange={onChange} 
+                                        placeholder="Confirm password" 
+                                        minlength="6" 
+                                        maxlength="32" 
+                                        required />
+                </InputWrapper>
+              </PasswordWrapper>
+              <ButtonsWrapper>
+                <ToLoginButton type="button" 
+                               tabIndex={7} 
+                               onClick={toLogin}
+                >
+                  To Login
+                </ToLoginButton>
+                <RegisterButton type="submit" 
+                                tabIndex={6} 
+                                onClick={register}
+                >
+                    Register
+                </RegisterButton>
+              </ButtonsWrapper>
+              <Footer></Footer>
+            </RegisterForm>
+          </Left>
+          <Middle></Middle>
+          <Right image={sideImage}>
 
-            </Right>
-        </Wrapper>
-      </Container>
-    );
-  }
+          </Right>
+      </Wrapper>
+    </Container>
+  )
 }
 
 Register.proptypes = {
   finishLoading: PropTypes.func.isRequired
 }
 
-const connectedRegisterPage = connect()(Register);
-const firebaseRegisterPage = compose(withFirebase)(connectedRegisterPage)
-export { firebaseRegisterPage as Register }; 
+export { Register }; 

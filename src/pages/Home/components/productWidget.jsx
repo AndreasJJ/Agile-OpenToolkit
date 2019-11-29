@@ -1,9 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../../sharedComponents/Firebase';
+import { FirebaseContext, GetDocument, ListenToDocuments, BatchWrite } from '../../../sharedComponents/Firebase';
 
 import { productActions } from '../../../state/actions/product';
 import { userActions } from '../../../state/actions/user';
@@ -76,234 +75,199 @@ const AddProductButton = styled.button`
   box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
 `
 
-class ProductWidget extends React.PureComponent {
+const ProductWidget = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
+  const dispatch = useDispatch()
 
-    this.state = {
-      firstProductLoad: true,
-      loading: true,
-      products: [],
-      showModal: false,
-      modalContent: "",
-      selectedProduct: 0
-    };
+  const Guid = useSelector(state => state.authentication.user.uid)
+  const Gemail = useSelector(state => state.authentication.user.email)
+  const Gfirstname = useSelector(state => state.authentication.user.firstname)
+  const Glastname = useSelector(state => state.authentication.user.lastname)
+  const Gproducts = useSelector(state => state.product.products)
+  const GselectedProduct = useSelector(state => state.product.selectedProduct)
 
-    this.createProduct = this.createProduct.bind(this)
-    this.AddProductButtonClicked = this.AddProductButtonClicked.bind(this)
-    this.getMembers = this.getMembers.bind(this)
-    this.showMembersButtonClicked = this.showMembersButtonClicked.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-  }
+  const [firstProductLoad, setFirstProductLoad] = useState(true)
+  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState([])
+  const [showModal, setShowModal] = useState(false)
+  const [modalContent, setModalContent] = useState("")
+  const [selectedProduct, setSelectedProduct] = useState(0)
 
-  async componentDidMount() {
-    const onSnapshot = async (querySnapshot) => {
-      let tempArray = querySnapshot.docs.map((doc) => {
-                                                let obj = doc.data()
-                                                obj.id = doc.id
-                                                return obj
-                                              })
-      let globalSelectedProduct = this.props.products[this.props.selectedProduct]
-      
-      let newGlobalSelectedProductIndex;
-      if(globalSelectedProduct) {
-        newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
-      } else {
-        newGlobalSelectedProductIndex = 0
+  let productListener;
+
+  useEffect(() => {
+    const init = async () => {
+      const onSnapshot = async (querySnapshot) => {
+        let tempArray = querySnapshot.docs
+                                     .map((doc) => {
+                                        let obj = doc.data()
+                                        obj.id = doc.id
+                                        return obj
+                                      })
+        let globalSelectedProduct = Gproducts[GselectedProduct]
+        
+        let newGlobalSelectedProductIndex;
+        if(globalSelectedProduct) {
+          newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
+        } else {
+          newGlobalSelectedProductIndex = 0
+        }
+
+        if(tempArray.length > products.length && !loading) {
+          dispatch(alertActions.clear())
+          dispatch(alertActions.success('Product successfully added'))
+        }
+
+        await setProducts(tempArray)
+        await setLoading(false)
+
+        dispatch(productActions.getProducts(tempArray))
+
+        if(GselectedProduct !== newGlobalSelectedProductIndex) {
+          dispatch(productActions.selectProductRecalibration(newGlobalSelectedProductIndex))
+        }
       }
 
-      if(tempArray.length > this.state.products.length && !this.state.loading) {
-        this.props.dispatch(alertActions.clear())
-        this.props.dispatch(alertActions.success('Product successfully added'))
-      }
-
-      await this.setState({products: tempArray, loading: false})
-
-      this.props.dispatch(productActions.getProducts(tempArray))
-      if(this.props.selectedProduct !== newGlobalSelectedProductIndex) {
-        this.props.dispatch(productActions.selectProductRecalibration(newGlobalSelectedProductIndex))
-      }
+      productListener = await ListenToDocuments(firebase, onSnapshot, "users/" + Guid + '/products')
     }
+    init()
 
-    this.productListener = await this.props.firebase
-                                           .db
-                                           .collection('users')
-                                           .doc(this.props.uid)
-                                           .collection('products')
-                                           .onSnapshot(onSnapshot);
+    return () => {
+      productListener()
+    }
+  }, [])
 
-  }
+  const createProduct = (product) => {
+    let batch = []
 
-  componentWillUnmount() {
-    this.productListener()
-  }
+    let productId = (firebase.db.collection("products").doc()).id
 
-  createProduct(product) {
-    var batch = this.props.firebase.db.batch();
-
-    var productsRef = this.props.firebase
-                                .db
-                                .collection("products")
-                                .doc();
-    batch.set(productsRef, {
+    //Write product
+    let productPath = "products/" + productId
+    let productData = {
       name: product.name,
       description: product.description,
       owner: {
-         uid: this.props.uid,
-         firstname: this.props.firstname,
-         lastname: this.props.lastname 
+         uid: Guid,
+         firstname: Gfirstname,
+         lastname: Glastname 
       }
-    });
+    }
+    batch.push([productPath, productData])
 
-    var rolesRef = this.props.firebase
-                             .db.collection("products")
-                             .doc(productsRef.id)
-                             .collection("roles")
-                             .doc(this.props.uid);
-    batch.set(rolesRef, {
+    // Write role
+    let rolesPath = "products/" + productId + "/roles/" + Guid
+    let rolesData = {
       role: 1
-    });
+    }
+    batch.push([rolesPath, rolesData])
 
-    var membersRef = this.props.firebase
-                               .db
-                               .collection("products")
-                               .doc(productsRef.id)
-                               .collection("members")
-                               .doc(this.props.uid);
-    batch.set(membersRef, {
-      email: this.props.email,
-      firstname: this.props.firstname,
-      lastname: this.props.lastname
-    });
-    
-    batch.commit().then(() => {
-        this.props.dispatch(alertActions.info('Please wait while we create your new product'))
-    });
+    // Write Member
+    let memberPath = "products/" + productId + "/members/" + Guid
+    let memberData = {
+      email: Gemail,
+      firstname: Gfirstname,
+      lastname: Glastname
+    }
+    batch.push([memberPath, memberData])
+
+    BatchWrite(firebase, batch, () => {
+        dispatch(alertActions.info('Please wait while we create your new product'))
+    })
   }
 
-  AddProductButtonClicked() {
-    this.setState({showModal: true, 
-                   modalContent: "productCreation"
-                  })
+  const AddProductButtonClicked = () => {
+    setShowModal(true)
+    setModalContent("productCreation")
   }
 
-  async getMembers(productId) {
-    let docSnapshot = await this.props.firebase
-                                        .db
-                                        .collection('products')
-                                        .doc(productId)
-                                        .collection('members')
-                                        .doc('members')
-                                        .get()
-    return docSnapshot.data().list
+  const getMembers = async (productId) => {
+    let doc = await GetDocument(firebase, "products/" + productId + "/members/members")
+    return doc.list
   }
 
-  showMembersButtonClicked(e) {
+  const showMembersButtonClicked = (e) => {
     if(e.target.tagName == "path") {
-      this.setState({selectedProduct: e.target.parentNode.parentNode.parentNode.dataset.productindex})
+      setSelectedProduct(e.target.parentNode.parentNode.parentNode.dataset.productindex)
     } else if(e.target.tagName == "svg") {
-      this.setState({selectedProduct: e.target.parentNode.parentNode.dataset.productindex})
+      setSelectedProduct(e.target.parentNode.parentNode.dataset.productindex)
     } else if(e.target.tagName == "BUTTON") {
-     this.setState({selectedProduct: e.target.parentNode.dataset.productindex})
+     setSelectedProduct(e.target.parentNode.dataset.productindex)
     }
-    this.setState({showModal: true, modalContent: "showMembers"})
+    setShowModal(true)
+    setModalContent("showMembers")
   }
 
-  closeModal() {
-    this.setState({showModal: false, modalContent: ""})
+  const closeModal = () => {
+    setShowModal(false)
+    setModalContent("")
   }
 
-  render () {
-    let modal = <Modal />
+  let modal = <Modal />
+  if(modalContent == "productCreation") {
+    modal = <Modal content={<Tabs tabNames={["Create New Product", "Join Product Team"]} 
+                                  tabComponents={[<CreateNewProduct 
+                                  sendProduct={createProduct} 
+                                  onclick={closeModal} />, <JoinProductTeam />]} />
+                            } 
+                   exitModalCallback={closeModal} />
+  } else if (modalContent == "showMembers") {
+    modal = <Modal content={<ProductMembers products={products} 
+                                            productIndex={selectedProduct} 
+                                            getMembers={getMembers} /> 
+                            } 
+                  minWidth={"400px"} 
+                  maxWidth={"400px"} 
+                  exitModalCallback={closeModal} />
+  }
 
-    if(this.state.modalContent == "productCreation") {
-      modal = <Modal content={<Tabs tabNames={["Create New Product", "Join Product Team"]} 
-                                    tabComponents={[<CreateNewProduct 
-                                    sendProduct={this.createProduct} 
-                                    onclick={this.closeModal} />, <JoinProductTeam />]} />
-                              } 
-                     exitModalCallback={this.closeModal} />
-    } else if (this.state.modalContent == "showMembers") {
-      modal = <Modal content={<ProductMembers products={this.state.products} 
-                                              productIndex={this.state.selectedProduct} 
-                                              getMembers={this.getMembers} /> 
-                              } 
-                    minWidth={"400px"} 
-                    maxWidth={"400px"} 
-                    exitModalCallback={this.closeModal} />
+  return(
+  <Widget>
+    {
+      showModal
+      ?
+        modal
+      :
+        null
     }
-
-    return(
-    <Widget>
-      {
-        this.state.showModal
-        ?
-          modal
-        :
-          null
-      }
-      <Content>
-        <WidgetHeader>
-          Products
-        </WidgetHeader>
-        <WidgetBody>
-          <ProductList>
-            {this.state.loading
-             ?
-               (["skeletonProduct1", 
-                 "skeletonProduct2", 
-                 "skeletonProduct3"]).map((key, index) => 
-                                            <Product skeleton={true} 
-                                                     key={key} 
-                                                     onclick={() => false} 
-                                                     productIndex={index} 
-                                                     name={"Skeleton name"} 
-                                                     owner={{firstname: "god", lastname: "the creator"}}/>
-                                          )
-              :
-               this.state.products 
-               && this.state.products.map((product, index) => 
-                                          <Product key={index} 
-                                                   onclick={this.showMembersButtonClicked} 
+    <Content>
+      <WidgetHeader>
+        Products
+      </WidgetHeader>
+      <WidgetBody>
+        <ProductList>
+          {
+            loading
+            ?
+              (["skeletonProduct1", 
+                "skeletonProduct2", 
+                "skeletonProduct3"]).map((key, index) => 
+                                          <Product skeleton={true} 
+                                                   key={key} 
+                                                   onclick={() => false} 
                                                    productIndex={index} 
-                                                   name={product.name} 
-                                                   owner={product.owner}/>
+                                                   name={"Skeleton name"} 
+                                                   owner={{firstname: "god", lastname: "the creator"}}/>
                                         )
-            }
-          </ProductList>
-          <AddProductButton onClick={this.AddProductButtonClicked}>
-            Add Product
-          </AddProductButton>
-        </WidgetBody>
-      </Content>
-    </Widget>
-    )
-  }
+            :
+              products 
+              && products.map((product, index) => 
+                                <Product key={index} 
+                                         onclick={showMembersButtonClicked} 
+                                         productIndex={index} 
+                                         name={product.name} 
+                                         owner={product.owner}/>
+                              )
+          }
+        </ProductList>
+        <AddProductButton onClick={AddProductButtonClicked}>
+          Add Product
+        </AddProductButton>
+      </WidgetBody>
+    </Content>
+  </Widget>
+  )
 }
 
-ProductWidget.propTypes = {
-  uid: PropTypes.string.isRequired,
-  email: PropTypes.string.isRequired,
-  firstname: PropTypes.string.isRequired,
-  lastname: PropTypes.string.isRequired,
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired
-}
-
-function mapStateToProps(state) {
-    const { uid, email, firstname, lastname} = state.authentication.user;
-    const { products, selectedProduct } = state.product;
-    return {
-      uid,
-      email,
-      firstname,
-      lastname,
-      products,
-      selectedProduct
-    };
-}
-
-const connectedProductWidget = connect(mapStateToProps)(ProductWidget);
-const firebaseProductWidget = compose(withFirebase)(connectedProductWidget)
-export { firebaseProductWidget as ProductWidget };
+export { ProductWidget }

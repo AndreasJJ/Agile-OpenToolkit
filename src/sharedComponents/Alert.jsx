@@ -87,6 +87,7 @@ const ProgressBar = styled.progress`
 
 const Alert = ({alert, removeToast}) => {
     const [progress, setProgress] = useState(0)
+    
     useEffect(() => {
         const id = setInterval(() => {
             setProgress(_progress => {

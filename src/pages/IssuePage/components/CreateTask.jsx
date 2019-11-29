@@ -1,9 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useContext} from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from './../../../sharedComponents/Firebase';
+import { FirebaseContext, AddDocument } from './../../../sharedComponents/Firebase';
 
 import styled from 'styled-components';
 
@@ -94,105 +93,72 @@ const Cancel = styled.button`
   font-weight: 400;
 `
 
-class CreateTask extends React.PureComponent {
+const CreateTask = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      submitDisabled: true,
-      title: "",
-      description: ""
-    }
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
 
-    this.onChangeTitle = this.onChangeTitle.bind(this)
-    this.onChangeDescription = this.onChangeDescription.bind(this)
-    this.sendTask = this.sendTask.bind(this)
+  const [submitDisabled, setSubmitDisabled] = useState(true)
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+
+  const onChangeTitle = (e) => {
+    setTitle(e.target.value)
+    setSubmitDisabled(e.target.value === "" ? true : false)
   }
 
-  componentDidMount() {
-
+  const onChangeDescription = (e) => {
+    setDescription(e.target.value)
   }
 
-  onChangeTitle(e) {
-    let isSubmitDisabled = e.target.value === "" ? true : false
-
-    this.setState({title: e.target.value, 
-                   submitDisabled: isSubmitDisabled
-                 })
-  }
-
-  onChangeDescription(e) {
-    this.setState({description: e.target.value})
-  }
-
-  async sendTask() {
+  const sendTask = async () => {
     let task = {
-      title: this.state.title,
-      description: this.state.description,
+      title: title,
+      description: description,
       status: "OPEN",
-      timestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
+      timestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
     }
-    await this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.issueId)
-              .collection("tasks")
-              .add(task)
-    this.props.exit()
+    await AddDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + props.issueId + "/tasks", task)
+    props.exit()
   }
 
-  render () {
-    return(
-      <Wrapper>
-        <Header>
-          <h3>New Task</h3>
-        </Header>
-        <Body>
-          <Info>
-            <TitleWrapper>
-              <Title>Title</Title>
-              <TitleInput placeholder="Title" 
-                          value={this.state.title} 
-                          onChange={this.onChangeTitle} />
-            </TitleWrapper>
-            <DescriptionWrapper>
-              <Description>Description</Description>
-              <DescriptionArea placeholder="Write a comment..." 
-                               value={this.state.description} 
-                               onChange={this.onChangeDescription} />
-            </DescriptionWrapper>
-          </Info>
-          <Action>
-            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendTask()}>
-              Submit task
-            </Submit>
-            <Cancel onClick={(e) => this.props.exit()}>
-              Cancel
-            </Cancel>
-          </Action>
-        </Body>
-      </Wrapper>
-    )
-  }
+  return(
+    <Wrapper>
+      <Header>
+        <h3>New Task</h3>
+      </Header>
+      <Body>
+        <Info>
+          <TitleWrapper>
+            <Title>Title</Title>
+            <TitleInput placeholder="Title" 
+                        value={title} 
+                        onChange={onChangeTitle} />
+          </TitleWrapper>
+          <DescriptionWrapper>
+            <Description>Description</Description>
+            <DescriptionArea placeholder="Write a comment..." 
+                             value={description} 
+                             onChange={onChangeDescription} />
+          </DescriptionWrapper>
+        </Info>
+        <Action>
+          <Submit disabled={submitDisabled} onClick={(e) => sendTask()}>
+            Submit task
+          </Submit>
+          <Cancel onClick={(e) => props.exit()}>
+            Cancel
+          </Cancel>
+        </Action>
+      </Body>
+    </Wrapper>
+  )
 }
 
 CreateTask.propTypes = {
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired,
   issueId: PropTypes.string.isRequired,
   exit: PropTypes.func.isRequired
 }
 
-function mapStateToProps(state) {
-    const { products, selectedProduct } = state.product
-    return {
-        products,
-        selectedProduct
-    };
-}
-
-const connectedTask = connect(mapStateToProps)(CreateTask);
-const firebaseTask = compose(withFirebase)(connectedTask)
-export { firebaseTask as CreateTask }; 
+export { CreateTask }; 

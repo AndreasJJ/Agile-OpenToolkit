@@ -1,9 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext, useRef} from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from './../../../sharedComponents/Firebase';
+import { FirebaseContext, GetDocument, UpdateDocument } from './../../../sharedComponents/Firebase';
 import Select from './../../../sharedComponents/Select';
 
 import Checkbox from './Checkbox'
@@ -37,14 +36,6 @@ const TaskTitle = styled.h3`
   font-weight: bold;
 `
 
-const TaskAssignee = styled.span`
-
-`
-
-const TaskDescription = styled.div`
-
-`
-
 const TaskAssignation = styled.div`
   display: flex;
   align-items: center;
@@ -57,43 +48,43 @@ const CheckBoxLabel = styled.label`
   margin-right: 10px;
 `
 
-class Task extends React.PureComponent {
+const Task = (props) => {
+  const prevProps = useRef(props)
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      checked: this.props.status.toLowerCase() == "open" ? false : true,
-      members: [],
-      assigneeIndex: 0
+  const firebase = useContext(FirebaseContext)
+
+  const uid = useSelector(state => state.authentication.user.uid)
+  const firstname = useSelector(state => state.authentication.user.firstname)
+  const lastname = useSelector(state => state.authentication.user.lastname)
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
+
+  const [checked, setChecked] = useState(props.status.toLowerCase() == "open" ? false : true)
+  const [members, setMembers] = useState([])
+  const [assigneeIndex, setAssigneeIndex] = useState(0)
+
+  useEffect(() => {
+    const init = async () => {
+      await getMembers()
+      await setNewAssigneeIndex()
     }
+    init()
+  }, [])
 
-    this.getMembers = this.getMembers.bind(this)
-    this.setAssigneeIndex = this.setAssigneeIndex.bind(this)
-    this.handleCheckboxChange = this.handleCheckboxChange.bind(this)
-    this.updateTaskStatus = this.updateTaskStatus.bind(this)
-    this.handleSelectChange = this.handleSelectChange.bind(this)
-    this.updateTaskAssignee = this.updateTaskAssignee.bind(this)
-  }
-
-  async componentDidMount() {
-    await this.getMembers()
-    await this.setAssigneeIndex()
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    if(this.props.assignee !== prevProps.assignee) {
-       await this.setAssigneeIndex()
+  useEffect(() => {
+    if(props.assignee !== prevProps.current.assignee) {
+       setNewAssigneeIndex()
     }
-  }
+  })
 
-  async getMembers() {
-    let docSnapshot = await this.props.firebase
-                                      .db.collection("products")
-                                      .doc(this.props.products[this.props.selectedProduct].id)
-                                      .collection("members")
-                                      .doc("members")
-                                      .get()
-    let members = docSnapshot.data().list.map((member) => {
+  useEffect(() => {
+    setNewAssigneeIndex()
+  }, [members])
+
+  const getMembers = async () => {
+    let membersDoc = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/members/members")
+
+    let _members = membersDoc.list.map((member) => {
       return {uid: Object.keys(member)[0], 
               firstname: Object.values(member)[0].firstname, 
               lastname: Object.values(member)[0].lastname,
@@ -101,102 +92,88 @@ class Task extends React.PureComponent {
               name: Object.values(member)[0].firstname + " " + Object.values(member)[0].lastname
              }
     })
-    await this.setState({members: members})
+
+    await setMembers(_members)
   }
 
-  async setAssigneeIndex() {
+  const setNewAssigneeIndex = async () => {
     let index = 0
-    for (var i = 0; i < this.state.members.length; i++) {
-      if(this.props.assignee && (this.state.members[i].uid == this.props.assignee.uid)) {
+    for (var i = 0; i < members.length; i++) {
+      if(props.assignee && (members[i].uid == props.assignee.uid)) {
         index = i+1
       }
     }
-    await this.setState({assigneeIndex: index})
+
+    await setAssigneeIndex(index)
   }
 
-  updateTaskStatus() {
-    return this.props.firebase
-                     .db.collection("products")
-                     .doc(this.props.products[this.props.selectedProduct].id)
-                     .collection("stories")
-                     .doc(this.props.issueId)
-                     .collection("tasks")
-                     .doc(this.props.taskId)
-                     .update({
-                        status: !this.state.checked ? "CLOSED" : "OPEN",
-                        lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                        lastEditer: {
-                          firstname: this.props.firstname,
-                          lastname: this.props.lastname,
-                          uid: this.props.uid,
+  const updateTaskStatus = () => {
+    const data = {
+      status: !checked ? "CLOSED" : "OPEN",
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        firstname: firstname,
+        lastname: lastname,
+        uid: uid,
 
-                        }
-                     })
+      }
+    }
+
+    return UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + props.issueId + "/tasks/" + props.taskId, data)
   }
 
-  handleCheckboxChange(e) {
-    this.setState({ checked: !this.state.checked })
-    this.updateTaskStatus().then(() => {
-    }).catch((err) => {
-      this.setState({ checked: !this.state.checked })
+  const handleCheckboxChange = async (e) => {
+    setChecked(!checked)
+
+    this.updateTaskStatus().catch((err) => {
+      setChecked(!checked)
     })
   }
 
-  handleSelectChange(e) {
+  const handleSelectChange = (e) => {
      if(e.target.value == 0) {
-       this.updateTaskAssignee(null)
+       updateTaskAssignee(null)
      } else {
-      this.updateTaskAssignee({
-        firstname: this.state.members[e.target.value-1].firstname,
-        lastname: this.state.members[e.target.value-1].lastname,
-        uid: this.state.members[e.target.value-1].uid,
-        profilePicture: this.state.members[e.target.value-1].profilePicture ? this.state.members[e.target.value-1].profilePicture : null
+      updateTaskAssignee({
+        firstname: members[e.target.value-1].firstname,
+        lastname: members[e.target.value-1].lastname,
+        uid: members[e.target.value-1].uid,
+        profilePicture: members[e.target.value-1].profilePicture ? members[e.target.value-1].profilePicture : null
       })
      }
   }
 
-  updateTaskAssignee(assignee) {
-    return this.props.firebase
-                     .db.collection("products")
-                     .doc(this.props.products[this.props.selectedProduct].id)
-                     .collection("stories")
-                     .doc(this.props.issueId)
-                     .collection("tasks")
-                     .doc(this.props.taskId)
-                     .update({
-                       assignee: assignee
-                     })
+  const updateTaskAssignee = (assignee) => {
+    return UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + props.issueId + "/tasks/" + props.taskId, {assignee: assignee})
   }
 
-  render () {
-    return(
+  return(
     <TaskWrapper>
       {
-        this.props.issueStatus.toLowerCase() === "open"
+        props.issueStatus.toLowerCase() === "open"
         ?
-          <CheckBoxLabel><Checkbox checked={this.state.checked} onChange={this.handleCheckboxChange} /></CheckBoxLabel>
+          <CheckBoxLabel><Checkbox checked={checked} onChange={handleCheckboxChange} /></CheckBoxLabel>
         :
           null
       }
       <TaskInfo>
         <TaskHeader>
           <TaskTitle>
-            {this.props.title}
+            {props.title}
           </TaskTitle>
-          <TaskAssignee>
-            {this.props.assignee ? "Assigned: " + this.props.assignee.firstname.charAt(0).toUpperCase() + this.props.assignee.firstname.slice(1) + " " + this.props.assignee.lastname : ""}
-          </TaskAssignee>
+          <span>
+            {props.assignee ? "Assigned: " + props.assignee.firstname.charAt(0).toUpperCase() + props.assignee.firstname.slice(1) + " " + props.assignee.lastname : ""}
+          </span>
         </TaskHeader>
-        <TaskDescription>
-          {this.props.description}
-        </TaskDescription>
+        <div>
+          {props.description}
+        </div>
         <TaskAssignation>
-          <Select list={this.state.members} value={this.state.assigneeIndex} onChange={this.handleSelectChange} keyName={"uid"} textName={"name"} />
+          <Select list={members} value={assigneeIndex} onChange={handleSelectChange} keyName={"uid"} textName={"name"} />
         </TaskAssignation>
       </TaskInfo>
     </TaskWrapper>
-    )
-  }
+  )
 }
 
 Task.propTypes = {
@@ -207,25 +184,6 @@ Task.propTypes = {
   description: PropTypes.string,
   status: PropTypes.string.isRequired,
   assignee: PropTypes.object.isRequired,
-  uid: PropTypes.string.isRequired,
-  firstname: PropTypes.string.isRequired,
-  lastname: PropTypes.string.isRequired,
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired
 }
 
-function mapStateToProps(state) {
-    const { uid, firstname, lastname } = state.authentication.user;
-    const { products, selectedProduct } = state.product
-    return {
-        uid,
-        firstname,
-        lastname,
-        products,
-        selectedProduct
-    };
-}
-
-const connectedTask = connect(mapStateToProps)(Task);
-const firebaseTask = compose(withFirebase)(connectedTask)
-export { firebaseTask as Task }; 
+export { Task }; 

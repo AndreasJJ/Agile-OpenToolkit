@@ -1,10 +1,9 @@
-import React from 'react';
-import { withRouter } from 'react-router';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext, useRef} from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../sharedComponents/Firebase';
+import { FirebaseContext, ListenToDocuments, ListenToDocument, GetDocument, GetDocuments, UpdateDocument } from '../../sharedComponents/Firebase';
 
 import SideBar from './components/Sidebar';
 import { Body } from './components/Body';
@@ -31,396 +30,333 @@ const Wrapper = styled.div`
 `;
 
 
-class IssuePage extends React.PureComponent {
+const IssuePage = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
+  const {id} = useParams()
+  const history = useHistory()
 
-    this.state = {
-      showModal: false,
-      modalContent: null,
-      status: "OPEN",
-      creationTimestamp: new Date(),
-      editedTimestamp: new Date(),
-      creator: "",
-      lastEditer: {},
-      title: "",
-      description: "",
-      tasks: [],
-      sprints: [],
-      sprint: "",
-      dueDate: null,
-      estimate: null,
-      labels: [],
-      selectedLabels: [],
-      editingIssue: false,
-      originalTitle: "",
-      originalDescription: ""
-    };
+  const prevId = useRef(id)
 
-    this.getData = this.getData.bind(this)
-    this.getTasks = this.getTasks.bind(this)
-    this.getAllSprints = this.getAllSprints.bind(this)
-    this.getAllLables = this.getAllLables.bind(this)
-    this.showNewIssueModal = this.showNewIssueModal.bind(this)
-    this.showNewTaskModal = this.showNewTaskModal.bind(this)
-    this.changeToEditMode = this.changeToEditMode.bind(this)
-    this.saveEdit = this.saveEdit.bind(this)
-    this.updateSprint = this.updateSprint.bind(this)
-    this.updateDueDate = this.updateDueDate.bind(this)
-    this.updateLabels = this.updateLabels.bind(this)
-    this.updateEstimate = this.updateEstimate.bind(this)
-    this.discardEdit = this.discardEdit.bind(this)
-    this.onChangeTitle = this.onChangeTitle.bind(this)
-    this.onChangeDescription = this.onChangeDescription.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-    this.goToCreatedIssue = this.goToCreatedIssue.bind(this)
-  }
+  const uid = useSelector(state => state.authentication.user.uid)
+  const firstname = useSelector(state => state.authentication.user.firstname)
+  const lastname = useSelector(state => state.authentication.user.lastname)
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
 
-  async componentDidMount() {
-    await this.getData()
-    await this.getTasks()
-    await this.getAllLables()
-    await this.getAllSprints()
-    this.props.finishLoading()
-  }
+  const [showModal, setShowModal] = useState(false)
+  const [modalContent, setModalContent] = useState(null)
+  const [status, setStatus] = useState("OPEN")
+  const [creationTimestamp, setCreationTimestamp] = useState(new Date())
+  const [editedTimestamp, setEditedTimestamp] = useState(new Date())
+  const [creator, setCreator] = useState("")
+  const [lastEditer, setLastEditer] = useState({})
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [tasks, setTasks] = useState([])
+  const [sprints, setSprints] = useState([])
+  const [sprint, setSprint] = useState("")
+  const [dueDate, setDueDate] = useState(null)
+  const [estimate, setEstimate] = useState(null)
+  const [labels, setLabels] = useState([])
+  const [selectedLabels, setSelectedLabels] = useState([])
+  const [editingIssue, setEditingIssue] = useState(false)
+  const [originalTitle, setOriginalTitle] = useState("")
+  const [originalDescription, setOriginalDescription] = useState("")
 
-  async componentDidUpdate(prevProps, prevState) {
-  if (this.props.match.params.id !== prevProps.match.params.id) { 
-      await this.setState({
-        showModal: false,
-        status: "OPEN",
-        creationTimestamp: new Date(),
-        editedTimestamp: new Date(),
-        creator: "",
-        lastEditer: "",
-        title: "",
-        description: "",
-        tasks: [],
-        sprints: [],
-        sprint: "",
-        dueDate: new Date(),
-        estimate: null,
-        labels: [],
-        selectedLabels: [],
-        editingIssue: false,
-        originalTitle: "",
-        originalDescription: ""
-      })
-      await this.getData()
-      await this.getTasks()
-      await this.getAllLables()
-      await this.getAllSprints()
-      this.props.finishLoading()
+  let DataListener;
+  let TasksListener;
+
+  useEffect(() => {
+    const init = async () => {
+      await getData()
+      await getTasks()
+      await getAllLables()
+      await getAllSprints()
+      props.finishLoading()
     }
-  }
+    init()
 
-  componentWillUnmount() {
-    this.DataListener()
-    this.TasksListener()
-  }
+    return () => {
+      DataListener()
+      TasksListener()
+    }
+  }, [])
 
-  getData() {
-    this.DataListener = this.props.firebase
-                                  .db
-                                  .collection("products")
-                                  .doc(this.props.products[this.props.selectedProduct].id)
-                                  .collection("stories")
-                                  .doc(this.props.match.params.id)
-                                  .onSnapshot(function(doc) {
-                                    let issue = doc.data()
-                                    issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : FsTsToDate(issue.timestamp)
-                                    issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : FsTsToDate(issue.lastUpdateTimestamp)
-                                    issue.dueDate = issue.dueDate == null ? null : FsTsToDate(issue.dueDate)
-                                    let tempArray = []
-                                    for (const [key, value] of Object.entries(issue.labels)) {
-                                      tempArray.push([key, value])
-                                    }
-                                    issue.labels = tempArray
-                                    this.setState({status: issue.status, 
-                                                   creationTimestamp: issue.timestamp, 
-                                                   editedTimestamp: issue.lastUpdateTimestamp, 
-                                                   creator: issue.creator, 
-                                                   lastEditer: issue.lastEditer, 
-                                                   title: issue.title, 
-                                                   description: issue.description, 
-                                                   originalTitle: issue.title, 
-                                                   originalDescription: issue.description, 
-                                                   sprint: issue.sprint,
-                                                   selectedLabels: issue.labels,
-                                                   dueDate: issue.dueDate,
-                                                   estimate: issue.estimate
-                                                 });
-                                  }.bind(this))
-  }
+  useEffect(() => {
+    if(prevId.current !== id) {
+      setShowModal(false)
+      setStatus("OPEN")
+      setCreationTimestamp(new Date())
+      setEditedTimestamp(new Date())
+      setCreator("")
+      setLastEditer("")
+      setTitle("")
+      setDescription("")
+      setTasks([])
+      setSprints([])
+      setSprint("")
+      setDueDate(new Date())
+      setEstimate(null)
+      setLabels([])
+      setSelectedLabels([])
+      setEditingIssue(false)
+      setOriginalTitle("")
+      setOriginalDescription("")
 
-  getTasks() {
-    this.TasksListener = this.props.firebase
-                                   .db.collection("products")
-                                   .doc(this.props.products[this.props.selectedProduct].id)
-                                   .collection("stories")
-                                   .doc(this.props.match.params.id)
-                                   .collection("tasks")
-                                   .orderBy("title")
-                                   .onSnapshot(function(querySnapshot) {
-                                      let tempArray = querySnapshot.docs.map((doc) => {
-                                        let obj = doc.data()
-                                        obj.id = doc.id
-                                        return obj
-                                      })
-                                      this.setState({tasks: tempArray})
-                                    }.bind(this))
-  }
+      getData()
+      getTasks()
+      getAllLables()
+      getAllSprints()
+      props.finishLoading()
 
-  async getAllLables() {
-    let docSnapshot = await this.props.firebase
-                     .db
-                     .collection("products")
-                     .doc(this.props.products[this.props.selectedProduct].id)
-                     .collection("labels")
-                     .doc("list")
-                     .get()
-    if(docSnapshot.data()) {
+      prevId.current = id
+    }
+  })
+
+  const getData = async () => {
+    const onSnapshot = (doc) => {
+      let issue = doc.data()
+      issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : FsTsToDate(issue.timestamp)
+      issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : FsTsToDate(issue.lastUpdateTimestamp)
+      issue.dueDate = issue.dueDate == null ? null : FsTsToDate(issue.dueDate)
       let tempArray = []
-      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
+      for (const [key, value] of Object.entries(issue.labels)) {
         tempArray.push([key, value])
       }
-      this.setState({labels: tempArray})
+      issue.labels = tempArray
+
+      setStatus(issue.status)
+      setCreationTimestamp(issue.timestamp)
+      setEditedTimestamp(issue.lastUpdateTimestamp)
+      setCreator(issue.creator)
+      setLastEditer(issue.lastEditer)
+      setTitle(issue.title)
+      setDescription(issue.description)
+      setOriginalTitle(issue.title)
+      setOriginalDescription(issue.description)
+      setSprint(issue.sprint)
+      setSelectedLabels(issue.labels)
+      setDueDate(issue.dueDate)
+      setEstimate(issue.estimate)
+    }
+    DataListener = await ListenToDocument(firebase, onSnapshot, "products/" + products[selectedProduct].id + "/stories/" + id)
+  }
+
+  const getTasks = async () => {
+    const onSnapshot = (querySnapshot) => {
+      let tempArray = querySnapshot.docs
+                                   .map((doc) => {
+                                      let obj = doc.data()
+                                      obj.id = doc.id
+                                      return obj
+                                    })
+      setTasks(tempArray)
+    }
+    TasksListener = await ListenToDocuments(firebase, onSnapshot, "products/" + products[selectedProduct].id + "/stories/" + id + "/tasks", null, [["title"]])
+  }
+
+  const getAllLables = async () => {
+    let list = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
+
+    if(list) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(list.list)) {
+        tempArray.push([key, value])
+      }
+      setLabels(tempArray)
     } else {
-      this.setState({labels: []})
+      setLabels([])
     }
   }
 
-  async getAllSprints() {
-    let querySnapshot = await this.props.firebase
-                     .db.collection("products")
-                     .doc(this.props.products[this.props.selectedProduct].id)
-                     .collection("sprints")
-                     .where('dueDate','>',new Date())
-                     .get()
-    let sprints = querySnapshot.docs.map((doc) => {
-      let obj = doc.data()
-      obj.id = doc.id
-      return obj
-    })
-    await this.setState({sprints: sprints})
+  const getAllSprints = async () => {
+    let sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [['dueDate','>',new Date()]])
+
+    setSprints(sprints)
   }
 
-  showNewIssueModal() {
-    this.setState({showModal: true, modalContent: "CreateIssue"})
+  const showNewIssueModal = () => {
+    setShowModal(true)
+    setModalContent("CreateIssue")
   }
 
-  showNewTaskModal() {
-    this.setState({showModal: true, modalContent: "CreateTask"})
+  const showNewTaskModal = () => {
+    setShowModal(true)
+    setModalContent("CreateTask")
   }
   
-  changeToEditMode() {
-    this.setState({editingIssue: true})
+  const changeToEditMode = () => {
+    setEditingIssue(true)
   }
 
-  saveEdit() {
-    if(this.state.title == this.state.originalTitle && 
-       this.state.description == this.state.originalDescription) 
+  const saveEdit = () => {
+    if(title == originalTitle && description == originalDescription) 
     {
-      this.setState({editingIssue: false})
+      setEditingIssue(false)
       return
     }
-    this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                title: this.state.title,
-                description: this.state.description,
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
-              .then(function() {
-                  this.setState({editingIssue: false})
-              }.bind(this))
-              .catch(function(err) {
-                this.setState({editingIssue: false, 
-                               title: this.state.originalTitle, 
-                               description: this.state.originalDescription
-                             })
-              }.bind(this))
-  }
 
-  updateSprint(sprintId) {
-    this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                sprint: sprintId,
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
-  }
-
-  updateDueDate(dueDate) {
-    this.props.firebase
-              .db.collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                dueDate: new Date(dueDate),
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
-  }
-
-  updateLabels(labels) {
-    this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                labels: labels,
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
-  }
-
-  updateEstimate(estimate) {
-    this.props.firebase
-              .db
-              .collection("products")
-              .doc(this.props.products[this.props.selectedProduct].id)
-              .collection("stories")
-              .doc(this.props.match.params.id)
-              .update({
-                estimate: estimate,
-                lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: this.props.uid,
-                  firstname: this.props.firstname,
-                  lastname: this.props.lastname
-                }
-              })
-  }
-
-  discardEdit() {
-    this.setState({editingIssue: false, 
-                   title: this.state.originalTitle, 
-                   description: this.state.originalDescription
-                 })
-  }
-
-  onChangeTitle(e) {
-    this.setState({title: e.target.value})
-  }
-
-  onChangeDescription(e) {
-    this.setState({description: e.target.value})
-  }
-
-  closeModal() {
-    this.setState({showModal: false})
-  }
-
-  goToCreatedIssue(issueId) {
-    this.props.history.push('/backlog/issue/'+issueId)
-  }
-
-  render() {
-    let modalContent;
-    if(this.state.modalContent == "CreateIssue") {
-      modalContent = <CreateIssue exit={this.closeModal} finished={this.goToCreatedIssue} />
-    } else if (this.state.modalContent == "CreateTask") {
-      modalContent = <CreateTask exit={this.closeModal} issueId={this.props.match.params.id} />
+    let data = {
+      title: title,
+      description: description,
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
+      }
     }
-    return (
-        <Wrapper>
-          {
-            this.state.showModal
-            ?
-              <Modal content={modalContent} 
-                     minWidth={"500px"} 
-                     exitModalCallback={this.closeModal} 
-              />
-            :
-              null
-          }
-          <Body
-            status={this.state.status}
-            editedTimestamp={this.state.editedTimestamp}
-            lastEditer={this.state.lastEditer}
-            editingIssue={this.state.editingIssue}
-            title={this.state.title}
-            description={this.state.description}
-            issueId={this.props.match.params.id}
-            productId={this.props.products[this.props.selectedProduct].id}
-            tasks={this.state.tasks}
-            showNewIssueModal={this.showNewIssueModal}
-            showNewTaskModal={this.showNewTaskModal}
-            onChangeTitle={this.onChangeTitle}
-            saveEdit={this.saveEdit}
-            discardEdit={this.discardEdit}
-            changeToEditMode={this.changeToEditMode}
-            onChangeDescription={this.onChangeDescription}
-          />
-          <SideBar status={this.state.status} 
-                   sprints={this.state.sprints} 
-                   selectedSprint={this.state.sprint} 
-                   dueDate={this.state.dueDate}
-                   estimate={this.state.estimate}
-                   labels={this.state.labels} 
-                   selectedLabels={this.state.selectedLabels} 
-                   updateSprint={this.updateSprint} 
-                   updateDueDate={this.updateDueDate} 
-                   updateLabels={this.updateLabels}
-                   updateEstimate={this.updateEstimate}
-          />
-        </Wrapper>
-    );
+
+    let success = () => {
+      setEditingIssue(false)
+    }
+
+    let failure = () => {
+      setEditingIssue(false)
+      setTitle(originalTitle)
+      setDescription(originalDescription)
+    }
+
+    UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data, success, failure)
   }
+
+  const updateSprint = (sprintId) => {
+    let data = {
+      sprint: sprintId,
+      lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
+      }
+    }
+
+    UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
+  }
+
+  const updateDueDate = (dueDate) => {
+    let data = {
+      dueDate: new Date(dueDate),
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: this.props.uid,
+        firstname: firstname,
+        lastname: lastname
+      }
+    }
+
+    UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
+  }
+
+  const updateLabels = (labels) => {
+    let data = {
+      labels: labels,
+      lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
+      }
+    }
+
+    UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
+  }
+
+  const updateEstimate = (estimate) => {
+    let data = {
+      estimate: estimate,
+      lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
+      }
+    }
+
+    UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
+  }
+
+  const discardEdit = () => {
+    setEditingIssue(false)
+    setTitle(originalTitle)
+    setDescription(originalDescription)
+  }
+
+  const onChangeTitle = (e) => {
+    setTitle(e.target.value)
+  }
+
+  const onChangeDescription = (e) => {
+    setDescription(e.target.value)
+  }
+
+  const closeModal = () => {
+    setShowModal(false)
+  }
+
+  const goToCreatedIssue = (issueId) => {
+    history.push('/backlog/issue/'+issueId)
+  }
+
+  let _modalContent;
+  if(modalContent == "CreateIssue") {
+    _modalContent = <CreateIssue exit={closeModal} finished={goToCreatedIssue} />
+  } else if (modalContent == "CreateTask") {
+    _modalContent = <CreateTask exit={closeModal} issueId={id} />
+  }
+
+  return (
+    <Wrapper>
+      {
+        showModal
+        ?
+          <Modal content={_modalContent} 
+                 minWidth={"500px"} 
+                 exitModalCallback={closeModal} 
+          />
+        :
+          null
+      }
+      <Body
+        status={status}
+        editedTimestamp={editedTimestamp}
+        lastEditer={lastEditer}
+        editingIssue={editingIssue}
+        title={title}
+        description={description}
+        issueId={id}
+        productId={products[selectedProduct].id}
+        tasks={tasks}
+        showNewIssueModal={showNewIssueModal}
+        showNewTaskModal={showNewTaskModal}
+        onChangeTitle={onChangeTitle}
+        saveEdit={saveEdit}
+        discardEdit={discardEdit}
+        changeToEditMode={changeToEditMode}
+        onChangeDescription={onChangeDescription}
+        uid={uid}
+        firstname={firstname}
+        lastname={lastname}
+      />
+      <SideBar status={status} 
+               sprints={sprints} 
+               selectedSprint={sprint} 
+               dueDate={dueDate}
+               estimate={estimate}
+               labels={labels} 
+               selectedLabels={selectedLabels} 
+               updateSprint={updateSprint} 
+               updateDueDate={updateDueDate} 
+               updateLabels={updateLabels}
+               updateEstimate={updateEstimate}
+      />
+    </Wrapper>
+  );
 }
 
 IssuePage.propTypes = {
   finishLoading: PropTypes.func.isRequired,
-  uid: PropTypes.string.isRequired,
-  firstname: PropTypes.string.isRequired,
-  lastname: PropTypes.string.isRequired,
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired,
 }
 
-function mapStateToProps(state) {
-    const { uid, firstname, lastname } = state.authentication.user;
-    const { products, selectedProduct } = state.product;
-    return {
-      uid,
-      firstname,
-      lastname,
-      products,
-      selectedProduct
-    };
-}
-
-const connectedIssuePage = connect(mapStateToProps)(IssuePage);
-const firebaseIssuePage = withRouter(compose(withFirebase)(connectedIssuePage))
-export { firebaseIssuePage as IssuePage };
+export { IssuePage };

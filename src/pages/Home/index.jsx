@@ -1,5 +1,4 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 import { ProductWidget } from './components/ProductWidget';
@@ -20,29 +19,24 @@ const Wrapper = styled.div`
   }
 `;
 
-export class Home extends React.PureComponent {
+const Home = (props) => {
 
- constructor(props) {
-    super(props)
-    this.state = {
-    };
-  }
+  useEffect(() => {
+    props.finishLoading()
+  }, [])
 
-  componentDidMount() {
-    this.props.finishLoading()
-  }
-
-
-  render() {
-      return (
-        <Wrapper>
-          <ProductWidget />
-          <DetailsWidget />
-        </Wrapper>
-      );
-  }
+  return (
+    <Wrapper>
+      <ProductWidget />
+      <DetailsWidget />
+    </Wrapper>
+  );
 }
 
 Home.propTypes = {
   finishLoading: PropTypes.func.isRequired
+}
+
+export {
+  Home
 }

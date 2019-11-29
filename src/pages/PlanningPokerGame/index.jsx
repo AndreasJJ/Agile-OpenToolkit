@@ -1,37 +1,23 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 
 import Game from './components/Game'
 
 import styled from 'styled-components';
 
-class PlanningPokerGame extends React.PureComponent {
+const PlanningPokerGame = (props) => {
 
-  constructor(props) {
-    super(props)
+  useEffect(() => {
+    console.log(props.match.params.id)
+  },[])
 
-    this.state = {
-
-    };
-
-  }
-
-  componentDidMount() {
-    console.log(this.props.match.params.id)
-  }
-
-  render() {
-    return (
-        <Game />
-    );
-  }
+  return (
+      <Game />
+  )
 }
 
 PlanningPokerGame.proptypes = {
 
 }
 
-const connectedPlanningPokerGame = withRouter(connect()(PlanningPokerGame));
-export { connectedPlanningPokerGame as PlanningPokerGame };
+export { PlanningPokerGame };

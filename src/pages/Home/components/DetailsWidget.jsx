@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect} from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
@@ -208,121 +208,99 @@ const Slider = styled.div`
   }
 `
 
-class DetailsWidget extends React.PureComponent {
+const DetailsWidget = (props) => {
+  const Gfirstname = useSelector(state => state.authentication.user.firstname)
+  const Glastname = useSelector(state => state.authentication.user.lastname)
+  const Ggender = useSelector(state => state.authentication.user.gender)
+  const Gemail = useSelector(state => state.authentication.user.email)
+  const GphoneNumber = useSelector(state => state.authentication.user.phoneNumber)
+  const GphotoURL = useSelector(state => state.authentication.user.photoURL)
 
-  constructor(props) {
-    super(props)
+  const [profilePicture, setProfilePicture] = useState(GphotoURL)
+  const [originalGender, setOriginalGender] = useState(Ggender)
+  const [originalFirstname, setOriginalFirstname] = useState(Gfirstname ? Gfirstname : "")
+  const [originalLastname, setOriginalLastname] = useState(Glastname ? Glastname : "")
+  const [originalMobile, setOriginalMobile] = useState(GphoneNumber ? GphoneNumber : "")
+  const [originalEmail, setOriginalEmail] = useState(Gemail ? Gemail : "")
+  const [gender, setGender] = useState(Ggender)
+  const [firstname, setFirstname] = useState(Gfirstname ? Gfirstname : "")
+  const [lastname, setLastname] = useState(Glastname ? Glastname : "")
+  const [mobile, setMobile] = useState(GphoneNumber ? GphoneNumber : "")
+  const [email, setEmail] = useState(Gemail ? Gemail : "")
+  const [saveDisabled, setSaveDisabled] = useState(true)
 
-    this.state = {
-      profilePicture: this.props.photoURL,
-      originalGender: this.props.gender,
-      originalFirstname: this.props.firstname ? this.props.firstname : "",
-      originalLastname: this.props.lastname ? this.props.lastname : "",
-      originalMobile: this.props.phoneNumber ? this.props.phoneNumber : "",
-      originalEmail: this.props.email ? this.props.email : "",
-      gender: this.props.gender,
-      firstname: this.props.firstname ? this.props.firstname : "",
-      lastname: this.props.lastname ? this.props.lastname : "",
-      mobile: this.props.phoneNumber ? this.props.phoneNumber : "",
-      email: this.props.email ? this.props.email : "",
-      saveDisabled: true
-    };
-
-    this.changeGender = this.changeGender.bind(this)
-    this.changeFirstname = this.changeFirstname.bind(this)
-    this.changeLastname = this.changeLastname.bind(this)
-    this.changeMobile = this.changeMobile.bind(this)
-    this.changeEmail = this.changeEmail.bind(this)
-    this.isOriginal = this.isOriginal.bind(this)
-  }
-
-  componentDidMount() {
-
-  }
-
-  changeGender(e) {
+  const changeGender = (e) => {
     let _saveDisabled = false
-    if(this.isOriginal(!this.state.gender)) {
+    if(isOriginal(!gender)) {
       _saveDisabled = true
     }
 
-    this.setState({
-      gender: !this.state.gender, 
-      saveDisabled: _saveDisabled
-    })
+    setGender(!gender)
+    setSaveDisabled(_saveDisabled)
   }
 
-  changeFirstname(e) {
+  const changeFirstname = (e) => {
     let _saveDisabled = false
-    if(this.isOriginal(null, e.target.value)) {
+    if(isOriginal(null, e.target.value)) {
       _saveDisabled = true
     }
-    this.setState({
-      firstname: e.target.value,
-      saveDisabled: _saveDisabled
-    });
+
+    setFirstname(e.target.value)
+    setSaveDisabled(_saveDisabled)
   }
 
-  changeLastname(e) {
+  const changeLastname = (e) => {
     let _saveDisabled = false
-    if(this.isOriginal(null,null, e.target.value)) {
+    if(isOriginal(null,null, e.target.value)) {
       _saveDisabled = true
     }
-    this.setState({
-      lastname: e.target.value,
-      saveDisabled: _saveDisabled
-    });
+
+    setLastname(e.target.value)
+    setSaveDisabled(_saveDisabled)
   }
 
-  changeMobile(e) { 
+  const changeMobile = (e) => { 
     let value = parseInt(e.target.value) ? parseInt(e.target.value) : ""
     value = value != NaN ? value: ""
 
     let _saveDisabled = false
-    if(this.isOriginal(null, null, null, value)) {
+    if(isOriginal(null, null, null, value)) {
       _saveDisabled = true
     }
-    this.setState({
-      mobile: value,
-      saveDisabled: _saveDisabled
-    });
+
+    setMobile(value)
+    setSaveDisabled(_saveDisabled)
   }
 
-  changeEmail(e) {
+  const changeEmail = (e) => {
     let _saveDisabled = false
-    if(this.isOriginal(null, null, null, null, e.target.value)) {
+    if(isOriginal(null, null, null, null, e.target.value)) {
       _saveDisabled = true
     }
-    this.setState({
-      email: e.target.value,
-      saveDisabled: _saveDisabled
-    });
+
+    setEmail(e.target.value)
+    setSaveDisabled(_saveDisabled)
   }
 
-  isOriginal(
-              gender = null,
-              firstname = null,
-              lastname = null,
-              mobile = null,
-              email = null
-            )
+  const isOriginal = (
+              _gender = null,
+              _firstname = null,
+              _lastname = null,
+              _mobile = null,
+              _email = null
+            ) =>
   {
-    let originalGender = this.state.originalGender
-    let originalFirstname = this.state.originalFirstname
-    let originalLastname = this.state.originalLastname
-    let originalMobile = this.state.originalMobile
-    let originalEmail = this.state.originalEmail
-    gender = gender != null ? gender : this.state.gender
-    firstname = firstname != null ? firstname : this.state.firstname
-    lastname = lastname != null  ? lastname : this.state.lastname
-    mobile = mobile != null ? mobile : this.state.mobile
-    email = email != null ? email : this.state.email
+    _gender = _gender != null ? _gender : gender
+    _firstname = _firstname != null ? _firstname : firstname
+    _lastname = _lastname != null  ? _lastname : lastname
+    _mobile = _mobile != null ? _mobile : mobile
+    _email = _email != null ? _email : email
 
-    if(originalGender === gender && 
-       originalFirstname === firstname && 
-       originalLastname === lastname && 
-       originalMobile === mobile && 
-       originalEmail === email) 
+    if(originalGender === _gender && 
+       originalFirstname === _firstname && 
+       originalLastname === _lastname && 
+       originalMobile === _mobile && 
+       originalEmail === _email) 
     {
       return true
     } else {
@@ -330,72 +308,48 @@ class DetailsWidget extends React.PureComponent {
     }
   }
 
-  render () {
-    return(
-      <Widget>
-        <Content>
-          <WidgetHeader>
-            Your Details
-          </WidgetHeader>
-          <WidgetBody>
-            <Inputs>
-              <FirstRow>
-                <ProfilePicture src={this.state.profilePicture ? this.state.profilePicture : BlankProfilePicture}>
-                </ProfilePicture>
-                <Switch>
-                  <ToggleButton type="checkbox" defaultChecked={this.state.gender} onChange={this.changeGender} />
-                  <Slider></Slider>
-                </Switch>
-              </FirstRow>
-              <Name>
-                <Firstname>
-                  <label>Firstname</label>
-                  <Input type="text" value={this.state.firstname} onChange={this.changeFirstname} />
-                </Firstname>
-                <Lastname>
-                  <label>Lastname</label>
-                  <Input type="text" value={this.state.lastname} onChange={this.changeLastname} />
-                </Lastname>
-              </Name>
-              <Contact>
-                <Mobile>
-                  <label>Mobile</label>
-                  <Input type="tel" pattern="[0-9]{8}" value={this.state.mobile} onChange={this.changeMobile} />
-                </Mobile>
-                <Email>
-                  <label>Email</label>
-                  <Input type="email" value={this.state.email} onChange={this.changeEmail} />
-                </Email>
-              </Contact>
-            </Inputs>
-            <SaveButton disabled={this.state.saveDisabled}> Save </SaveButton>
-          </WidgetBody>
-        </Content>
-      </Widget>
-    )
-  }
+  return(
+    <Widget>
+      <Content>
+        <WidgetHeader>
+          Your Details
+        </WidgetHeader>
+        <WidgetBody>
+          <Inputs>
+            <FirstRow>
+              <ProfilePicture src={profilePicture ? profilePicture : BlankProfilePicture}>
+              </ProfilePicture>
+              <Switch>
+                <ToggleButton type="checkbox" defaultChecked={gender} onChange={changeGender} />
+                <Slider></Slider>
+              </Switch>
+            </FirstRow>
+            <Name>
+              <Firstname>
+                <label>Firstname</label>
+                <Input type="text" value={firstname} onChange={changeFirstname} />
+              </Firstname>
+              <Lastname>
+                <label>Lastname</label>
+                <Input type="text" value={lastname} onChange={changeLastname} />
+              </Lastname>
+            </Name>
+            <Contact>
+              <Mobile>
+                <label>Mobile</label>
+                <Input type="tel" pattern="[0-9]{8}" value={mobile} onChange={changeMobile} />
+              </Mobile>
+              <Email>
+                <label>Email</label>
+                <Input type="email" value={email} onChange={changeEmail} />
+              </Email>
+            </Contact>
+          </Inputs>
+          <SaveButton disabled={saveDisabled}> Save </SaveButton>
+        </WidgetBody>
+      </Content>
+    </Widget>
+  )
 }
 
-DetailsWidget.propTypes = {
-  firstname: PropTypes.string.isRequired,
-  lastname: PropTypes.string.isRequired,
-  gender: PropTypes.bool,
-  email: PropTypes.string.isRequired,
-  phoneNumber: PropTypes.string,
-  photoURL: PropTypes.string,
-}
-
-function mapStateToProps(state) {
-    const { firstname, lastname, gender, email, phoneNumber, photoURL } = state.authentication.user;
-    return {
-        firstname,
-        lastname,
-        gender,
-        email,
-        phoneNumber,
-        photoURL,
-    };
-}
-
-const connectedDetailsWidget = connect(mapStateToProps)(DetailsWidget);
-export { connectedDetailsWidget as DetailsWidget };
+export { DetailsWidget };

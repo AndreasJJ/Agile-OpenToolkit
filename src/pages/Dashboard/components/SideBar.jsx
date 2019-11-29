@@ -195,9 +195,10 @@ const SideBar = (props) => {
               <ProductSelect onChange={selectChange} defaultValue={selectedIndex}>
                   {
                     //TODO: Handle if the stored selectedIndex in redux is higher than the number of products
-                    props.products && props.products.map((product, index) => 
-                                                                    <option key={product.id} value={index}>{product.name}</option>
-                                                                  )
+                    props.products && 
+                    props.products.map((product, index) => 
+                                        <option key={product.id} value={index}>{product.name}</option>
+                                      )
                   }
               </ProductSelect>
           </ProductSelecter>

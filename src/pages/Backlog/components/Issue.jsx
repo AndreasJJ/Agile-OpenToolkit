@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../../sharedComponents/Firebase';
+import {FirebaseContext, GetDocuments} from '../../../sharedComponents/Firebase';
 
 import Task from './Task'
 
@@ -99,90 +98,72 @@ const TasksOpen = styled.div`
   pointer-events: ${props => props.skeleton ? "none" : null};
 `
 
-class Issue extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      taskVisible: false,
-      tasks: [],
-      loadedTasks: false
-    }
+const Issue = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-    this.getTasks = this.getTasks.bind(this)
-    this.showTasks = this.showTasks.bind(this)
-  }
+  const [taskVisible, setTaskVisible] = useState(false)
+  const [tasks, setTasks] = useState([])
+  const [loadedTasks, setLoadedTasks] = useState(false)
 
-  async getTasks() {
-    let querySnapshot = await this.props.firebase
-                      .db.collection("products")
-                      .doc(this.props.productId)
-                      .collection("stories")
-                      .doc(this.props.issueId)
-                      .collection("tasks")
-                      .orderBy("title")
-                      .get()
-    return querySnapshot.docs.map((doc) => doc.data())
-  }
-
-  async showTasks() {
-    if(!this.state.loadedTasks) {
-      let tasks = await this.getTasks()
-      this.setState({taskVisible: true, tasks: tasks, loadedTasks: true})
+  const showTasks = async () => {
+    if(!loadedTasks) {
+      let tasks = await GetDocuments(firebase, "products/" + props.productId + "/stories/" + props.issueId + "/tasks", null, [["title"]])
+      setTasks(tasks)
+      setLoadedTasks(true)
+      setTaskVisible(true)
     } else {
-      this.setState({taskVisible: !this.state.taskVisible})
+      setTaskVisible(!taskVisible)
     }
   }
 
-  render () {
-    return (
-      <Wrapper>
-        <Card>
-          <IssueInfo>
-            <Left skeleton={this.props.skeleton}>
-              <div>
-                <ReactLink skeleton={this.props.skeleton} to={"/backlog/issue/" + this.props.issueId}>
-                  {this.props.title}
-                </ReactLink>
-              </div>
-              <MetaInfo>
-                <span>#{this.props.number}</span>
-                <span> · </span>
-                <span>Created {this.props.creationDate} by {this.props.creator}</span>
-              </MetaInfo>
-            </Left>
-            <Right skeleton={this.props.skeleton}>
-              <div>
-                <span>{this.props.status}</span>
-              </div>
-              <MetaInfo>
-                <span>{this.props.updated}</span>
-              </MetaInfo>
-            </Right>
-          </IssueInfo>
-          <TasksOpen skeleton={this.props.skeleton} onClick={this.showTasks}>
-            {
-              this.state.taskVisible
-              ?
-                <AngleDoubleUp size="2em" />
-              :
-                <AngleDoubleDown size="2em" />
-            }    
-          </TasksOpen>
-        </Card>
-        <Tasks displaying={this.state.taskVisible}>
+  return (
+    <Wrapper>
+      <Card>
+        <IssueInfo>
+          <Left skeleton={props.skeleton}>
+            <div>
+              <ReactLink skeleton={props.skeleton} to={"/backlog/issue/" + props.issueId}>
+                {props.title}
+              </ReactLink>
+            </div>
+            <MetaInfo>
+              <span>#{props.number}</span>
+              <span> · </span>
+              <span>Created {props.creationDate} by {props.creator}</span>
+            </MetaInfo>
+          </Left>
+          <Right skeleton={props.skeleton}>
+            <div>
+              <span>{props.status}</span>
+            </div>
+            <MetaInfo>
+              <span>{props.updated}</span>
+            </MetaInfo>
+          </Right>
+        </IssueInfo>
+        <TasksOpen skeleton={props.skeleton} onClick={showTasks}>
           {
-            this.state.tasks && 
-            this.state.tasks.map((task, index) => 
-                                  <Task key={index} 
-                                        title={task.title}
-                                        assigne={task.assignee} 
-                                        status={task.status} />
-                                )
-          }
-        </Tasks>
-      </Wrapper>
-    )
-  }
+            taskVisible
+            ?
+              <AngleDoubleUp size="2em" />
+            :
+              <AngleDoubleDown size="2em" />
+          }    
+        </TasksOpen>
+      </Card>
+      <Tasks displaying={taskVisible}>
+        {
+          tasks && 
+          tasks.map((task, index) => 
+                      <Task key={index} 
+                            title={task.title}
+                            assigne={task.assignee} 
+                            status={task.status} />
+                    )
+        }
+      </Tasks>
+    </Wrapper>
+  )
 }
 
 Issue.defaultProps = {
@@ -201,5 +182,4 @@ Issue.propTypes = {
   issueId: PropTypes.string.isRequired
 }
 
-const firebaseIssue = compose(withFirebase)(Issue)
-export { firebaseIssue as Issue };
+export { Issue };

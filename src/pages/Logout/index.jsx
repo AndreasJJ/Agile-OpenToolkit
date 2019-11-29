@@ -1,20 +1,14 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { withFirebase } from '../../sharedComponents/Firebase';
-
-import { userActions } from '../../state/actions/user';
+import React, { useEffect, useContext } from 'react';
+import { FirebaseContext } from '../../sharedComponents/Firebase';
 
 const Logout = (props) => {
+    const firebase = useContext(FirebaseContext)
 
-  useEffect(() => {
-    props.firebase.doSignOut()
-  })
+    useEffect(() => {
+        firebase.doSignOut()
+    }, [])
 
-  return (
-    "Logging out"
-  );
+    return ("Logging out");
 }
 
-const firebaseLogoutPage = compose(withFirebase)(Logout)
-export { firebaseLogoutPage as Logout }; 
+export { Logout }; 

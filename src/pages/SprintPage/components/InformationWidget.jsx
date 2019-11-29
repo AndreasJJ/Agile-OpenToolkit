@@ -1,10 +1,9 @@
-import React from 'react';
-import { withRouter } from 'react-router';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useParams, useHistory } from 'react-router';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../../sharedComponents/Firebase';
+import { FirebaseContext, GetDocument, UpdateDocument, DeleteDocument } from '../../../sharedComponents/Firebase';
 
 import { FsTsToDate, DateToLocalString } from '../../../sharedComponents/Utility'
 
@@ -110,207 +109,170 @@ const DateText = styled.span`
   margin-bottom: 20px;
 `
 
-class InformationWidget extends React.PureComponent {
+const InformationWidget = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
+  const {id} = useParams()
+  const history = useHistory()
 
-    this.state = {
-      editing: false,
-      title: "",
-      description: "",
-      startDate: new Date(),
-      dueDate: new Date(),
-      originalTitle: "",
-      originalDescription: "",
-      originalStartDate: new Date(),
-      originalDueDate: new Date()
-    };
+  const uid = useSelector(state => state.authentication.user.uid)
+  const firstname = useSelector(state => state.authentication.user.firstname)
+  const lastname = useSelector(state => state.authentication.user.lastname)
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)  
 
-    this.getSprint = this.getSprint.bind(this)
-    this.saveSprint = this.saveSprint.bind(this)
-    this.deleteSprint = this.deleteSprint.bind(this)
-    this.onEditButtonClick = this.onEditButtonClick.bind(this)
-    this.onDeleteButtonClick = this.onDeleteButtonClick.bind(this)
-    this.onSaveButtonClick = this.onSaveButtonClick.bind(this)
-    this.onChange = this.onChange.bind(this)
-  }
+  const [editing, setEditing] = useState(false)
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [startDate, setStartDate] = useState(new Date())
+  const [dueDate, setDueDate] = useState(new Date())
+  const [originalTitle, setOriginalTitle] = useState("")
+  const [originalDescription, setOriginalDescription] = useState("")
+  const [originalStartDate, setOriginalStartDate] = useState(new Date())
+  const [originalDueDate, setOriginalDueDate] = useState(new Date())
 
-  async componentDidMount() {
-    await this.getSprint()
-  }
+  useEffect(() => {
+    getSprint()
+  }, [])
 
-  async getSprint() {
-    let docSnapshot = await this.props.firebase
-                                      .db
-                                      .collection("products")
-                                      .doc(this.props.products[this.props.selectedProduct].id)
-                                      .collection("sprints")
-                                      .doc(this.props.match.params.id)
-                                      .get()
-    let sprint = docSnapshot.data()
+  const getSprint = async () => {
+    let sprint = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/" + id)
+
     if(sprint) {
-      this.setState({
-        title: sprint.title,
-        description: sprint.description,
-        startDate: FsTsToDate(sprint.startDate),
-        dueDate: FsTsToDate(sprint.dueDate),
-        originalTitle: sprint.title,
-        originalDescription: sprint.description,
-        originalStartDate: FsTsToDate(sprint.startDate),
-        originalDueDate: FsTsToDate(sprint.dueDate)
-      })
+      setTitle(sprint.title)
+      setDescription(sprint.description)
+      setStartDate(FsTsToDate(sprint.startDate))
+      setDueDate(FsTsToDate(sprint.dueDate))
+      setOriginalTitle(sprint.title)
+      setOriginalDescription(sprint.description)
+      setOriginalStartDate(FsTsToDate(sprint.startDate))
+      setOriginalDueDate(FsTsToDate(sprint.dueDate))
     }
   }
 
-  async saveSprint() {
-    if(this.state.title === this.state.originalTitle && 
-      this.state.description === this.state.originalDescription &&
-      this.state.startDate.getTime() === this.state.originalStartDate.getTime() &&
-      this.state.dueDate.getTime() === this.state.originalDueDate.getTime()) 
+  const saveSprint = async () => {
+    if(title === originalTitle && 
+      description === originalDescription &&
+      startDate.getTime() === originalStartDate.getTime() &&
+      dueDate.getTime() === originalDueDate.getTime()) 
     {
       return
     }
-    await this.props.firebase
-                    .db
-                    .collection("products")
-                    .doc(this.props.products[this.props.selectedProduct].id)
-                    .collection("sprints")
-                    .doc(this.props.match.params.id)
-                    .update({
-                      title: this.state.title,
-                      description: this.state.description,
-                      startDate: this.state.startDate,
-                      dueDate: this.state.dueDate,
-                      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                      lastEditer: {
-                        uid: this.props.uid,
-                        firstname: this.props.firstname,
-                        lastname: this.props.lastname
-                      }
-                    })
+
+    let data = {
+      title: title,
+      description: description,
+      startDate: startDate,
+      dueDate: dueDate,
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
+      }
+    }
+
+    await UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/" + id, data)
   }
 
-  async deleteSprint() {
-    await this.props.firebase
-                    .db
-                    .collection("products")
-                    .doc(this.props.products[this.props.selectedProduct].id)
-                    .collection("sprints")
-                    .doc(this.props.match.params.id)
-                    .delete()
-    this.props.history.push('/sprints')
+  const deleteSprint = async () => {
+    await DeleteDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/" + id)
+
+    history.push('/sprints')
   }
 
-  onEditButtonClick() {
-    this.setState({editing: true})
+  const onEditButtonClick = () => {
+    setEditing(true)
   }
 
-  onDeleteButtonClick() {
-    this.deleteSprint()
+  const onDeleteButtonClick = () => {
+    deleteSprint()
   }
 
-  async onSaveButtonClick() {
-    await this.saveSprint()
-    this.setState({editing: false})
+  const onSaveButtonClick = async () => {
+    await saveSprint()
+    setEditing(false)
   }
 
-  onChange(e) {
-    this.setState({description: e.target.value})
-  }
-
-  onChange(e) {
+  const onChange = (e) => {
     let val = e.target.value
-    if(e.target.name == "startDate" || e.target.name == "dueDate") {
+
+    if(e.target.name === "startDate" || e.target.name === "dueDate") {
       val = new Date(val)
     }
-    this.setState({
-      [e.target.name]: val
-    })
+
+    if(e.target.name === "title") {
+      setTitle(val)
+    } else if (e.target.name === "description") {
+      setDescription(val)
+    } else if (e.target.name === "startDate") {
+      setStartDate(val)
+    } else if (e.target.name === "dueDate") {
+      setDueDate(val)
+    }
   }
 
-  render () {
-    return(
-      <Wrapper>
-        <Content>
-              <Header>
-              {
-                this.state.editing
-                ?
-                  <TitleInput name="title" type="text" value={this.state.title} onChange={this.onChange} />
-                :
-                  <Title>{this.state.title}</Title>
-              }
-              <Controllers>
-                {
-                  this.state.editing
-                  ?
-                    <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={this.onSaveButtonClick}> Save </Button>
-                  :
-                    <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={this.onEditButtonClick}> Edit </Button>
-                }
-                <Button backgroundColor={"#ff6961"} borderColor={"#bf4f49"} onClick={this.onDeleteButtonClick}> Delete </Button>
-              </Controllers>
-              </Header>
+  return(
+    <Wrapper>
+      <Content>
+            <Header>
             {
-              this.state.editing
+              editing
               ?
-                <DescriptionTextArea name="description" defaultValue={this.state.description} onChange={this.onChange} />
+                <TitleInput name="title" type="text" value={title} onChange={onChange} />
               :
-                this.state.description
-                ?
-                  <Description>{this.state.description}</Description>
-                :
-                  null
+                <Title>{title}</Title>
             }
-            <Dates description={this.state.description} editing={this.state.editing}>
-              <DatesInputWrapper description={this.state.description} editing={this.state.editing}>
-                <DateLabel>Start Date:</DateLabel>
-                {
-                  this.state.editing
-                  ?
-                    <DateInput name="startDate" type="date" value={DateToLocalString(this.state.startDate)} onChange={this.onChange} />
-                  :
-                    <DateText>{DateToLocalString(this.state.startDate)}</DateText>
-                }
-              </DatesInputWrapper>
-              <DatesInputWrapper description={this.state.description} editing={this.state.editing}>
-                <DateLabel>Due Date:</DateLabel>
-                {
-                  this.state.editing
-                  ?
-                    <DateInput name="dueDate" type="date" value={DateToLocalString(this.state.dueDate)} min={DateToLocalString(new Date(new Date().setDate((this.state.startDate).getDate() + 1)))} onChange={this.onChange} />
-                  :
-                    <DateText>{DateToLocalString(this.state.dueDate)}</DateText>
-                }    
-              </DatesInputWrapper>
-            </Dates>
-        </Content>
-      </Wrapper>
-    )
-  }
+            <Controllers>
+              {
+                editing
+                ?
+                  <Button backgroundColor={"#1aaa55"} borderColor={"#168f48"} onClick={onSaveButtonClick}> Save </Button>
+                :
+                  <Button backgroundColor={"#fc9403"} borderColor={"#de7e00"} onClick={onEditButtonClick}> Edit </Button>
+              }
+              <Button backgroundColor={"#ff6961"} borderColor={"#bf4f49"} onClick={onDeleteButtonClick}> Delete </Button>
+            </Controllers>
+            </Header>
+          {
+            editing
+            ?
+              <DescriptionTextArea name="description" defaultValue={description} onChange={onChange} />
+            :
+              description
+              ?
+                <Description>{description}</Description>
+              :
+                null
+          }
+          <Dates description={description} editing={editing}>
+            <DatesInputWrapper description={description} editing={editing}>
+              <DateLabel>Start Date:</DateLabel>
+              {
+                editing
+                ?
+                  <DateInput name="startDate" type="date" value={DateToLocalString(startDate)} onChange={onChange} />
+                :
+                  <DateText>{DateToLocalString(startDate)}</DateText>
+              }
+            </DatesInputWrapper>
+            <DatesInputWrapper description={description} editing={editing}>
+              <DateLabel>Due Date:</DateLabel>
+              {
+                editing
+                ?
+                  <DateInput name="dueDate" type="date" value={DateToLocalString(dueDate)} min={DateToLocalString(new Date(new Date().setDate((startDate).getDate() + 1)))} onChange={onChange} />
+                :
+                  <DateText>{DateToLocalString(dueDate)}</DateText>
+              }    
+            </DatesInputWrapper>
+          </Dates>
+      </Content>
+    </Wrapper>
+  )
 }
 
 InformationWidget.proptypes = {
-  uid: PropTypes.string.isRequired,
-  firstname: PropTypes.string.isRequired,
-  lastname: PropTypes.string.isRequired,
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired
 }
 
-function mapStateToProps(state) {
-    const { uid, firstname, lastname } = state.authentication.user;
-    const { products, selectedProduct } = state.product;
-    return {
-      uid,
-      firstname,
-      lastname,
-      products,
-      selectedProduct
-    };
-}
-
-const connectedInformationWidget = connect(mapStateToProps)(InformationWidget);
-const firebaseInformationWidget = withRouter(compose(withFirebase)(connectedInformationWidget))
-export { firebaseInformationWidget as InformationWidget };
+export { InformationWidget };

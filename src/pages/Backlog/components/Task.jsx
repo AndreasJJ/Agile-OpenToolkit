@@ -38,9 +38,7 @@ const Title = styled.div`
   text-decoration: ${props => props.status == "CLOSED" ? "line-through" : "none"};
 `
 
-const Task = (props) => {
-  const {assigne, status, title} = props
-
+const Task = ({assigne, status, title}) => {
   return(
     <Wrapper>
       <Left>

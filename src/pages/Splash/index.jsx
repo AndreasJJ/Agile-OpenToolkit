@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import ReactFullpage from '@fullpage/react-fullpage';
 import { history } from '../../state/helpers/history';
 
@@ -84,124 +84,115 @@ const Image = styled.img`
 
 const LICENSEKEY = "***REMOVED***"
 
-export default class HomePage extends React.PureComponent {
+const HomePage = (props) => {
 
-  constructor(props) {
-    super(props)
-    
-    this.props.finishLoading()
+  const prevProps = useRef(props)
 
-    this.state = {
-      
-    };
-    this.toRegister = this.toRegister.bind(this)
-    this.getCookie = this.getCookie.bind(this)
-  }
-
-  componentDidMount() {
-    if(this.getCookie("visited")) {
+  useEffect(() => {
+    if(getCookie("visited")) {
       history.push('/login');
     }
-  }
+    props.finishLoading()
+  }, [])
 
-  componentDidUpdate(prevProps, prevState) {
-    if(this.props.location.hash !== prevProps.location.hash) {
-      this.props.finishLoading()
+  useEffect(() => {
+    if(props.location.hash !== prevProps.current.location.hash) {
+      props.finishLoading()
     }
-  }
-  toRegister(e) {
+  })
+
+  const toRegister = (e) => {
     e.preventDefault();
 
     history.push('/register');
   }
 
-  getCookie(name) {
-      var nameEQ = name + "=";
-      var ca = document.cookie.split(';');
-      for(var i=0;i < ca.length;i++) {
-          var c = ca[i];
+  const getCookie = (name) => {
+      let nameEQ = name + "=";
+      let ca = document.cookie.split(';');
+      for(let i=0;i < ca.length;i++) {
+          let c = ca[i];
           while (c.charAt(0)==' ') c = c.substring(1,c.length);
           if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
       }
       return null;
   }
 
-  render() {
-
-    return (
-      <ReactFullpage licenseKey={LICENSEKEY}
-        navigation
-        anchors={['welcome', 'productBacklog', 'PlanningPoker', 'sprintboard', 'retrospective']}
-        parallax
-        render={({ state, fullpageApi }) => {
-          return (
-            <ReactFullpage.Wrapper>
-              <div className="section">
-                <Content image={BackgroundImage}>
-                  <TextContent>
-                    <LogoWrapper>
-                      <img src={LogoImage} />
-                      <Logo><h1>Agile Toolkit</h1></Logo>
-                    </LogoWrapper>
-                    <h2>Collaborate with your team, write clean code, and make awesome products. Let us take care of scrum!</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet augue tincidunt, efficitur augue eget, elementum dui. Nam lacinia ligula tellus, eget interdum ipsum dictum vel. Nam cursus, elit eget rhoncus vulputate, odio risus gravida mauris, nec maximus nisl purus nec mi. Morbi id pulvinar elit. Vivamus viverra id eros id egestas. Aliquam purus massa, ornare vel viverra eu.</p>
-                    <GetStarted onClick={e => this.toRegister(e)}>Get Started</GetStarted>
-                    <Continue>Still not convinced? Scroll down!</Continue>
-                  </TextContent>
-                  <SideImage>
-                    <Image src={welcomeImage} />
-                  </SideImage>
-                </Content>
-              </div>
-              <div className="section">
-                <Content image={BackgroundImage}>
-                  <TextContent>
-                    <h2>Easily keep track of your issues with a proper product backlog</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
-                  </TextContent>
-                  <SideImage>
-                    <Image src={backlogImage} />
-                  </SideImage>
-                </Content>
-              </div>
-              <div className="section">
-                <Content image={BackgroundImage}>
-                  <TextContent>
-                    <h2>Estimate your issue's story points with planning poker</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
-                  </TextContent>
-                  <SideImage>
-                    <Image src={PlanningPokerImage} />
-                  </SideImage>
-                </Content>
-              </div>
-              <div className="section">
-                <Content image={BackgroundImage}>
-                  <TextContent>
-                    <h2>Keep track of the sprint and your teammates with a sprintboard</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
-                  </TextContent>
-                  <SideImage>
-                    <Image src={sprintboardImage} />
-                  </SideImage>
-                </Content>
-              </div>
-              <div className="section">
-                <Content image={BackgroundImage}>
-                  <TextContent>
-                    <h2>Improve your sprints with our retrospective boards</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
-                    <LastChance onClick={e => this.toRegister(e)}>Start your journey today</LastChance>
-                  </TextContent>
-                  <SideImage>
-                    <Image src={retrospectiveImage} />
-                  </SideImage>
-                </Content>
-              </div>
-            </ReactFullpage.Wrapper>
-          );
-        }}
-      />
-    );
-  }
+  return (
+    <ReactFullpage licenseKey={LICENSEKEY}
+      navigation
+      anchors={['welcome', 'productBacklog', 'PlanningPoker', 'sprintboard', 'retrospective']}
+      parallax
+      render={({ state, fullpageApi }) => {
+        return (
+          <ReactFullpage.Wrapper>
+            <div className="section">
+              <Content image={BackgroundImage}>
+                <TextContent>
+                  <LogoWrapper>
+                    <img src={LogoImage} />
+                    <Logo><h1>Agile Toolkit</h1></Logo>
+                  </LogoWrapper>
+                  <h2>Collaborate with your team, write clean code, and make awesome products. Let us take care of scrum!</h2>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet augue tincidunt, efficitur augue eget, elementum dui. Nam lacinia ligula tellus, eget interdum ipsum dictum vel. Nam cursus, elit eget rhoncus vulputate, odio risus gravida mauris, nec maximus nisl purus nec mi. Morbi id pulvinar elit. Vivamus viverra id eros id egestas. Aliquam purus massa, ornare vel viverra eu.</p>
+                  <GetStarted onClick={e => toRegister(e)}>Get Started</GetStarted>
+                  <Continue>Still not convinced? Scroll down!</Continue>
+                </TextContent>
+                <SideImage>
+                  <Image src={welcomeImage} />
+                </SideImage>
+              </Content>
+            </div>
+            <div className="section">
+              <Content image={BackgroundImage}>
+                <TextContent>
+                  <h2>Easily keep track of your issues with a proper product backlog</h2>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
+                </TextContent>
+                <SideImage>
+                  <Image src={backlogImage} />
+                </SideImage>
+              </Content>
+            </div>
+            <div className="section">
+              <Content image={BackgroundImage}>
+                <TextContent>
+                  <h2>Estimate your issue's story points with planning poker</h2>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
+                </TextContent>
+                <SideImage>
+                  <Image src={PlanningPokerImage} />
+                </SideImage>
+              </Content>
+            </div>
+            <div className="section">
+              <Content image={BackgroundImage}>
+                <TextContent>
+                  <h2>Keep track of the sprint and your teammates with a sprintboard</h2>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
+                </TextContent>
+                <SideImage>
+                  <Image src={sprintboardImage} />
+                </SideImage>
+              </Content>
+            </div>
+            <div className="section">
+              <Content image={BackgroundImage}>
+                <TextContent>
+                  <h2>Improve your sprints with our retrospective boards</h2>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
+                  <LastChance onClick={e => toRegister(e)}>Start your journey today</LastChance>
+                </TextContent>
+                <SideImage>
+                  <Image src={retrospectiveImage} />
+                </SideImage>
+              </Content>
+            </div>
+          </ReactFullpage.Wrapper>
+        );
+      }}
+    />
+  )
 }
+
+export default HomePage

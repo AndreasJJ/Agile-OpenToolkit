@@ -1,9 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../sharedComponents/Firebase';
+import { FirebaseContext, GetDocuments, AddDocument } from '../../sharedComponents/Firebase';
 
 import { FsTsToDate, DateToLocalString } from '../../sharedComponents/Utility';
 import Modal from '../../sharedComponents/Modal';
@@ -92,167 +91,122 @@ const Body = styled.div`
   box-sizing: border-box;
 `
 
-class Sprints extends React.PureComponent {
+const Sprints = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
 
-    this.state = {
-      loading: true,
-      activeTab: 1,
-      showModal: false,
-      sprints: []
-    };
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActivetab] = useState(1)
+  const [showModal, setShowModal] = useState(false)
+  const [sprints, setSprints] = useState([])
 
-    this.getSprints = this.getSprints.bind(this)
-    this.tabClicked = this.tabClicked.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-    this.createSprint = this.createSprint.bind(this)
-  }
-
-  async componentDidMount() {
-    await this.getSprints()
-    await this.props.finishLoading()
-    this.setState({loading: false})
-  }
-
-  async getSprints() {
-    let ref;
-    if(this.state.activeTab === 0) {
-      ref = this.props.firebase
-                      .db
-                      .collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("sprints")
-                      .where("dueDate", "<", new Date())
-                      .orderBy("dueDate", 'desc')
-    }else if(this.state.activeTab === 1) {
-      ref = this.props.firebase
-                      .db
-                      .collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("sprints")
-                      .where("dueDate", ">=", new Date())
-                      .orderBy("dueDate", 'asc')
-    } else {
-      ref = this.props.firebase
-                      .db
-                      .collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("sprints")
-                      .where("startDate", ">", new Date())
-                      .orderBy("startDate", 'asc')
+  useEffect(() => {
+    const init = async () => {
+      await props.finishLoading()
+      setLoading(false)
     }
-    let querySnapshot = await ref.get()
-    let sprints = querySnapshot.docs.map((doc) => {
-      let obj = doc.data()
-      obj.id = doc.id
-      return obj
-    })
+    init()
+  }, [])
 
-    if(this.state.activeTab === 1) {
+  useEffect(() => {
+    getSprints()
+  }, [activeTab])
+
+  const getSprints = async () => {
+    let sprints;
+    if(activeTab === 0) {
+      sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [["dueDate", "<", new Date()]], [["dueDate", 'desc']])
+    }else if(activeTab === 1) {
+      sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [["dueDate", ">=", new Date()]], [["dueDate", 'asc']])
+    } else {
+      sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [["startDate", ">", new Date()]], [["startDate", 'asc']])
+    }
+
+    if(activeTab === 1) {
       sprints = sprints.filter((obj) => FsTsToDate(obj.startDate))
     } 
 
-    this.setState({sprints: sprints})
+    setSprints(sprints)
   }
 
-  async tabClicked(e) {
-    await this.setState({activeTab: parseInt(e.target.dataset.index)})
-    this.getSprints()
+  const tabClicked = async (e) => {
+    await setActivetab(parseInt(e.target.dataset.index))
   }
 
-  closeModal() {
-    this.setState({showModal: false})
+  const closeModal = () => {
+    setShowModal(false)
   }
 
-  async createSprint(sprint) {
-    await this.props.firebase
-                     .db
-                     .collection("products")
-                     .doc(this.props.products[this.props.selectedProduct].id)
-                     .collection("sprints")
-                     .add(sprint)
-    await this.getSprints()
+  const createSprint = async (sprint) => {
+    await AddDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/", sprint)
+    getSprints()
   }
 
-  render() {
-    return (
-        <Wrapper>
-          {
-            this.state.showModal
-            ?
-              <Modal content={<CreateSprint exit={this.closeModal} 
-                                            createSprint={this.createSprint} />
-                              } 
-                      minWidth={"800px"} 
-                      exitModalCallback={this.closeModal} />
-            :
-              null
-          }
-          <Content>
-            <Header> 
-              <Controls> 
-                <StateTabs> 
-                  <Tab activeIndex={this.state.activeTab} index={0} data-index={0} onClick={this.tabClicked}>
-                    Past
-                  </Tab>
-                  <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>
-                    Current
-                  </Tab>
-                  <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>
-                    Future
-                  </Tab>
-                </StateTabs>
-                <NewSprint onClick={(e) => {this.setState({showModal: true})}}>
-                  New Sprint
-                </NewSprint>
-              </Controls>
-            </Header>
-            <Body>
-              {
-                this.state.loading
-                ?
-                  <SprintCard skeleton={true} 
-                              key={"skeletonSprintCard"} 
-                              sprintId={""} 
-                              title={"This is a skeleton sprint title"} 
-                              startDate={DateToLocalString(new Date())} 
-                              dueDate={DateToLocalString(new Date())} 
-                              totalIssues={1} 
-                              finishedIssues={0} />
-                :
-                  this.state.sprints && this.state.sprints.map((sprint, index) =>
-                    <SprintCard key={index} 
-                                sprintId={sprint.id} 
-                                title={sprint.title} 
-                                startDate={DateToLocalString(FsTsToDate(sprint.startDate))} 
-                                dueDate={DateToLocalString(FsTsToDate(sprint.dueDate))} 
-                                totalIssues={sprint.totalIssues} 
-                                finishedIssues={sprint.finishedIssues} />
-                  )
-              }
-            </Body>
-          </Content>
-        </Wrapper>
-    );
-  }
+  return (
+      <Wrapper>
+        {
+          showModal
+          ?
+            <Modal content={<CreateSprint exit={closeModal} 
+                                          createSprint={createSprint} />
+                            } 
+                    minWidth={"800px"} 
+                    exitModalCallback={closeModal} />
+          :
+            null
+        }
+        <Content>
+          <Header> 
+            <Controls> 
+              <StateTabs> 
+                <Tab activeIndex={activeTab} index={0} data-index={0} onClick={tabClicked}>
+                  Past
+                </Tab>
+                <Tab activeIndex={activeTab} index={1} data-index={1} onClick={tabClicked}>
+                  Current
+                </Tab>
+                <Tab activeIndex={activeTab} index={2} data-index={2} onClick={tabClicked}>
+                  Future
+                </Tab>
+              </StateTabs>
+              <NewSprint onClick={(e) => {setShowModal(true)}}>
+                New Sprint
+              </NewSprint>
+            </Controls>
+          </Header>
+          <Body>
+            {
+              loading
+              ?
+                <SprintCard skeleton={true} 
+                            key={"skeletonSprintCard"} 
+                            sprintId={""} 
+                            title={"This is a skeleton sprint title"} 
+                            startDate={DateToLocalString(new Date())} 
+                            dueDate={DateToLocalString(new Date())} 
+                            totalIssues={1} 
+                            finishedIssues={0} />
+              :
+                sprints && sprints.map((sprint, index) =>
+                  <SprintCard key={index} 
+                              sprintId={sprint.id} 
+                              title={sprint.title} 
+                              startDate={DateToLocalString(FsTsToDate(sprint.startDate))} 
+                              dueDate={DateToLocalString(FsTsToDate(sprint.dueDate))} 
+                              totalIssues={sprint.totalIssues} 
+                              finishedIssues={sprint.finishedIssues} />
+                )
+            }
+          </Body>
+        </Content>
+      </Wrapper>
+  )
 }
 
 Sprints.proptypes = {
-  finishLoading: PropTypes.func.isRequired,
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired
+  finishLoading: PropTypes.func.isRequired
 }
 
-function mapStateToProps(state) {
-    const { products, selectedProduct } = state.product
-    return {
-        products,
-        selectedProduct
-    };
-}
-
-const connectedSprints = connect(mapStateToProps)(Sprints);
-const firebaseSprints = compose(withFirebase)(connectedSprints)
-export { firebaseSprints as Sprints };
+export { Sprints };

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import NotificationsWidget from './components/NotificationsWidget';
@@ -19,7 +18,7 @@ const Overview = (props) => {
 
   useEffect(() => {
     props.finishLoading()
-  })
+  }, [])
 
   return (
     <Wrapper>

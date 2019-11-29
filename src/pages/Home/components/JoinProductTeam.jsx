@@ -75,9 +75,4 @@ const JoinProductTeam = (props) => {
   )
 }
 
-JoinProductTeam.propTypes = {
-
-}
-
-
 export default JoinProductTeam

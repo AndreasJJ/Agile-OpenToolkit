@@ -1,10 +1,9 @@
-import React from 'react';
-import { withRouter } from 'react-router';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../../sharedComponents/Firebase';
+import { FirebaseContext, GetDocuments } from '../../../sharedComponents/Firebase';
 
 import IssueList from './IssueList'
 
@@ -33,76 +32,53 @@ const Content = styled.div`
   }  
 `
 
-class IssuesListsWidget extends React.PureComponent {
+const IssuesListsWidget = (props) => {
+  const firebase = useContext(FirebaseContext)
 
-  constructor(props) {
-    super(props)
+  const {id} = useParams()
 
-    this.state = {
-      unstartedIssues: [],
-      ongingIssues: [],
-      completedIssues: []
-    };
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)      
 
-    this.getIssues = this.getIssues.bind(this)
-  }
+  const [unstartedIssues, setUnstartedIssues] = useState([])
+  const [ongingIssues, setOngingIssues] = useState([])
+  const [completedIssues, setCompletedIssues] = useState([])
 
-  async componentDidMount() {
-    let issues = await this.getIssues()
-  }
+  useEffect(() => {
+    getIssues()
+  }, [])
 
-  async getIssues() {
-    let querySnapshot = await this.props.firebase
-                                        .db
-                                        .collection("products")
-                                        .doc(this.props.products[this.props.selectedProduct].id)
-                                        .collection("stories")
-                                        .where('sprint', '==', this.props.match.params.id)
-                                        .get()
-    let unstartedIssues = []
-    let completedIssues = []
-    querySnapshot.docs.forEach(function(doc) {
-      let id = doc.id
-      doc = doc.data()
-      doc.id = id
+  const getIssues = async () => {
+    let documents = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", [['sprint', '==', id]])
+
+    let _unstartedIssues = []
+    let _completedIssues = []
+
+    documents.forEach((doc) => {
       if(doc.status == "OPEN") {
-        unstartedIssues.push(doc)
+        _unstartedIssues.push(doc)
       } else if (doc.status == "CLOSED") {
-        completedIssues.push(doc)
+        _completedIssues.push(doc)
       }
-    }.bind(this));
-    this.setState({
-      unstartedIssues: unstartedIssues,
-      completedIssues: completedIssues
     })
+
+    setUnstartedIssues(_unstartedIssues)
+    setCompletedIssues(_completedIssues)
   }
 
-  render () {
-    return(
-      <Wrapper>
-        <Content>
-        <IssueList title="Unstarted" issues={this.state.unstartedIssues} margin="0px 10px 0px 0px" />
-        <IssueList title="Ongoing" issues={this.state.ongingIssues} margin="0px 10px" />
-        <IssueList title="Completed" issues={this.state.completedIssues} margin="0px 0px 0px 10px" />
-        </Content>
-      </Wrapper>
-    )
-  }
+  return(
+    <Wrapper>
+      <Content>
+      <IssueList title="Unstarted" issues={unstartedIssues} margin="0px 10px 0px 0px" />
+      <IssueList title="Ongoing" issues={ongingIssues} margin="0px 10px" />
+      <IssueList title="Completed" issues={completedIssues} margin="0px 0px 0px 10px" />
+      </Content>
+    </Wrapper>
+  )
 }
 
 IssuesListsWidget.proptypes = {
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired
+
 }
 
-function mapStateToProps(state) {
-    const { products, selectedProduct } = state.product;
-    return {
-      products,
-      selectedProduct
-    };
-}
-
-const connectedIssuesListsWidget = connect(mapStateToProps)(IssuesListsWidget);
-const firebaseIssuesListsWidget = withRouter(compose(withFirebase)(connectedIssuesListsWidget))
-export { firebaseIssuesListsWidget as IssuesListsWidget };
+export { IssuesListsWidget };

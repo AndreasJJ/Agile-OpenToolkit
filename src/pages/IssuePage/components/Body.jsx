@@ -1,9 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../../sharedComponents/Firebase';
+import { FirebaseContext, UpdateDocument } from '../../../sharedComponents/Firebase';
 
 import { getPrettyCreationDate } from '../../../sharedComponents/Utility'
 
@@ -172,6 +170,8 @@ const SubmitButton = styled.button`
 `
 
 const Body = (props) => {
+  const firebase = useContext(FirebaseContext)
+
   const {status, editedTimestamp, lastEditer, 
          showNewIssueModal, showNewTaskModal, editingIssue, title, onChangeTitle, 
          saveEdit, discardEdit, changeToEditMode, description,
@@ -179,21 +179,17 @@ const Body = (props) => {
          uid, firstname, lastname} = props
 
   const issueStatusChange = () => {
-    props.firebase
-              .db
-              .collection("products")
-              .doc(productId)
-              .collection("stories")
-              .doc(issueId)
-              .update({
-                status: status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
-                lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-                lastEditer: {
-                  uid: uid,
-                  firstname: firstname,
-                  lastname: lastname
-                }
-              })
+    let data = {
+      status: status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastEditer: {
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
+      }
+    }
+
+    UpdateDocument(firebase, "products/" + productId + "/stories/" + issueId, data)
   }
 
   return(
@@ -310,15 +306,4 @@ Body.propTypes = {
   lastname: PropTypes.string.isRequired
 }
 
-function mapStateToProps(state) {
-    const { uid, firstname, lastname } = state.authentication.user;
-    return {
-      uid,
-      firstname,
-      lastname
-    };
-}
-
-const connectedBody = connect(mapStateToProps)(Body);
-const firebaseBody = compose(withFirebase)(connectedBody)
-export { firebaseBody as Body };
+export { Body };

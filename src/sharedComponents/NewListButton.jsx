@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
@@ -55,76 +55,53 @@ const AddStoryButton = styled.button`
     margin-right: 5px;
 `;
 
-/* eslint-disable react/prefer-stateless-function */
-export default class NewListButton extends React.PureComponent {
+const NewListButton = (props) => {
+  const [showAddList, setShowAddList] = useState(false)
+  const [listName, setListName] = useState("")
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      showAddList: false,
-      listName: ""
-    };
-
-    this.clickAddList = this.clickAddList.bind(this)
-    this.clickShowAddList = this.clickShowAddList.bind(this)
-    this.clickCloseAddList = this.clickCloseAddList.bind(this)
+  const clickShowAddList = () => {
+    setShowAddList(true)
   }
 
-  componentDidMount() {
+  const clickAddList = () => {
+    props.addList(listName)
 
+    setListName("")
   }
 
-  clickShowAddList() {
-    this.setState({
-      showAddList: true
-    });
+  const clickCloseAddList = () => {
+    setShowAddList(false)
   }
 
-  clickAddList() {
-    this.props.addList(this.state.listName)
-    this.setState({
-      listName: ""
-    });
+  const changeInputValue = (value) => {
+    setListName(value)
   }
 
-  clickCloseAddList() {
-    this.setState({
-      showAddList: false
-    });
-  }
-
-  changeInputValue(value) {
-    this.setState({
-      listName: value
-    });
-  }
-
-  render() {
-    return (
-        this.state.showAddList
-        ?
-        <ButtonWrapper>
-          <ButtonInner>
-            <AddStoryInputWrapper>
-              <AddStoryTextArea value={this.state.listName} onChange={e => this.changeInputValue(e.target.value)} />
-              <AddStoryControlsWrapper>
-                <AddStoryButton onClick={this.clickAddList}>Add List</AddStoryButton>
-                <Times size="1.5em" onClick={this.clickCloseAddList} />
-              </AddStoryControlsWrapper>
-            </AddStoryInputWrapper>
-          </ButtonInner>
-        </ButtonWrapper>
-        :
-        <ButtonWrapper onClick={this.clickShowAddList}>
-          <ButtonInner>
-            + Add another list
-          </ButtonInner>
-        </ButtonWrapper>
-    );
-  }
+  return (
+    showAddList
+    ?
+    <ButtonWrapper>
+      <ButtonInner>
+        <AddStoryInputWrapper>
+          <AddStoryTextArea value={listName} onChange={e => changeInputValue(e.target.value)} />
+          <AddStoryControlsWrapper>
+            <AddStoryButton onClick={clickAddList}>Add List</AddStoryButton>
+            <Times size="1.5em" onClick={clickCloseAddList} />
+          </AddStoryControlsWrapper>
+        </AddStoryInputWrapper>
+      </ButtonInner>
+    </ButtonWrapper>
+    :
+    <ButtonWrapper onClick={clickShowAddList}>
+      <ButtonInner>
+        + Add another list
+      </ButtonInner>
+    </ButtonWrapper>
+  )
 }
 
 NewListButton.proptypes = {
   addList: PropTypes.func.isRequired
 }
+
+export default NewListButton

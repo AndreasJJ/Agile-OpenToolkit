@@ -1,9 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { compose } from 'recompose';
 import PropTypes from 'prop-types';
 
-import { withFirebase } from './Firebase';
+import { FirebaseContext, GetDocuments, GetDocument, AddDocument } from './Firebase';
 
 import { DateToLocalString } from './Utility';
 import { alertActions } from '../state/actions/alert';
@@ -244,257 +244,215 @@ const Cancel = styled.button`
   font-weight: 400;
 `
 
-export default class CreateIssue extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      title: "",
-      description: "",
-      dueDateEnabled: false,
-      dueDate: DateToLocalString(new Date()),
-      estimate: "",
-      selectedSprint: 0,
-      selectedLabels: [],
-      submitDisabled: true,
-      labels: [],
-      sprints: []
-    }
-    this.getSprints = this.getSprints.bind(this)
-    this.getLabels = this.getLabels.bind(this)
-    this.onChangeTitle = this.onChangeTitle.bind(this)
-    this.onChangeDescription = this.onChangeDescription.bind(this)
-    this.onChangeDueDate = this.onChangeDueDate.bind(this)
-    this.onChangeSprintSelect = this.onChangeSprintSelect.bind(this)
-    this.onChangeLabelsSelect = this.onChangeLabelsSelect.bind(this)
-    this.onDueDateEnabledChange = this.onDueDateEnabledChange.bind(this)
-    this.sendIssue = this.sendIssue.bind(this)
-    this.onEstimateChange = this.onEstimateChange.bind(this)
+const CreateIssue = (props) => {
+  const firebase = useContext(FirebaseContext)
+
+  const dispatch = useDispatch()
+
+  const uid = useSelector(state => state.authentication.user.uid)
+  const firstname = useSelector(state => state.authentication.user.firstname)
+  const lastname = useSelector(state => state.authentication.user.lastname)
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)   
+
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [dueDateEnabled, setDueDateEnabled] = useState(false)
+  const [dueDate, setDueDate] = useState(DateToLocalString(new Date()))
+  const [estimate, setEstimate] = useState("")
+  const [selectedSprint, setSelectedSprint] = useState(0)
+  const [selectedLabels, setSelectedLabels] = useState([])
+  const [submitDisabled, setSubmitDisabled] = useState(true)
+  const [labels, setLabels] = useState([])
+  const [sprints, setSprints] = useState([])
+
+  useEffect(() => {
+    getLabels()
+    getSprints()
+  }, [])
+
+  const getSprints = async () => {
+    let _sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints/", [['dueDate','>',new Date()]])
+
+    setSprints(_sprints)
   }
 
-  componentDidMount() {
-    this.getLabels()
-    this.getSprints()
-  }
+  const getLabels = async () => {
+    let document = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
 
-  async getSprints() {
-    let querySnapshot = await this.props.firebase
-                            .db.collection("products")
-                            .doc(this.props.products[this.props.selectedProduct].id)
-                            .collection("sprints")
-                            .where('dueDate','>',new Date())
-                            .get()
-    let sprints = querySnapshot.docs.map((doc) => doc.data())
-    this.setState({sprints: sprints})
-  }
-
-  async getLabels() {
-    let docSnapshot = await this.props.firebase
-                            .db.collection("products")
-                            .doc(this.props.products[this.props.selectedProduct].id)
-                            .collection("labels")
-                            .doc("list")
-                            .get()
-    if(docSnapshot.data()) {
+    if(document) {
       let tempArray = []
-      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
+      for (const [key, value] of Object.entries(document.list)) {
         tempArray.push([key, value])
       }
-      this.setState({labels: tempArray})
+
+      setLabels(tempArray)
     } else {
-      this.setState({labels: []})
+      setLabels([])
     }
   }
 
-  onChangeTitle(e) {
-    let isSubmitDisabled = e.target.value === "" ? true : false
-
-    this.setState({title: e.target.value, 
-                   submitDisabled: isSubmitDisabled
-                 })
+  const onChangeTitle = (e) => {
+    setTitle(e.target.value)
+    setSubmitDisabled(e.target.value === "" ? true : false)
   }
 
-  onChangeDescription(e) {
-    this.setState({description: e.target.value})
+  const onChangeDescription = (e) => {
+    setDescription(e.target.value)
   }
 
-  onChangeDueDate(e) {
-    this.setState({dueDate: e.target.value})
+  const onChangeDueDate = (e) => {
+    setDueDate(e.target.value)
   }
 
-  onChangeSprintSelect(e) {
-    this.setState({selectedSprint: e.target.value})
+  const onChangeSprintSelect = (e) => {
+    setSelectedSprint(e.target.value)
   }
 
-  onChangeLabelsSelect(e) {
+  const onChangeLabelsSelect = (e) => {
     let newVal = event.target.value
-    let stateVal = this.state.selectedLabels
+    let stateVal = selectedLabels
 
     let selectedValue = [...e.target.options].filter(o => o.selected).map(o => o.value)
-    this.setState({selectedLabels: selectedValue})
+
+    setSelectedLabels(selectedValue)
   }
 
-  onDueDateEnabledChange() {
-    this.setState({dueDateEnabled: !this.state.dueDateEnabled})
+  const onDueDateEnabledChange = () => {
+    setDueDateEnabled(!dueDateEnabled)
   }
 
-  onEstimateChange(e) {
-    this.setState({estimate: e.target.value})
+  const onEstimateChange = (e) => {
+    setEstimate(e.target.value)
   }
 
-  sendIssue() {
+  const sendIssue = async () => {
     let issue = {
-      title: this.state.title,
-      description: this.state.description,
-      dueDate: this.state.dueDateEnabled ? new Date(this.state.dueDate) : null,
-      sprint: (this.state.sprints.length <= this.state.selectedSprint) ? null : (this.state.selectedSprint > 0 ? this.state.sprints[this.state.selectedSprint-1].id : null),
+      title: title,
+      description: description,
+      dueDate: dueDateEnabled ? new Date(dueDate) : null,
+      sprint: (sprints.length <= selectedSprint) ? null : (selectedSprint > 0 ? sprints[selectedSprint-1].id : null),
       status: "OPEN",
-      timestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
-      lastUpdateTimestamp: this.props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      timestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
       creator: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
       },
       lastEditer: {
-        uid: this.props.uid,
-        firstname: this.props.firstname,
-        lastname: this.props.lastname
+        uid: uid,
+        firstname: firstname,
+        lastname: lastname
       }
     }
 
-    if(this.state.estimate && this.state.estimate !== "" && !isNaN(this.state.estimate)) {
-      issue.estimate = Number(this.state.estimate)
+    if(estimate && estimate !== "" && !isNaN(estimate)) {
+      issue.estimate = Number(estimate)
     }
 
-    if(this.state.labels.length > 0) {
-      let labels = this.state.selectedLabels.map(i => this.state.labels[i])
+    if(labels.length > 0) {
+      let labels = selectedLabels.map(i => labels[i])
       issue.labels = Object.fromEntries(labels)
     }
 
-    var incrementRef = this.props.firebase
-                                 .db.collection("products")
-                                 .doc(this.props.products[this.props.selectedProduct].id)
-                                 .collection("stories")
-                                 .doc("--STATS--")
+    try {
+      let incrementValue = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/stories/--STATS--")
 
-    incrementRef.get().then(function(incrementValueDoc) {
-          var incrementValue = incrementValueDoc.exists ? incrementValue = incrementValueDoc.data().count : 0
+      incrementValue = incrementValue ? incrementValue.count : 0
 
-          issue.number = incrementValue
+      issue.number = incrementValue
 
-          return this.props.firebase
-                    .db.collection("products")
-                    .doc(this.props.products[this.props.selectedProduct].id)
-                    .collection("stories")
-                    .add(issue)
-    }.bind(this)).then(function(snapshot) {
-        console.log("Issue transmittion successfully committed!");
-        this.props.finished(snapshot.id)
-        this.props.exit()
-    }.bind(this)).catch(function(error) {
-        console.log("Issue transmittion failed: ", error);
-        this.props.dispatch(alertActions.error("Something went wrong. We were unable to save the issue. Please try again!"));
-    }.bind(this));
+      let snapshot = await AddDocument(firebase, "products/" + products[selectedProduct].id + "/stories", issue)
+
+      console.log("Issue transmittion successfully committed!");
+      props.finished(snapshot.id)
+      props.exit()
+    } catch(err) {
+      console.log("Issue transmittion failed: ", err);
+      dispatch(alertActions.error("Something went wrong. We were unable to save the issue. Please try again!"));
+    }
+
   }
 
-  render () {
-    return (
-      <Wrapper>
-        <Header>
-          <h3>New Issue</h3>
-        </Header>
-        <Body>
-          <Info>
-            <TitleWrapper>
-              <Title>Title</Title>
-              <TitleInput placeholder="Title" 
-                          value={this.state.title} 
-                          onChange={this.onChangeTitle} />
-            </TitleWrapper>
-            <DescriptionWrapper>
-              <Description>Description</Description>
-              <DescriptionArea placeholder="Write a comment..." 
-                               value={this.state.description} 
-                               onChange={this.onChangeDescription} />
-            </DescriptionWrapper>
-          </Info>
-          <Options>
-            <SprintWrapper>
-              <Sprint>Sprint</Sprint>
-              <SprintSelect onChange={this.onChangeSprintSelect} 
-                            defaultValue={this.state.selectedSprint}>
-                <Option></Option>
-                {
-                  this.state.sprints && this.state.sprints.map((sprint, index) => 
-                                                                <Option key={index} value={index+1}>{sprint.title}</Option>
-                                                               )
-                }
-              </SprintSelect>
-            </SprintWrapper>
-            <LabelsWrapper>
-              <Labels>Labels</Labels>
-              <LabelsSelect multiple onChange={this.onChangeLabelsSelect} defaultValue={this.state.selectedLabels}>
-                {
-                  this.state.labels && this.state.labels.length > 0 ? null : <Option disabled></Option>
-                }
-                {
-                  this.state.labels && this.state.labels.map((label, index) => 
-                                                              <Option key={index} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
-                                                             )
-                }
-              </LabelsSelect>
-            </LabelsWrapper>
-            <DueDateWrapper>
-              <DueDate>Due Date</DueDate>
-              <DueDateInputsWrapper>
-                <EnableDueDateInput type="checkbox" defaultChecked={this.state.dueDateEnabled} onChange={this.onDueDateEnabledChange} />
-                <DateInput disabled={!this.state.dueDateEnabled}
-                           type="date" 
-                           value={this.state.dueDate} 
-                           onChange={this.onChangeDueDate} 
-                           min={DateToLocalString(new Date())} />
-              </DueDateInputsWrapper>
-            </DueDateWrapper>
-            <EstimateWrapper>
-              <Estimate>Estimate</Estimate>
-              <EstimateInput type="number" min="0" value={this.state.estimate} onChange={this.onEstimateChange} />
-            </EstimateWrapper>
-          </Options>
-          <Action>
-            <Submit disabled={this.state.submitDisabled} onClick={(e) => this.sendIssue()}>
-              Submit issue
-            </Submit>
-            <Cancel onClick={(e) => this.props.exit()}>
-              Cancel
-            </Cancel>
-          </Action>
-        </Body>
-      </Wrapper>
-    )
-  }
+  return (
+    <Wrapper>
+      <Header>
+        <h3>New Issue</h3>
+      </Header>
+      <Body>
+        <Info>
+          <TitleWrapper>
+            <Title>Title</Title>
+            <TitleInput placeholder="Title" 
+                        value={title} 
+                        onChange={onChangeTitle} />
+          </TitleWrapper>
+          <DescriptionWrapper>
+            <Description>Description</Description>
+            <DescriptionArea placeholder="Write a comment..." 
+                             value={description} 
+                             onChange={onChangeDescription} />
+          </DescriptionWrapper>
+        </Info>
+        <Options>
+          <SprintWrapper>
+            <Sprint>Sprint</Sprint>
+            <SprintSelect onChange={onChangeSprintSelect} 
+                          defaultValue={selectedSprint}>
+              <Option></Option>
+              {
+                sprints && sprints.map((sprint, index) => 
+                                        <Option key={index} value={index+1}>{sprint.title}</Option>
+                                       )
+              }
+            </SprintSelect>
+          </SprintWrapper>
+          <LabelsWrapper>
+            <Labels>Labels</Labels>
+            <LabelsSelect multiple onChange={onChangeLabelsSelect} defaultValue={selectedLabels}>
+              {
+                labels && labels.length > 0 ? null : <Option disabled></Option>
+              }
+              {
+                labels && labels.map((label, index) => 
+                                      <Option key={index} value={index} backgroundColor={label[1].color}>{label[0]}</Option>
+                                     )
+              }
+            </LabelsSelect>
+          </LabelsWrapper>
+          <DueDateWrapper>
+            <DueDate>Due Date</DueDate>
+            <DueDateInputsWrapper>
+              <EnableDueDateInput type="checkbox" defaultChecked={dueDateEnabled} onChange={onDueDateEnabledChange} />
+              <DateInput disabled={!dueDateEnabled}
+                         type="date" 
+                         value={dueDate} 
+                         onChange={onChangeDueDate} 
+                         min={DateToLocalString(new Date())} />
+            </DueDateInputsWrapper>
+          </DueDateWrapper>
+          <EstimateWrapper>
+            <Estimate>Estimate</Estimate>
+            <EstimateInput type="number" min="0" value={estimate} onChange={onEstimateChange} />
+          </EstimateWrapper>
+        </Options>
+        <Action>
+          <Submit disabled={submitDisabled} onClick={(e) => sendIssue()}>
+            Submit issue
+          </Submit>
+          <Cancel onClick={(e) => props.exit()}>
+            Cancel
+          </Cancel>
+        </Action>
+      </Body>
+    </Wrapper>
+  )
 }
 
 CreateIssue.proptypes = {
-  uid: PropTypes.string.isRequired,
-  firstname: PropTypes.string.isRequired,
-  lastname: PropTypes.string.isRequired,
-  selectedProduct: PropTypes.string.isRequired,
   finished: PropTypes.func.isRequired,
   exit: PropTypes.func.isRequired
 }
 
-function mapStateToProps(state) {
-    const { uid, firstname, lastname } = state.authentication.user;
-    const { products, selectedProduct } = state.product;
-    return {
-        uid,
-        firstname,
-        lastname,
-        products,
-        selectedProduct
-    };
-}
-
-const connectedCreateIssue = connect(mapStateToProps)(CreateIssue);
-const firebaseCreateIssue = compose(withFirebase)(connectedCreateIssue)
-export { firebaseCreateIssue as CreateIssue };
+export { CreateIssue };

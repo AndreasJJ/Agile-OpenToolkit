@@ -1,9 +1,8 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { compose } from 'recompose';
-import { withFirebase } from '../../sharedComponents/Firebase';
+import { FirebaseContext } from '../../sharedComponents/Firebase';
 import { history } from '../../state/helpers/history';
 
 import { alertActions } from '../../state/actions/alert';
@@ -184,151 +183,137 @@ const Input = styled.input`
   outline: none;
 `;
 
-class Login extends React.PureComponent {
+const Login = (props) => {
+  const dispatch = useDispatch()
 
-  constructor(props) {
-    super(props)
+  const firebase = useContext(FirebaseContext)
 
-    this.props.finishLoading()
+  const [showModal, setShowModal] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
-    this.state = {
-      showModal: false,
-      email: '',
-      password: ''
-    };
+  useEffect(() => {
+    setCookie("visited", true)
+    props.finishLoading()
+  }, [])
 
-    this.setCookie = this.setCookie.bind(this)
-    this.login = this.login.bind(this)
-    this.toRegister = this.toRegister.bind(this)
-    this.onChange = this.onChange.bind(this)
-    this.onClickForgotPassword = this.onClickForgotPassword.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-  }
-
-  componentDidMount() {
-    this.setCookie("visited", true)
-  }
-
-  setCookie(name,value,days) {
-      var expires = "";
+  const setCookie = (name,value,days) =>  {
+      let expires = "";
       if (days) {
-          var date = new Date();
+          let date = new Date();
           date.setTime(date.getTime() + (days*24*60*60*1000));
           expires = "; expires=" + date.toUTCString();
       }
       document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
 
-  login(e) {
+  const login = async (e) => {
     e.preventDefault();
 
-    const {dispatch} = this.props
-    if (this.state.email && this.state.password) {
-      this.props.firebase.doSignInWithEmailAndPassword(this.state.email, this.state.password).then((user) => {
-      }).catch((err) => {
-         dispatch(alertActions.error(err.message));
-      })
+    if (email && password) {
+      try {
+        let user = await firebase.doSignInWithEmailAndPassword(email, password)
+      }catch (err) {
+        dispatch(alertActions.error(err.message));
+      }
     }
   }
 
-  toRegister(e) {
+  const toRegister = (e) => {
     e.preventDefault();
 
     history.push('/register');
   }
 
-  onChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
+  const onChange = (e) => {
+    if(e.target.name === "email") {
+      setEmail(e.target.value)
+    } else if(e.target.name === "password") {
+      setPassword(e.target.value)
+    }
   }
 
-  onClickForgotPassword() {
-    this.setState({showModal: true})
+  const onClickForgotPassword = () => {
+    setShowModal(true)
   }
 
-  closeModal() {
-    this.setState({showModal: false})
+  const closeModal = () => {
+    setShowModal(false)
   }
 
-  render() {
+  return (
+    <Container>
+      {
+          showModal
+          ?
+            <Modal content={<ForgotPassword finished={closeModal} />} 
+                   minWidth={"800px"} 
+                   exitModalCallback={closeModal} 
+            />
+          :
+            null
+      }
+      <Wrapper>
+        <Left>
+          <LoginForm>
+            <Title>Login</Title>
+            <EmailWrapper>
+              <span>Email</span>
+              <InputWrapper>
+                <User size="1em" />
+                <Input type="text" 
+                            tabIndex={1} 
+                            name="email" 
+                            value={email} 
+                            onChange={onChange} 
+                            placeholder="email" 
+                            required />
+              </InputWrapper>
+            </EmailWrapper>
+            <PasswordWrapper>
+              <span>Password</span>
+              <InputWrapper>
+                <UnlockAlt size="1em" />
+                <Input type="password" 
+                               tabIndex={2} 
+                               name="password" 
+                               value={password} 
+                               onChange={onChange} 
+                               placeholder="Password" 
+                               required />
+              </InputWrapper>
+            </PasswordWrapper>
+            <ButtonsWrapper>
+              <ToRegisterButton type="button" 
+                                tabIndex={4} 
+                                onClick={toRegister}>
+                  To Register
+              </ToRegisterButton>
+              <LoginButton type="submit" 
+                           tabIndex={3} 
+                           onClick={login}
+              >
+                  Login
+              </LoginButton>
+            </ButtonsWrapper>
+            <Footer>
+              <ForgotPasswordLink onClick={onClickForgotPassword}>
+                Forgot password
+              </ForgotPasswordLink>
+            </Footer>
+          </LoginForm>
+        </Left>
+        <Middle></Middle>
+        <Right image={sideImage}>
 
-    return (
-      <Container>
-        {
-            this.state.showModal
-            ?
-              <Modal content={<ForgotPassword finished={this.closeModal} />} 
-                     minWidth={"800px"} 
-                     exitModalCallback={this.closeModal} 
-              />
-            :
-              null
-        }
-        <Wrapper>
-          <Left>
-            <LoginForm>
-              <Title>Login</Title>
-              <EmailWrapper>
-                <span>Email</span>
-                <InputWrapper>
-                  <User size="1em" />
-                  <Input type="text" 
-                              tabIndex={1} 
-                              name="email" 
-                              value={this.state.email} 
-                              onChange={this.onChange} 
-                              placeholder="email" 
-                              required />
-                </InputWrapper>
-              </EmailWrapper>
-              <PasswordWrapper>
-                <span>Password</span>
-                <InputWrapper>
-                  <UnlockAlt size="1em" />
-                  <Input type="password" 
-                                 tabIndex={2} 
-                                 name="password" 
-                                 value={this.state.password} 
-                                 onChange={this.onChange} 
-                                 placeholder="Password" 
-                                 required />
-                </InputWrapper>
-              </PasswordWrapper>
-              <ButtonsWrapper>
-                <ToRegisterButton type="button" 
-                                  tabIndex={4} 
-                                  onClick={this.toRegister}>
-                    To Register
-                </ToRegisterButton>
-                <LoginButton type="submit" 
-                             tabIndex={3} 
-                             onClick={this.login}
-                >
-                    Login
-                </LoginButton>
-              </ButtonsWrapper>
-              <Footer>
-                <ForgotPasswordLink onClick={this.onClickForgotPassword}>
-                  Forgot password
-                </ForgotPasswordLink>
-              </Footer>
-            </LoginForm>
-          </Left>
-          <Middle></Middle>
-          <Right image={sideImage}>
-
-          </Right>
-        </Wrapper>
-      </Container>
-    );
-  }
+        </Right>
+      </Wrapper>
+    </Container>
+  )
 }
 
 Login.proptypes = {
   finishLoading: PropTypes.func.isRequired
 }
 
-const connectedLoginPage = connect()(Login);
-const firebaseLoginPage = compose(withFirebase)(connectedLoginPage)
-export { firebaseLoginPage as Login }; 
+export { Login }; 

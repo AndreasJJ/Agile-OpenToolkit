@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import Pill from './Pill';
@@ -29,78 +29,62 @@ const ValuesContainer = styled.div`
   flex-wrap: wrap;
 `
 
-export default class TagsInput extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      tagsInputValue: '',
-      tags: []
-    }
-
-    this.addTag = this.addTag.bind(this)
-    this.updateTags = this.updateTags.bind(this)
-    this.removeTag = this.removeTag.bind(this)
-    this.updateTags = this.updateTags.bind(this)
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-  }
+const TagsInput = (props) => {
+  const [tagsInputValue, setTagsInputValue] = useState("")
+  const [tags, setTags] = useState([])
   
-  addTag(tag) {
+  const addTag = (tag) => {
     if (tag == '') return;
 
     tag = tag.trim();
 
-    if(!(this.state.tags.indexOf(tag) > -1)) {
-      let tags = this.state.tags.concat([tag]);
-      this.updateTags(tags);
+    if(!(tags.indexOf(tag) > -1)) {
+      let _tags = tags.concat([tag]);
+      updateTags(_tags);
     }
 
-    this.updateTagValue('');
+    updateTagValue('');
   }
 
-  updateTagValue(value) {
+  const updateTagValue = (value) => {
     if(value == ' ') {
       return;
     }
-    this.setState({
-      tagsInputValue: value
-    })
+
+    setTagsInputValue(value)
   }
 
-  removeTag(removeTag) {
-    let tags = this.state.tags.filter((tag) => tag !== removeTag);
-    this.updateTags(tags);
+  const removeTag = (removeTag) => {
+    let tags = tags.filter((tag) => tag !== removeTag);
+    updateTags(tags);
   }
 
-  updateTags(tags) {
-    this.setState({
-      tags
-    })
+  const updateTags = (tags) => {
+    setTags(tags)
   }
 
-  handleKeyPress(e) {
-    console.log(e.key)
+  const handleKeyPress = (e) => {
     if(e.key === ' '){
-      this.addTag(e.target.value)
+      addTag(e.target.value)
     }
   }
 
-  render () {
-    const {tagsInputValue, tags} = this.state;
-    return (
-      <div>
-       <Input value={tagsInputValue} 
-                  onChange={(e) => {this.updateTagValue(e.target.value);}} 
-                  onKeyPress={this.handleKeyPress} 
-                  type="text" placeholder="Members seperated by space"
-        />
-       <ValuesContainer>
-        {tags && tags.map((tag, index) => <Pill key={index} onClear={() => this.removeTag(tag)} text={tag} />)}
-       </ValuesContainer>
-      </div>
-    )
-  }
+  return (
+    <div>
+     <Input value={tagsInputValue} 
+                onChange={(e) => {updateTagValue(e.target.value);}} 
+                onKeyPress={handleKeyPress} 
+                type="text" placeholder="Members seperated by space"
+      />
+     <ValuesContainer>
+      {tags && tags.map((tag, index) => <Pill key={index} onClear={() => removeTag(tag)} text={tag} />)}
+     </ValuesContainer>
+    </div>
+  )
 }
 
 TagsInput.proptypes = {
   
 }
+
+export default TagsInput

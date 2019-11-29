@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
@@ -89,94 +89,58 @@ const AddStoryButton = styled.button`
     margin-right: 5px;
 `;
 
-export default class BoardList extends React.PureComponent {
+const BoardList = (props) => {
+  const [inputingStory, setInputingStory] = useState(false)
+  const [storyName, setStoryName] = useState("")
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      inputingStory: false,
-      storyName: ""
-    };
-
-    this.clickAddStory = this.clickAddStory.bind(this)
-    this.clickStopAddStory = this.clickStopAddStory.bind(this)
-    this.clickSendStory = this.clickSendStory.bind(this)
-    this.changeInputValue = this.changeInputValue.bind(this)
+  const clickAddStory = () => {
+    setInputingStory(true)
   }
 
-  componentDidMount() {
-
+  const clickStopAddStory = () => {
+    setInputingStory(false)
   }
 
-  clickAddStory() {
-    this.setState({inputingStory: true})
+  const clickSendStory = () => {
+    props.sendStory();
+    setInputingStory(false)
   }
 
-  clickStopAddStory() {
-    this.setState({inputingStory: false})
+  const changeInputValue = (value) => {
+    setStoryName(value)
   }
 
-  clickSendStory() {
-    this.props.sendStory();
-    this.setState({inputingStory: false})
-  }
-
-  static AddStory = (props) => (
-    props.state ? <BoardList.AddStoryInput inputValue={props.inputValue} 
-                                           inputOnChange={props.inputOnChange} 
-                                           sendOnClick={props.AddStoryInputSendOnClick} 
-                                           onclick={props.addStoryInputOnClick} /> 
-                : <BoardList.AddStoryButton onclick={props.addStoryButtonOnClick} />
-  );
-
-  static AddStoryButton = (props) => (
-      <ListComposeStory onClick={props.onclick}>
-        <AddIcon size="1em" />
-        <span>Add another story</span>
-      </ListComposeStory>
-  );
-
-  static AddStoryInput = (props) => (
-      <AddStoryInputWrapper>
-        <AddStoryTextArea value={props.inputValue} onChange={e => props.inputOnChange(e.target.value)} />
-        <AddStoryControlsWrapper>
-          <AddStoryButton onClick={props.sendOnClick}>Add Story</AddStoryButton>
-          <Times size="1.5em" onClick={props.onclick} />
-        </AddStoryControlsWrapper>
-      </AddStoryInputWrapper>
-  );
-
-  changeInputValue(value) {
-    this.setState({
-      storyName: value
-    });
-  }
-
-  render() {
-
-    return (
-     <List>
-       <ListHeader>{this.props.name}</ListHeader>
-       <ListStory>
-         {
-           this.props.list.map((item, index) => {
-              return( <Story key={index}>
-                        <StoryName>{item.name}</StoryName>
-                      </Story>
-                    )
+  return (
+    <List>
+      <ListHeader>{props.name}</ListHeader>
+      <ListStory>
+        {
+          props.list.map((item, index) => {
+            return( <Story key={index}>
+                      <StoryName>{item.name}</StoryName>
+                    </Story>
+                  )
           })
-         }
-       </ListStory>
-       <BoardList.AddStory state={this.state.inputingStory} 
-                           inputValue={this.state.storyName} 
-                           inputOnChange={this.changeInputValue} 
-                           AddStoryInputSendOnClick={this.clickSendStory} 
-                           addStoryInputOnClick={this.clickStopAddStory} 
-                           addStoryButtonOnClick={this.clickAddStory}  />
-     </List>
-    );
-  }
+        }
+      </ListStory>
+      {
+        inputingStory
+        ? 
+          <AddStoryInputWrapper>
+            <AddStoryTextArea value={storyName} onChange={e => changeInputValue(e.target.value)} />
+            <AddStoryControlsWrapper>
+              <AddStoryButton onClick={clickSendStory}>Add Story</AddStoryButton>
+              <Times size="1.5em" onClick={clickStopAddStory} />
+            </AddStoryControlsWrapper>
+          </AddStoryInputWrapper>
+        : 
+          <ListComposeStory onClick={clickAddStory}>
+            <AddIcon size="1em" />
+            <span>Add another story</span>
+          </ListComposeStory>
+      }
+    </List>
+  );
 }
 
 BoardList.proptypes = {
@@ -184,3 +148,5 @@ BoardList.proptypes = {
   name: PropTypes.string.isRequired,
   list: PropTypes.array.isRequired
 }
+
+export default BoardList

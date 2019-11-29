@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { withFirebase } from '../../sharedComponents/Firebase';
+import { useSelector } from 'react-redux';
+import {FirebaseContext, GetDocuments, GetDocument} from '../../sharedComponents/Firebase';
 
 import { getPrettyCreationDate, FsTsToDate } from '../../sharedComponents/Utility';
 
@@ -115,206 +114,167 @@ const Body = styled.div`
   box-sizing: border-box;
 `
 
-class Backlog extends React.PureComponent {
+const Backlog = (props) => {
+  const firebase = useContext(FirebaseContext)
 
- constructor(props) {
-    super(props)
+  const [loading, setLoading] = useState(true)
+  const [labels, setLabels] = useState([])
+  const [selectedLabel, setSelectedLabel] = useState(0)
+  const [issues, setIssues] = useState([])
+  const [originalIssues, setOriginalIssues] = useState([])
+  const [activeTab, setActiveTab] = useState(null)
+  const [showModal, setShowModal] = useState(false)
 
-    this.state = {
-      loading: true,
-      labels: [],
-      selectedLabel: 0,
-      issues: [],
-      originalIssues: [],
-      activeTab: 0,
-      showModal: false
-    };
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
 
-    this.getIssues = this.getIssues.bind(this)
-    this.tabClicked = this.tabClicked.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-    this.getAllLables = this.getAllLables.bind(this)
-    this.filterIssues = this.filterIssues.bind(this)
-    this.onLabelSelectChange = this.onLabelSelectChange.bind(this)
-  }
+  useEffect(() => {
+    const init = async () => {
+      await props.finishLoading()
 
-  async componentDidMount() {
-    await this.getIssues()
-    await this.props.finishLoading()
-    await this.getAllLables()
-    await this.setState({loading: false})
-  }
+      let docSnapshot = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
 
-  async getIssues() {
-    let ref;
-    if(this.state.activeTab === 0) {
-      ref = this.props.firebase
-                      .db
-                      .collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("stories")
-                      .where("status", "==", "OPEN").orderBy("timestamp")
-    }else if(this.state.activeTab === 1) {
-      ref = this.props.firebase
-                      .db.collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("stories")
-                      .where("status", "==", "CLOSED")
-                      .orderBy("timestamp")
-    } else {
-      ref = this.props.firebase
-                      .db.collection("products")
-                      .doc(this.props.products[this.props.selectedProduct].id)
-                      .collection("stories")
-                      .orderBy("timestamp")
-    }
-    let querySnapshot = await ref.get()
-    let issues = querySnapshot.docs.filter((doc) => doc.id != "--STATS--").map((doc) => {
-      let obj = doc.data()
-      obj.id = doc.id
-      return obj
-    })
-    await this.setState({issues: issues, originalIssues: issues})
-    this.filterIssues()
-  }
-
-  async getAllLables() {
-    let docSnapshot = await this.props.firebase
-                     .db
-                     .collection("products")
-                     .doc(this.props.products[this.props.selectedProduct].id)
-                     .collection("labels")
-                     .doc("list")
-                     .get()
-    if(docSnapshot.data()) {
-      let tempArray = []
-      for (const [key, value] of Object.entries(docSnapshot.data().list)) {
-        tempArray.push({id: key, color: value.color, description: value.description})
+      if(docSnapshot) {
+        let tempArray = []
+        for (const [key, value] of Object.entries(docSnapshot.list)) {
+          tempArray.push({id: key, color: value.color, description: value.description})
+        }
+        await setLabels(tempArray)
+      } else {
+        await setLabels([])
       }
-      this.setState({labels: tempArray})
-    } else {
-      this.setState({labels: []})
-    }
-  }
 
-  filterIssues() {
-    if(this.state.selectedLabel == 0) {
-      this.setState({
-        issues: this.state.originalIssues
-      })
+      await setLoading(false)
+      await setActiveTab(0)
+    }
+    init()
+  }, [])
+
+  useEffect(() => {
+    const inner = async () => {
+      let querySnapshot;
+      if(activeTab === 0) {
+        querySnapshot = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", [["status", "==", "OPEN"]], [["timestamp"]])
+      }else if(activeTab === 1) {
+        querySnapshot = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", [["status", "==", "CLOSED"]], [["timestamp"]])
+      } else if (activeTab === 2) {
+        querySnapshot = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", null, [["timestamp"]])
+      } else {
+        return
+      }
+      let newIssues = querySnapshot.filter((doc) => doc.id != "--STATS--")
+      await setOriginalIssues(newIssues)
+    }
+    inner()
+  },[activeTab])
+
+  useEffect(() => {
+    filterIssues()
+  }, [originalIssues, selectedLabel])
+
+  const filterIssues = async () => {
+    if(selectedLabel == 0) {
+      await setIssues(originalIssues)
     } else {
-      let filtered = this.state.originalIssues.filter((issue) => {
+      let filtered = originalIssues.filter((issue) => {
         if(!issue.labels) { return }
-        if(Object.keys(issue.labels).includes(this.state.labels[this.state.selectedLabel-1].id)) {
+        if(Object.keys(issue.labels).includes(labels[selectedLabel-1].id)) {
           return issue
         }
       })
-      this.setState({issues: filtered})
+      await setIssues(filtered)
     }
   }
 
-  async onLabelSelectChange(e) {
-    await this.setState({selectedLabel: e.target.value})
-    this.filterIssues()
+  const onLabelSelectChange = async (e) => {
+    setSelectedLabel(e.target.value)
   }
 
-  tabClicked(e) {
-    this.setState({activeTab: parseInt(e.target.dataset.index)}, () => this.getIssues())
+  const tabClicked = (e) => {
+    setActiveTab(parseInt(e.target.dataset.index))
   }
 
-  closeModal() {
-    this.setState({showModal: false})
+  const closeModal = () => {
+    setShowModal(false)
   }
 
-  render() {
-      return (
-        <Wrapper>
+  return (
+    <Wrapper>
+      {
+        showModal
+        ?
+          <Modal content={<CreateIssue 
+                 exit={closeModal} 
+                 finished={() => {let _activeTab = activeTab; setActiveTab(null); setActiveTab(_activeTab);}} />} 
+                 minWidth={"800px"} 
+                 exitModalCallback={closeModal} 
+          />
+        :
+          null
+      }
+      <Content>
+        <Header> 
+          <Controls> 
+            <StateTabs> 
+              <Tab activeIndex={activeTab} index={0} data-index={0} onClick={tabClicked}>
+                Open
+              </Tab>
+              <Tab activeIndex={activeTab} index={1} data-index={1} onClick={tabClicked}>
+                Closed
+              </Tab>
+              <Tab activeIndex={activeTab} index={2} data-index={2} onClick={tabClicked}>
+                All
+              </Tab>
+            </StateTabs>
+            <NewIssue onClick={(e) => {setShowModal(true)}}>
+              New Issue
+            </NewIssue>
+          </Controls>
+          <Search> 
+            <SearchInput placeholder="Search..." />
+            <Select styling="height: 100%; width: 200px; margin-left: 10px;" placeholderText="Select label" list={labels} value={selectedLabel} onChange={onLabelSelectChange} textName="id" keyName="id" />
+          </Search>
+        </Header>
+        <Body> 
           {
-            this.state.showModal
+            loading
             ?
-              <Modal content={<CreateIssue 
-                     exit={this.closeModal} 
-                     finished={this.getIssues} />} 
-                     minWidth={"800px"} 
-                     exitModalCallback={this.closeModal} 
-              />
+              (["skeletonIssue1", "skeletonIssue2", "skeletonIssue3", "skeletonIssue4", "skeletonIssue5", "skeletonIssue6"]).map((key, index) => 
+                  <Issue skeleton={true} 
+                         key={key} 
+                         getTasks={() => false} 
+                         id={""} 
+                         title={"This is a skeleton title"} 
+                         number={0} 
+                         creationDate={getPrettyCreationDate(new Date())} 
+                         creator={"god himself"} 
+                         updated={getPrettyCreationDate(new Date())} 
+                         status={"OPEN"} />
+                )
             :
-              null
+              issues && issues.map((issue, index) => 
+                  <Issue skeleton={false} 
+                         key={issue.id} 
+                         issueId={issue.id} 
+                         productId={products[selectedProduct].id}
+                         title={issue.title} 
+                         number={issue.number} 
+                         creationDate={getPrettyCreationDate(FsTsToDate(issue.timestamp))} 
+                         creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} 
+                         updated={getPrettyCreationDate(FsTsToDate(issue.lastUpdateTimestamp))} 
+                         status={issue.status} />
+                )
           }
-          <Content>
-            <Header> 
-              <Controls> 
-                <StateTabs> 
-                  <Tab activeIndex={this.state.activeTab} index={0} data-index={0} onClick={this.tabClicked}>
-                    Open
-                  </Tab>
-                  <Tab activeIndex={this.state.activeTab} index={1} data-index={1} onClick={this.tabClicked}>
-                    Closed
-                  </Tab>
-                  <Tab activeIndex={this.state.activeTab} index={2} data-index={2} onClick={this.tabClicked}>
-                    All
-                  </Tab>
-                </StateTabs>
-                <NewIssue onClick={(e) => {this.setState({showModal: true})}}>
-                  New Issue
-                </NewIssue>
-              </Controls>
-              <Search> 
-                <SearchInput placeholder="Search..." />
-                <Select styling="height: 100%; width: 200px; margin-left: 10px;" placeholderText="Select label" list={this.state.labels} value={this.state.selectedLabel} onChange={this.onLabelSelectChange} textName="id" keyName="id" />
-              </Search>
-            </Header>
-            <Body> 
-              {
-                this.state.loading
-                ?
-                  (["skeletonIssue1", "skeletonIssue2", "skeletonIssue3", "skeletonIssue4", "skeletonIssue5", "skeletonIssue6"]).map((key, index) => 
-                      <Issue skeleton={true} 
-                             key={key} 
-                             getTasks={() => false} 
-                             id={""} 
-                             title={"This is a skeleton title"} 
-                             number={0} 
-                             creationDate={getPrettyCreationDate(new Date())} 
-                             creator={"god himself"} 
-                             updated={getPrettyCreationDate(new Date())} 
-                             status={"OPEN"} />
-                    )
-                :
-                  this.state.issues && this.state.issues.map((issue, index) => 
-                      <Issue skeleton={false} 
-                             key={issue.id} 
-                             issueId={issue.id} 
-                             productId={this.props.products[this.props.selectedProduct].id}
-                             title={issue.title} 
-                             number={issue.number} 
-                             creationDate={getPrettyCreationDate(FsTsToDate(issue.timestamp))} 
-                             creator={issue.creator ? issue.creator.firstname.charAt(0).toUpperCase() + issue.creator.firstname.slice(1) + " " + issue.creator.lastname : ""} 
-                             updated={getPrettyCreationDate(FsTsToDate(issue.lastUpdateTimestamp))} 
-                             status={issue.status} />
-                    )
-              }
-            </Body>
-          </Content>
-        </Wrapper>
-      );
-  }
+        </Body>
+      </Content>
+    </Wrapper>
+  );
 }
 
 Backlog.propTypes = {
-  finishLoading: PropTypes.func.isRequired,
-  products: PropTypes.array.isRequired,
-  selectedProduct: PropTypes.string.isRequired
+  finishLoading: PropTypes.func.isRequired
 }
 
-function mapStateToProps(state) {
-    const { products, selectedProduct } = state.product;
-    return {
-        products,
-        selectedProduct
-    };
+export {
+  Backlog
 }
-
-const connectedBacklog = connect(mapStateToProps)(Backlog);
-const firebaseBacklog = compose(withFirebase)(connectedBacklog)
-export { firebaseBacklog as Backlog };

@@ -23,7 +23,7 @@ const SprintPage = ({finishLoading}) => {
 
   useEffect(() => {
     finishLoading()
-  })
+  }, [])
 
   return (
       <Wrapper>

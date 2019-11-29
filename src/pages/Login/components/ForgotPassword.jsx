@@ -23,7 +23,7 @@ const Form = styled.form`
 const ForgotPassword = (props) => {
     const firebase = useContext(FirebaseContext)
     const dispatch = useDispatch()
-    const [email, setEmail] = useState()
+    const [email, setEmail] = useState("")
 
     const onSubmit = async (e) => {
         e.preventDefault()
