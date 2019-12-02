@@ -27,13 +27,13 @@ const Container = styled.div`
 
 const Wrapper = styled.div`
   width: 800px;
-  border-radius: 6px;
   overflow: hidden;
   padding: 55px 55px 37px 55px;
   background-color: #ffffff;
-  -webkit-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
-     -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
-          box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  -moz-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  border-radius: 5px;
   display: grid;
   grid-template-columns: Calc(50% - 1px) 2px Calc(50% - 1px);
   grid-template-rows: 100%;

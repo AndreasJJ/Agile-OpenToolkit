@@ -25,9 +25,10 @@ const Widget = styled.div`
   grid-row-end: 2;
   display: flex;
   margin: 20px;
-  -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  -moz-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  border-radius: 5px;
   background-color: #ffffff;
 
   @media only screen and (max-width: 800px) {

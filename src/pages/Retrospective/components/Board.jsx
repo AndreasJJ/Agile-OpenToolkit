@@ -47,31 +47,14 @@ const BoardBody = styled.div`
   padding: 5px;
 `
 
-const WellBoard = styled.div`
+const BoardList = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-`
-
-const ImprovementsBoard = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-  -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-`
-
-const ActionsBoard = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-  -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
-  box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  -moz-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
+  border-radius: 5px;
 `
 
 const AddButton = styled.button`
@@ -100,7 +83,7 @@ const Board = (props) => {
 
   return (
     <Wrapper>
-      <WellBoard data-name={"well"}>
+      <BoardList data-name={"well"}>
         <BoardHeader> 
           <HeaderTitle color={"#77dd77"}>Went Well</HeaderTitle>
           <AddButton onClick={clickedAddButton}><b>+</b></AddButton>
@@ -108,8 +91,8 @@ const Board = (props) => {
         <BoardBody>
           {wellCards.length > 0 && wellCards.map((card, index) => card)}
         </BoardBody>
-      </WellBoard>
-      <ImprovementsBoard data-name={"improvements"}>
+      </BoardList>
+      <BoardList data-name={"improvements"}>
         <BoardHeader>
           <HeaderTitle color={"#ff6961"}>Could've Been Better</HeaderTitle>
           <AddButton onClick={clickedAddButton}><b>+</b></AddButton>
@@ -117,8 +100,8 @@ const Board = (props) => {
         <BoardBody>
           {improvementCards.length > 0 && improvementCards.map((card, index) => card)}
         </BoardBody>
-      </ImprovementsBoard>
-      <ActionsBoard data-name={"actions"}>
+      </BoardList>
+      <BoardList data-name={"actions"}>
         <BoardHeader>
           <HeaderTitle color={"#aec6cf"}>Actions For Improvements</HeaderTitle>
           <AddButton onClick={clickedAddButton}><b>+</b></AddButton>
@@ -126,7 +109,7 @@ const Board = (props) => {
         <BoardBody>
           {actionCards.length > 0 && actionCards.map((card, index) => card)}
         </BoardBody>
-      </ActionsBoard>
+      </BoardList>
     </Wrapper>
   );
 }
