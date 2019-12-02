@@ -67,7 +67,7 @@ const Header = (props) => {
   const {ProfilePicture, firstname, lastname, onClickCollapse, hidden} = props
   return (
     <HEADER hidden={hidden}>
-      <Collapse onClick={() => {onClickCollapse()}}>
+      <Collapse onClick={onClickCollapse}>
         <Bars size="1em" />
       </Collapse>
       <TopBar>
