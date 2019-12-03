@@ -14,8 +14,8 @@ const HEADER = styled.header`
     grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 2;
-    background-color: #ffffff;
-    border-bottom: 1px solid #cccccc;
+    background-color: #2ECEFE;
+    /* border-bottom: 1px solid #cccccc; */
     z-index: 9;
 
     @media only screen and (max-width: 800px) {
@@ -30,6 +30,7 @@ const Collapse = styled.div`
     align-items: center;
     font-size: -webkit-xxx-large;
     padding: 5px;
+    color: #ffffff;
 `;
 
 const TopBar = styled.div`

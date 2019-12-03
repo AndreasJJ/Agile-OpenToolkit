@@ -19,7 +19,7 @@ const SIDEBAR = styled.aside`
     grid-column-end: 1;
     grid-row-start: 1;
     grid-row-end: 3;
-    background-color: #2eb1e5;
+    background-color: #ffffff;
     color: #ffffff;
     height: 100%;
     box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
@@ -46,11 +46,13 @@ const ProductSelecter = styled.div`
     align-items: center;
     width: 100%;
     padding: 0px;
-    margin: 15px 0px;
     box-sizing: border-box;
+    min-height: 80px;
 `
 
 const ProductSelect = styled.select`
+    font-size: 16px;
+    height: 80px;
     width: 100%;
     margin-bottom: 15px;
     margin-top: 15px;
@@ -62,7 +64,7 @@ const ProductSelect = styled.select`
     background-position: right 50%;
     background-repeat: no-repeat;
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDZFNDEwNjlGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDZFNDEwNkFGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0NkU0MTA2N0Y3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0NkU0MTA2OEY3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuGsgwQAAAA5SURBVHjaYvz//z8DOYCJgUxAf42MQIzTk0D/M+KzkRGPoQSdykiKJrBGpOhgJFYTWNEIiEeAAAMAzNENEOH+do8AAAAASUVORK5CYII=);
-    padding: 15px;
+    padding: 0px 15px;
     margin: 0px;
     background-color: #ffffff;
 `
@@ -77,41 +79,54 @@ const Menu = styled.ul`
     width: 100%;
     text-align: left;
     overflow: auto;
-`;
-
-const HomeMenu = styled.ul`
-    list-style: none;
-    margin-block-start: 0px;
-    margin-block-end: 0px;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    padding-inline-start: 0px;
-    width: 100%;
-    text-align: left;
-    overflow: hidden;
-    padding: 15px 0px;
-`;
+`
 
 const MenuItem = styled.li`
     padding-bottom: 15px;
     padding-top: 15px;
-    padding-left: 10px;
-    background-color: ${props => props.current == props.next ? "#f6f6f6" : null};
+    
 `
 
 const Link = styled(rLink)`
-    color: ${props => props.current == props.next ? "#2eb1e5" : "#ffffff"};
+    color: #535353;
     text-decoration: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
 
     :visited {
-      color: ${props => props.current == props.next ? "#2eb1e5" : "#ffffff"};
+      color: #535353;
+    }
+
+    & > span {
+      text-align: center;
+      font-size: 0.8em;
+      width: 69px;
+    }
+
+    @media only screen and (max-width: 800px) {
+      flex-direction: row;
+      justify-content: start;
+      margin-left: 15px;
+
+      & > span {
+        width: 100%;
+        text-align: start;
+        margin-left: 5px;
+        font-size: 1em;
+      }
     }
 `
 
-const LeftPadding = styled.span`
-  padding-left: 5px;
+const IconWrapper = styled.div`
+  padding: 15px;
+  background-color: ${props => props.current == props.next ? "#2ECEFE" : "#e5e4f2"};
+  border-radius: 10px;
+
+  & > svg {
+    color: ${props => props.current == props.next ? "#ffffff" : "#000000"};
+  }  
 `
 
 const LogoWrapper = styled.div`
@@ -132,33 +147,9 @@ const Logo = styled.span`
 const SideBarGrid = styled.div`
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 100px calc(100% - 150px) 50px;
+    grid-template-rows: 100%;
     width: 100%;
     height: 100%;
-`
-
-const Logout = styled.div`
-  display: flex;
-  color: #ffffff;
-  cursor: pointer;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
-     -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* Internet Explorer/Edge */
-          user-select: none; /* Non-prefixed version, currently
-                                supported by Chrome and Opera */
-`
-
-const LogoutButton = styled.div`
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  padding-left: 10px;
-`
-
-const SignIcon = styled(SignOutAlt)`
-  margin-right: 5px;
 `
 
 const SideBar = (props) => {
@@ -179,18 +170,7 @@ const SideBar = (props) => {
   return (
     <SIDEBAR hidden={props.hidden} >
       <SideBarGrid>
-        <LogoWrapper>
-          <Logo>Agile Toolkit</Logo>
-        </LogoWrapper>
         <SideNav>
-          <HomeMenu>
-            <MenuItem current={props.location.pathname} next={"/dashboard"}>
-              <Link to="/dashboard" current={props.location.pathname} next={"/dashboard"}>
-                <Home size="1em"/>
-                <LeftPadding>Home</LeftPadding>
-              </Link>
-            </MenuItem>
-          </HomeMenu>
           <ProductSelecter>
               <ProductSelect onChange={selectChange} defaultValue={selectedIndex}>
                   {
@@ -206,41 +186,76 @@ const SideBar = (props) => {
             props.products.length > 0
             ?
               <Menu>
-                <MenuItem current={props.location.pathname} next={"/overview"}>
-                  <Link to="/overview" current={props.location.pathname} next={"/overview"}><Graph size="1em"/>
-                    <LeftPadding>Overview</LeftPadding>
+                <MenuItem>
+                  <Link to="/dashboard" current={props.location.pathname} next={"/dashboard"}>
+                    <IconWrapper current={props.location.pathname} next={"/dashboard"}>
+                      <Home size="1.5em"/>
+                    </IconWrapper>
+                    <span>Home</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/backlog"}>
-                  <Link to="/backlog" current={props.location.pathname} next={"/backlog"}><Collection size="1em"/>
-                    <LeftPadding>Product backlog</LeftPadding>
+                <MenuItem>
+                  <Link to="/overview" current={props.location.pathname} next={"/overview"}>
+                    <IconWrapper current={props.location.pathname} next={"/overview"}>
+                      <Graph size="1.5em"/>
+                    </IconWrapper>
+                    <span>Overview</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/labels"}>
-                  <Link to="/labels" current={props.location.pathname} next={"/labels"}><Label size="1em"/>
-                    <LeftPadding>Labels</LeftPadding>
+                <MenuItem>
+                  <Link to="/backlog" current={props.location.pathname} next={"/backlog"}>
+                    <IconWrapper current={props.location.pathname} next={"/backlog"}>
+                      <Collection size="1.5em"/>
+                    </IconWrapper>
+                    <span>Product backlog</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/sprints"}>
-                  <Link to="/sprints" current={props.location.pathname} next={"/sprints"}><DirectionsRun size="1em"/>
-                    <LeftPadding>Sprints</LeftPadding>
+                <MenuItem>
+                  <Link to="/labels" current={props.location.pathname} next={"/labels"}>
+                    <IconWrapper current={props.location.pathname} next={"/labels"}>
+                      <Label size="1.5em"/>
+                    </IconWrapper>
+                    <span>Labels</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/sprintboard"}>
+                <MenuItem>
+                  <Link to="/sprints" current={props.location.pathname} next={"/sprints"}>
+                    <IconWrapper current={props.location.pathname} next={"/sprints"}>
+                      <DirectionsRun size="1.5em"/>
+                    </IconWrapper>
+                    <span>Sprints</span>
+                  </Link>
+                </MenuItem>
+                <MenuItem>
                   <Link to="/sprintboard" current={props.location.pathname} next={"/sprintboard"}>
-                    <Columns size="1em"/>
-                    <LeftPadding>Sprintboard</LeftPadding>
+                    <IconWrapper current={props.location.pathname} next={"/sprintboard"}>
+                      <Columns size="1.5em"/>
+                    </IconWrapper>
+                    <span>Sprintboard</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/planning"}>
-                  <Link to="/planning" current={props.location.pathname} next={"/planning"}><ViewCarousel size="1em"/>
-                    <LeftPadding>Planning Poker</LeftPadding>
+                <MenuItem>
+                  <Link to="/planning" current={props.location.pathname} next={"/planning"}>
+                    <IconWrapper current={props.location.pathname} next={"/planning"}>
+                      <ViewCarousel size="1.5em"/>
+                    </IconWrapper>
+                    <span>Planning Poker</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/retrospective"}>
+                <MenuItem>
                   <Link to="/retrospective" current={props.location.pathname} next={"/retrospective"}>
-                    <Directions size="1em"/>
-                    <LeftPadding>Retrospective Board</LeftPadding>
+                    <IconWrapper  current={props.location.pathname} next={"/retrospective"}>
+                      <Directions size="1.5em"/>
+                    </IconWrapper>
+                    <span>Retrospective Board</span>
+                  </Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/logout" current={props.location.pathname} next={"/logout"}>
+                    <IconWrapper current={props.location.pathname} next={"/logout"}>
+                      <SignOutAlt size="1.5em" />
+                    </IconWrapper>
+                    <span>Logout</span>
                   </Link>
                 </MenuItem>
               </Menu>
@@ -248,12 +263,6 @@ const SideBar = (props) => {
               null
           }
         </SideNav>
-        <Logout title="Click here to logout">
-          <LogoutButton onClick={() => {props.onClickLogout()}}>
-            <SignIcon size="1em" />
-            <span>Logout</span>
-          </LogoutButton>
-        </Logout>
       </SideBarGrid>
     </SIDEBAR>
   );
@@ -264,8 +273,7 @@ SideBar.propTypes = {
   selectProduct: PropTypes.func.isRequired,
   hidden: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
-  products: PropTypes.array.isRequired,
-  onClickLogout: PropTypes.func.isRequired
+  products: PropTypes.array.isRequired
 }
 
 export default SideBar;

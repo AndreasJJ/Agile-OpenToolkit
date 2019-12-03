@@ -25,7 +25,7 @@ const Left = styled.div`
   & > div {
     margin-top: 2px;
     color: ${props => props.skeleton ? "transparent" : null};
-    background-color: ${props => props.skeleton ? "lightgray" : null}
+    background-color: ${props => props.skeleton ? "lightgray" : null};
   }
 `
 
@@ -34,7 +34,7 @@ const ReactLink = styled(Link)`
   text-decoration: none;
   margin-bottom: 2px;
   color: ${props => props.skeleton ? "transparent" : "#000000"};
-  background-color: ${props => props.skeleton ? "lightgray" : null}
+  background-color: ${props => props.skeleton ? "lightgray" : null};
 
   &:hover {
     text-decoration: underline;
@@ -57,7 +57,7 @@ const ProgressInfo = styled.div`
 
   & > span {
     color: ${props => props.skeleton ? "transparent" : null};
-    background-color: ${props => props.skeleton ? "lightgray" : null}
+    background-color: ${props => props.skeleton ? "lightgray" : null};
   }
 `
 

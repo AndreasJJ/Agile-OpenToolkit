@@ -7,7 +7,7 @@ import styled from 'styled-components';
 const Wrapper = styled.div`
   display: flex;
   align-items: flex-start;
-  margin: ${props => props.margin ? props.margin : "none"}
+  margin: ${props => props.margin ? props.margin : "none"};
   box-sizing: border-box;
 
   @media only screen and (max-width: 800px) {
@@ -54,7 +54,7 @@ const ReactLink = styled(Link)`
   font-weight: bold;
   text-decoration: none;
   color: ${props => props.skeleton ? "transparent" : "#000000"};
-  background-color: ${props => props.skeleton ? "lightgray" : null}
+  background-color: ${props => props.skeleton ? "lightgray" : null};
 
   &:hover {
     text-decoration: underline;

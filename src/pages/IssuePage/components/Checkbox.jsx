@@ -34,7 +34,7 @@ const StyledCheckbox = styled.div`
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: ${props => props.checked ? '#2e64d9' : '#2eb1e5'}
+  background: ${props => props.checked ? '#2e64d9' : '#2eb1e5'};
   border-radius: 3px;
   transition: all 150ms;
 
@@ -43,7 +43,7 @@ const StyledCheckbox = styled.div`
   }
 
   ${Icon} {
-    visibility: ${props => props.checked ? 'visible' : 'hidden'}
+    visibility: ${props => props.checked ? 'visible' : 'hidden'};
   }
 `
 

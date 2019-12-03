@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const StyledSelect = styled.select`
+  font-size: 16px;
   ${props => props.styling ? props.styling : ""}
 `
 

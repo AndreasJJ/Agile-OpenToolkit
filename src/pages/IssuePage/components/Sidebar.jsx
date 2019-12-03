@@ -46,6 +46,7 @@ const Value = styled.div`
 `
 
 const SprintSelect = styled.select`
+  font-size: 16px;
   width: 100%;
 `
 
@@ -54,12 +55,13 @@ const DueDateInput = styled.input`
 `
 
 const LabelSelect = styled.select`
+  font-size: 16px;
   width: 100%;
 `
 
 const Option = styled.option`
   width: 100%;
-  background-color: ${props => props.backgroundColor ? props.backgroundColor : "none"}
+  background-color: ${props => props.backgroundColor ? props.backgroundColor : "none"};
   color: black;
 `
 

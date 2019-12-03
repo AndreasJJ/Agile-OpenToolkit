@@ -30,7 +30,7 @@ const Left = styled.div`
 
   & > div {
     color: ${props => props.skeleton ? "transparent" : null};
-    background-color: ${props => props.skeleton ? "lightgray" : null}
+    background-color: ${props => props.skeleton ? "lightgray" : null};
   }
 `
 
@@ -49,7 +49,7 @@ const Right = styled.div`
 
   & > div {
     color: ${props => props.skeleton ? "transparent" : null};
-    background-color: ${props => props.skeleton ? "lightgray" : null}
+    background-color: ${props => props.skeleton ? "lightgray" : null};
   }
 `
 
@@ -61,7 +61,7 @@ const ReactLink = styled(Link)`
   font-weight: bold;
   text-decoration: none;
   color: ${props => props.skeleton ? "transparent" : "#000000"};
-  background-color: ${props => props.skeleton ? "lightgray" : null}
+  background-color: ${props => props.skeleton ? "lightgray" : null};
 
   &:hover {
     text-decoration: underline;

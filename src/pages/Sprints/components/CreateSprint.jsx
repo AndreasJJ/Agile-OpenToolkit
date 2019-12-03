@@ -101,14 +101,14 @@ const Action = styled.div`
 `
 
 const Submit = styled.button`
-  border-radius: 3px
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;
 `
 
 const Cancel = styled.button`
-  border-radius: 3px
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;

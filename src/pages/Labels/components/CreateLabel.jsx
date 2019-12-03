@@ -45,7 +45,7 @@ const Title = styled.label`
 const TitleInput = styled.input`
   width: 100%;
   margin: 0px 15px 0px 15px;
-      border: 1px solid rgb(238,238,238);
+  border: 1px solid rgb(238,238,238);
 `
 
 const DescriptionWrapper = styled.div`
@@ -62,7 +62,7 @@ const Description = styled.label`
 const DescriptionInput = styled.input`
   width: 100%;
   margin: 0px 15px 0px 15px;
-      border: 1px solid rgb(238,238,238);
+  border: 1px solid rgb(238,238,238);
 `
 
 const ColorSelectWrapper = styled.div`
@@ -80,7 +80,7 @@ const ColorSelect = styled.label`
 const ColorInput = styled.input`
   width: 100%;
   margin: 0px 15px 0px 15px;
-      border: 1px solid rgb(238,238,238);
+  border: 1px solid rgb(238,238,238);
 `
 
 const Action = styled.div`

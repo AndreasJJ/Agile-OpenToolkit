@@ -22,7 +22,7 @@ const Left = styled.div`
   & > span {
     margin-bottom: 2px;
     color: ${props => props.skeleton ? "transparent" : null} !important;
-    background-color: ${props => props.skeleton ? "lightgray" : null}
+    background-color: ${props => props.skeleton ? "lightgray" : null};
   }
 `
 

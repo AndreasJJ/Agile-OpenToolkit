@@ -46,7 +46,7 @@ const Title = styled.label`
 const TitleInput = styled.input`
   width: 100%;
   margin: 0px 15px 0px 15px;
-      border: 1px solid rgb(238,238,238);
+  border: 1px solid rgb(238,238,238);
 `
 
 const DescriptionWrapper = styled.div`
@@ -80,14 +80,14 @@ const Action = styled.div`
 `
 
 const Submit = styled.button`
-  border-radius: 3px
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;
 `
 
 const Cancel = styled.button`
-  border-radius: 3px
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;

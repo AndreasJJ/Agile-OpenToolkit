@@ -11,7 +11,7 @@ import SideBar from './components/SideBar';
 
 const Grid = styled.div`
     display: grid;
-    grid-template-columns: ${props => props.hidden ? "0px 1fr" : "200px calc(100% - 200px)"};
+    grid-template-columns: ${props => props.hidden ? "0px 1fr" : "100px calc(100% - 100px)"};
     grid-template-rows: 80px calc(100% - 80px);
     width: 100%;
     height: 100%;
@@ -79,10 +79,6 @@ const Dashboard = (props) => {
     setHidden(!hidden)
   }
 
-  const logout = () => {
-    props.history.push('/logout')
-  }
-
   const selectProduct = (index) => {
     dispatch(productActions.selectProduct(index))
   }
@@ -95,8 +91,7 @@ const Dashboard = (props) => {
               lastname={lastname} 
               profilePic={photoURL}>
       </Header>
-      <SideBar onClickLogout={logout} 
-               hidden={hidden} 
+      <SideBar hidden={hidden} 
                location={props.location} 
                selectProduct={selectProduct} 
                products={products} 

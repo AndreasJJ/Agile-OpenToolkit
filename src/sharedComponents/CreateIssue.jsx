@@ -106,6 +106,7 @@ const Sprint = styled.label`
 `
 
 const SprintSelect = styled.select`
+  font-size: 16px;
   min-width: 80px;
 
   @media only screen and (max-width: 800px) {
@@ -140,6 +141,7 @@ const Labels = styled.label`
 `
 
 const LabelsSelect = styled.select`
+  font-size: 16px;
   min-width: 80px;
 
   @media only screen and (max-width: 800px) {
@@ -150,7 +152,7 @@ const LabelsSelect = styled.select`
 
 const Option = styled.option`
   width: 100%;
-  background-color: ${props => props.backgroundColor ? props.backgroundColor : "none"}
+  background-color: ${props => props.backgroundColor ? props.backgroundColor : "none"};
 `
 
 const DueDateWrapper = styled.div`
@@ -231,14 +233,14 @@ const Action = styled.div`
 `
 
 const Submit = styled.button`
-  border-radius: 3px
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;
 `
 
 const Cancel = styled.button`
-  border-radius: 3px
+  border-radius: 3px;
   padding: 6px 10px;
   font-size: 14px;
   font-weight: 400;

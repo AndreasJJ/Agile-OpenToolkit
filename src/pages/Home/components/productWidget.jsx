@@ -47,7 +47,7 @@ const Content = styled.div`
 `
 
 const WidgetHeader = styled.div`
-  padding: 10px
+  padding: 10px;
   background-color: #00b8fe;
   color: #ffffff;
 `
@@ -56,7 +56,7 @@ const WidgetBody = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px
+  padding: 10px;
   overflow: auto;
 `
 

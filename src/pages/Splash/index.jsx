@@ -22,7 +22,7 @@ const Content = styled.div`
     background-color: #2ECEFE;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover
+    background-size: cover;
     @media only screen and (max-width: 768px) {
       grid-template-columns: 100%;
       grid-template-rows: Calc(100% - 100px);
@@ -55,12 +55,20 @@ const LogoImage = styled.img`
   height: auto;
 `
 
+const FrontPageText = styled.p`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`
+
 const GetStarted = styled.button`
   padding: 20px;
+  min-height: min-content;
   width: 150px;
   box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
   border-radius: 5px
   border: none;
+  background-color: #ffffff;
 `
 
 const Continue = styled.span`
@@ -126,10 +134,12 @@ const Parallax = styled.g`
 
 const LastChance = styled.button`
   padding: 20px;
+  min-height: min-content;
   width: 200px;
   box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
-  border-radius: 5px
+  border-radius: 5px;
   border: none;
+  background-color: #ffffff;
 `
 
 const SideImage = styled.div`
@@ -190,13 +200,13 @@ const HomePage = (props) => {
         return (
           <ReactFullpage.Wrapper>
             <div className="section">
-              <Content image={BackgroundImage}>
+              <Content>
                 <TextContent>
                   <LogoWrapper>
                     <Logo><LogoImage src={LogoSrc} /></Logo>
                   </LogoWrapper>
                   <h2>Collaborate with your team, write clean code, and make awesome products. Let us take care of scrum!</h2>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet augue tincidunt, efficitur augue eget, elementum dui. Nam lacinia ligula tellus, eget interdum ipsum dictum vel. Nam cursus, elit eget rhoncus vulputate, odio risus gravida mauris, nec maximus nisl purus nec mi. Morbi id pulvinar elit. Vivamus viverra id eros id egestas. Aliquam purus massa, ornare vel viverra eu.</p>
+                  <FrontPageText>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet augue tincidunt, efficitur augue eget, elementum dui. Nam lacinia ligula tellus, eget interdum ipsum dictum vel. Nam cursus, elit eget rhoncus vulputate, odio risus gravida mauris, nec maximus nisl purus nec mi. Morbi id pulvinar elit. Vivamus viverra id eros id egestas. Aliquam purus massa, ornare vel viverra eu.</FrontPageText>
                   <GetStarted onClick={e => toRegister(e)}>Get Started</GetStarted>
                   <Continue>Still not convinced? Scroll down!</Continue>
                 </TextContent>
@@ -219,7 +229,7 @@ const HomePage = (props) => {
               </WaveBox>
             </div>
             <div className="section">
-              <Content image={BackgroundImage}>
+              <Content>
                 <TextContent>
                   <h2>Easily keep track of your issues with a proper product backlog</h2>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
@@ -243,7 +253,7 @@ const HomePage = (props) => {
               </WaveBox>
             </div>
             <div className="section">
-              <Content image={BackgroundImage}>
+              <Content>
                 <TextContent>
                   <h2>Estimate your issue's story points with planning poker</h2>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
@@ -267,7 +277,7 @@ const HomePage = (props) => {
               </WaveBox>
             </div>
             <div className="section">
-              <Content image={BackgroundImage}>
+              <Content>
                 <TextContent>
                   <h2>Keep track of the sprint and your teammates with a sprintboard</h2>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>
@@ -291,7 +301,7 @@ const HomePage = (props) => {
               </WaveBox>
             </div>
             <div className="section">
-              <Content image={BackgroundImage}>
+              <Content>
                 <TextContent>
                   <h2>Improve your sprints with our retrospective boards</h2>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla imperdiet quam et tortor convallis varius. Praesent nisi metus, elementum a lectus non, consequat eleifend sem. Vivamus congue felis at lectus.</p>

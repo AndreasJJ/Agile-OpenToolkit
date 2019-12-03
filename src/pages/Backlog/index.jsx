@@ -100,12 +100,6 @@ const SearchInput = styled.input`
   flex-grow: 1;
 `
 
-const LabelSort = styled.select`
-  height: 100%;
-  width: 200px;
-  margin-left: 10px;
-`
-
 const Body = styled.div`
   width: 100%;
   flex-grow: 1;
