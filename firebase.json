@@ -18,8 +18,12 @@
         "function": "github_webhook_endpoint"
       },
       {
+        "source": "/api/endpoint-gitlab",
+        "function": "gitlab_webhook_endpoint"
+      },
+      {
         "source": "/api/secret-key",
-        "function": "secret_key_webhook_endpoint"
+        "function": "secret_key_reset_endpoint"
       },
       {
         "source": "**",

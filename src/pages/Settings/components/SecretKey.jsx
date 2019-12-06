@@ -50,20 +50,30 @@ const SecretKey = (props) => {
 
     const resetSecretKey = async () => {
         try {
+            const data = {
+                productId: products[selectedProduct].id,
+                type: props.type
+            }
+
+            let firebaseIdToken = await firebase.doGetIdToken(true)
+
             const response = await fetch("https://agiletoolkit.io/api/secret-key", {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 credentials: 'same-origin',
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + firebaseIdToken
                 },
                 redirect: 'follow',
                 referrer: 'no-referrer',
-                body: JSON.stringify(props.type)
+                body: JSON.stringify(data)
             })
-    
-            return await response.json()
+
+            let newKey = await response.json()
+            setKey(newKey.key)
+            setShowingKey(true)
         } catch(err) {
             dispatch(alertActions.error(err.message))
         }

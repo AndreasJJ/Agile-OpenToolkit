@@ -35,6 +35,8 @@ class Firebase {
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
+  doGetIdToken = forceRefresh => this.auth.currentUser.getIdToken(forceRefresh)
+
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
       if (authUser) {

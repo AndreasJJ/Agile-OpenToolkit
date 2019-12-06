@@ -73,7 +73,7 @@ const webhook_issues = async (productId, req) => {
         externalType: "gitlab"
     }
 
-    if(internalIssue.id) {
+    if(internalIssue) {
         await db.collection('products')
                 .doc(productId)
                 .collection('stories')
@@ -84,6 +84,29 @@ const webhook_issues = async (productId, req) => {
                 .doc(productId)
                 .collection('stories')
                 .add(story)
+    }
+}
+
+async function verify_signature(productId, payload_body, checksum) {
+    const promise = await db.collection('products')
+                      .doc(productId)
+                      .collection('config')
+                      .doc('secret')
+                      .get()
+
+    try {
+        const secret = (promise.val()).github
+        const payload = JSON.stringify(payload_body)
+
+        const hmac = crypto.createHmac('sha1', secret)
+        const digest = 'sha1=' + hmac.update(payload).digest('hex')
+
+        if (!checksum || !digest || crypto.timingSafeEqual(checksum, digest)) {
+            return false
+        }
+        return true
+    } catch(e) {
+        return false
     }
 }
 

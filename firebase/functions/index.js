@@ -1,5 +1,6 @@
 const github = require('./src/api/github.js');
 const gitlab = require('./src/api/gitlab.js');
+const secretKey = require('./src/api/secretKey.js');
 
 const functions = require('firebase-functions');
 
@@ -305,3 +306,4 @@ exports.updateStoriesStats = functions.firestore
 
 exports.github_webhook_endpoint = functions.https.onRequest(github.webhook);
 exports.gitlab_webhook_endpoint = functions.https.onRequest(gitlab.webhook);
+exports.secret_key_reset_endpoint = functions.https.onRequest(secretKey.reset);
