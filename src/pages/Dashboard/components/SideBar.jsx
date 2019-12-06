@@ -267,12 +267,6 @@ const SideBar = (props) => {
                     <span>Logout</span>
                   </Link>
                 </MenuItem>
-                <MenuItem current={props.location.pathname} next={"/settings"}>
-                  <Link to="/settings" current={props.location.pathname} next={"/settings"}>
-                    <Cog size="1em"/>
-                    <LeftPadding>Settings</LeftPadding>
-                  </Link>
-                </MenuItem>
               </Menu>
             :
               null
