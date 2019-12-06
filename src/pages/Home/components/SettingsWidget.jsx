@@ -49,7 +49,7 @@ const SettingsWidget = (props) => {
         <Widget>
             <Content>
                 <WidgetHeader>
-                    Settings
+                    Account Settings
                 </WidgetHeader>
                 <WidgetBody>
 

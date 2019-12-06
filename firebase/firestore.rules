@@ -81,12 +81,18 @@ service cloud.firestore {
       	allow read: if false;
         allow write: if getAfter(/databases/$(database)/documents/products/$(product)).data.owner.uid == request.auth.uid;
       }
+
+      match /config/secret {
+        allow read: if getRole(product) > 0;
+        allow write: if false;
+      }
+
       //TODO: Check that lastEditer was request.auth.uid and check that the timestamp is at the current time
       //TODO: Check that creator and lastEditer contains uid, firstname and lastname
       match /stories/{stories} {
       	allow read: if memberOfProduct(product);
       	allow create: if getRole(product) > 0
-        								&& request.resource.data.keys().hasOnly(["title", "description", "dueDate", "labels", "sprint", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer", "estimate"])
+        								&& request.resource.data.keys().hasOnly(["title", "description", "dueDate", "labels", "sprint", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer", "estimate", "externalId", "externalType"])
                       	&& request.resource.data.keys().hasAll(["title", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer"])
                         && request.resource.data.creator.keys().hasOnly(["uid", "firstname", "lastname"])
                         && request.resource.data.creator.keys().hasAll(["uid", "firstname", "lastname"])
@@ -97,7 +103,7 @@ service cloud.firestore {
                         && ((!math.isNaN(request.resource.data.estimate) && request.resource.data.keys().hasAll(["estimate"])) || !request.resource.data.keys().hasAll(["estimate"]) || request.resource.data.estimate == null)
                         && (request.resource.data.labels.keys().hasOnly(get(/databases/$(database)/documents/products/$(product)/labels/list).data.list.keys()) || !request.resource.data.keys().hasAll(["labels"]));
         allow update: if memberOfProduct(product)
-        								&& request.resource.data.keys().hasOnly(["title", "description", "dueDate", "labels", "sprint", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer", "estimate"])
+        								&& request.resource.data.keys().hasOnly(["title", "description", "dueDate", "labels", "sprint", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer", "estimate", "externalId", "externalType"])
                       	&& request.resource.data.keys().hasAll(["title", "timestamp", "number", "status", "creator", "lastUpdateTimestamp", "lastEditer"])
                         && request.resource.data.creator.keys().hasOnly(["uid", "firstname", "lastname"])
                         && request.resource.data.creator.keys().hasAll(["uid", "firstname", "lastname"])

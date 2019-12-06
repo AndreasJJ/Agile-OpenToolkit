@@ -217,7 +217,23 @@ const Labels = (props) => {
         {
           loading
           ?
-            <LabelCard name={"skeleton"} skeleton={true}/>
+            (["skeletonLabel1", 
+            "skeletonLabel2", 
+            "skeletonLabel3", 
+            "skeletonLabel4", 
+            "skeletonLabel5", 
+            "skeletonLabel6",
+            "skeletonLabel7",
+            "skeletonLabel8",
+            "skeletonLabel9",
+            "skeletonLabel10",
+            "skeletonLabel11",
+            "skeletonLabel12",
+            "skeletonLabel13",
+            "skeletonLabel14",
+            "skeletonLabel15"]).map((key, index) => 
+              <LabelCard name={key} skeleton={true}/>
+            )
           :
             _labels && _labels.map((label, index) =>
               <LabelCard key={label[0]} 

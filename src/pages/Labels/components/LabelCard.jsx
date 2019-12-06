@@ -95,12 +95,24 @@ const LabelCard = (props) => {
         {description}
       </Description>
       <ControlsWrapper>
-        <SubscribeButton subscribed={subscribed} 
-                         onClick={(e) => subscribed ? unsubscribe(name) : subscribe(name)}
-        >
-          {subscribed ? "Unsubscribe" : "Subscribe"}
-        </SubscribeButton>
-        <DeleteButton onClick={(e) => deleteLabel(name)}>Delete</DeleteButton>
+        {
+          skeleton
+          ?
+            null
+          :
+            <SubscribeButton subscribed={subscribed} 
+            onClick={(e) => subscribed ? unsubscribe(name) : subscribe(name)}
+            >
+              {subscribed ? "Unsubscribe" : "Subscribe"}
+            </SubscribeButton>
+        }
+        {
+          skeleton
+          ?
+            null
+          :
+            <DeleteButton onClick={(e) => deleteLabel(name)}>Delete</DeleteButton>
+        }
       </ControlsWrapper>
     </Wrapper>
   )

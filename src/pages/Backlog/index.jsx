@@ -115,8 +115,8 @@ const Backlog = (props) => {
   const [loading, setLoading] = useState(true)
   const [labels, setLabels] = useState([])
   const [selectedLabel, setSelectedLabel] = useState(0)
-  const [issues, setIssues] = useState([])
-  const [originalIssues, setOriginalIssues] = useState([])
+  const [issues, setIssues] = useState(null)
+  const [originalIssues, setOriginalIssues] = useState(null)
   const [activeTab, setActiveTab] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
@@ -139,7 +139,6 @@ const Backlog = (props) => {
         await setLabels([])
       }
 
-      await setLoading(false)
       await setActiveTab(0)
     }
     init()
@@ -166,6 +165,12 @@ const Backlog = (props) => {
   useEffect(() => {
     filterIssues()
   }, [originalIssues, selectedLabel])
+
+  useEffect(() => {
+    if(issues) {
+      setLoading(false)
+    }
+  }, [issues])
 
   const filterIssues = async () => {
     if(selectedLabel == 0) {
@@ -234,7 +239,21 @@ const Backlog = (props) => {
           {
             loading
             ?
-              (["skeletonIssue1", "skeletonIssue2", "skeletonIssue3", "skeletonIssue4", "skeletonIssue5", "skeletonIssue6"]).map((key, index) => 
+              (["skeletonIssue1", 
+                "skeletonIssue2", 
+                "skeletonIssue3", 
+                "skeletonIssue4", 
+                "skeletonIssue5", 
+                "skeletonIssue6",
+                "skeletonIssue7",
+                "skeletonIssue8",
+                "skeletonIssue9",
+                "skeletonIssue10",
+                "skeletonIssue11",
+                "skeletonIssue12",
+                "skeletonIssue13",
+                "skeletonIssue14",
+                "skeletonIssue15"]).map((key, index) => 
                   <Issue skeleton={true} 
                          key={key} 
                          getTasks={() => false} 

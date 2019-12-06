@@ -20,6 +20,7 @@ import { SprintPage } from './pages/SprintPage';
 import Planning from './pages/Planning';
 import { PlanningPokerGame } from './pages/PlanningPokerGame';
 import Retrospective from './pages/Retrospective';
+import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Logout } from './pages/Logout';
@@ -98,6 +99,7 @@ const App = (props) => {
 					      <PrivateRoute exact path='/planning' component={Dashboard} content={Planning} finishLoading={finishLoading} />
 					      <PrivateRoute exact path='/planning/game/:id' component={Dashboard} content={PlanningPokerGame} finishLoading={finishLoading} />
 					      <PrivateRoute exact path='/retrospective' component={Dashboard} content={Retrospective} finishLoading={finishLoading} />
+						  <PrivateRoute exact path='/settings' component={Dashboard} content={Settings} finishLoading={finishLoading} />
 					      <Route render={(props) => (<Error404 finishLoading={finishLoading} {...props} />)} />
 					    </Switch>
 		            </React.Fragment>

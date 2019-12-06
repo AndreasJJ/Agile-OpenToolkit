@@ -12,6 +12,7 @@ import {Directions} from 'styled-icons/boxicons-regular/Directions'
 import {ViewCarousel} from 'styled-icons/material/ViewCarousel'
 import {SignOutAlt} from 'styled-icons/fa-solid'
 import {Label} from 'styled-icons/material/Label'
+import {Settings} from 'styled-icons/octicons/Settings'
 
 const SIDEBAR = styled.aside`
     display: ${props => props.hidden ? "none" : "block"};
@@ -248,6 +249,14 @@ const SideBar = (props) => {
                       <Directions size="1.5em"/>
                     </IconWrapper>
                     <span>Retrospective Board</span>
+                  </Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link to="/settings" current={props.location.pathname} next={"/settings"}>
+                    <IconWrapper  current={props.location.pathname} next={"/settings"}>
+                      <Settings size="1.5em"/>
+                    </IconWrapper>
+                    <span>Product Settings</span>
                   </Link>
                 </MenuItem>
                 <MenuItem>

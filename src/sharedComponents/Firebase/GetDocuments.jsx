@@ -30,11 +30,14 @@ async function GetDocuments(firebase, path, wheres, orderBys, startAt, startAfte
     }
 
     let snapshot = await ref.get()
-    let documents = snapshot.docs.map((doc) => {
-        let object = doc.data()
-        object.id = doc.id
-        return object
-    })
+    let documents = null
+    if(snapshot) {
+        documents = snapshot.docs.map((doc) => {
+            let object = doc.data()
+            object.id = doc.id
+            return object
+        })
+    }
     
     return documents
 }

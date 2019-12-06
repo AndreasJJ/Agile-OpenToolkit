@@ -296,7 +296,7 @@ const DetailsWidget = (props) => {
     _lastname = _lastname != null  ? _lastname : lastname
     _mobile = _mobile != null ? _mobile : mobile
     _email = _email != null ? _email : email
-
+    
     if(originalGender === _gender && 
        originalFirstname === _firstname && 
        originalLastname === _lastname && 
@@ -313,7 +313,7 @@ const DetailsWidget = (props) => {
     <Widget>
       <Content>
         <WidgetHeader>
-          Your Details
+          Account Details
         </WidgetHeader>
         <WidgetBody>
           <Inputs>
