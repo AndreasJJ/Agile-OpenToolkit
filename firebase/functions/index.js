@@ -1,10 +1,11 @@
+const github = require('./src/api/github.js');
+const gitlab = require('./src/api/gitlab.js');
+
 const functions = require('firebase-functions');
 
-const admin = require('firebase-admin');
-admin.initializeApp();
-
-const db = admin.firestore();
-const FieldValue = require('firebase-admin').firestore.FieldValue;
+const admin = require('./src/admin.js');
+const db = admin.db;
+const FieldValue = admin.FieldValue;
 
 // Listen for changes in all documents in the 'products/members' collection and add it to the users product list
 exports.addProductToUserProductList = functions.firestore
@@ -301,3 +302,6 @@ exports.updateStoriesStats = functions.firestore
     	}
     	return null
    	});
+
+exports.github_webhook_endpoint = functions.https.onRequest(github.webhook);
+exports.gitlab_webhook_endpoint = functions.https.onRequest(gitlab.webhook);

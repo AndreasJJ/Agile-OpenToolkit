@@ -18,7 +18,6 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-
   @media only screen and (max-width: 800px) {
     padding: 0;
   }
@@ -48,11 +47,11 @@ const Settings = (props) => {
 
   const prevKey = useRef(history.location.key)
 
-  useEffect(() => {
+  useEffect(() => {
     props.finishLoading()
   }, [])
 
-  useEffect(() => {
+  useEffect(() => {
     if(prevKey.current !== history.location.key) {
       props.finishLoading()
       prevKey.current = history.location.key
