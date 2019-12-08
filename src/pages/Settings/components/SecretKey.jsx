@@ -10,22 +10,24 @@ import styled from 'styled-components';
 const Input = styled.input`
     width: 100%;
     max-width: 600px;
-    height: 30px;
+    margin: 0px;
 `
 
 const Controlls = styled.div`
     display: flex;
     margin-bottom 5px;
+    height: 30px;
 `
 
 const Button = styled.button`
     border-radius: 3px;
     padding: 6px 10px 6px 10px;
-    height: 100%;
+    margin: 0px;
 `
 
 const ButtonMargin = styled.div`
     margin-left: 5px;
+    display: flex;
 `
 
 const ShowWrapper = styled.div`
@@ -45,7 +47,10 @@ const SecretKey = (props) => {
 
     const getSecretKey = async () => {
         let secret = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/config/secret")
-        return secret[props.type]
+        if(secret) {
+            return secret[props.type]
+        }
+        return null
     }
 
     const resetSecretKey = async () => {

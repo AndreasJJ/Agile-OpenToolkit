@@ -1,4 +1,5 @@
 var path = require('path');
+const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const config = {
@@ -8,6 +9,11 @@ const config = {
     path: path.resolve(__dirname, 'firebase/public'),
     filename: 'bundle.js'
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+    })
+  ],
   optimization: {
     minimizer: [new UglifyJsPlugin()],
     namedModules: false,

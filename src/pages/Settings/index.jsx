@@ -34,11 +34,27 @@ const Content = styled.div`
   height: 100%;
   background-color: #ffffff;
   padding: 15px;
+  box-sizing: border-box;
+
+  @media only screen and (max-width: 800px) {
+    flex-direction: column;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border-radius: 0px;
+    padding: 15px 15px 0px 15px;
+  }
 `
 
 const SubPageContainer = styled.div`
   margin-left: 10px;
   flex: 1;
+  overflow: auto;
+
+  @media only screen and (max-width: 800px) {
+    margin-left: 0px;
+    margin-top 10px;
+  }
 `
 
 const Settings = (props) => {

@@ -12,7 +12,11 @@ const NavBox = styled.nav`
     height: min-content;
     min-width 150px;
     max-width: 200px;
-    flex: auto;
+
+    @media only screen and (max-width: 800px) {
+        width: 100%;
+        max-width: 100%;
+    }
 `
 
 const InnerNav = styled.div`
@@ -32,6 +36,10 @@ const InnerBox = styled.div`
     flex-direction: column;
     width: 70%;
     min-width: min-content;
+
+    @media only screen and (max-width: 800px) {
+        max-width: none;
+    }
 `
 
 const Item = styled.div`
