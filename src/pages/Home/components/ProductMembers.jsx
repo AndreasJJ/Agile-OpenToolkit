@@ -42,11 +42,13 @@ const Body = styled.div`
 `
 
 const ProductMembers = (props) => {
-
+  // State
   const [members, setMembers] = useState([])
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
+      // Get members from database and update state
       let _members = await props.getMembers(props.products[props.productIndex].id)
       setMembers(_members)
     }

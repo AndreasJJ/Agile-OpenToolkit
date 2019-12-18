@@ -7,7 +7,14 @@ const StyledSelect = styled.select`
   font-size: 16px;
   ${props => props.styling ? props.styling : ""}
 `
-
+/* 
+ * 'styling' is any valid css string
+ * 'value' is default index
+ * 'placeHolderText' is a placeholder string
+ * 'list' is an array of elements to be shown in the select
+ * 'keyName' is the object field name that is used to get the value for the key attribute on 'option' element
+ * 'textName' is the object field name that is used to get the value for the text in the 'option' element
+ */
 const Select = (props) => {
   return (
     <StyledSelect styling={props.styling} onChange={(e) => props.onChange(e)} value={props.value}>

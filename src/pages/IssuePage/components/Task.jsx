@@ -49,41 +49,52 @@ const CheckBoxLabel = styled.label`
 `
 
 const Task = (props) => {
+  // Previous props
   const prevProps = useRef(props)
 
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux state
   const uid = useSelector(state => state.authentication.user.uid)
   const firstname = useSelector(state => state.authentication.user.firstname)
   const lastname = useSelector(state => state.authentication.user.lastname)
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // State
   const [checked, setChecked] = useState(props.status.toLowerCase() == "open" ? false : true)
   const [members, setMembers] = useState([])
   const [assigneeIndex, setAssigneeIndex] = useState(0)
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
+      // Get members and set the assignee index
       await getMembers()
       await setNewAssigneeIndex()
     }
     init()
   }, [])
 
+  // If the assignee changed then update the assignee index
   useEffect(() => {
     if(props.assignee !== prevProps.current.assignee) {
        setNewAssigneeIndex()
     }
   })
 
+  // If members change then update the assignee index
   useEffect(() => {
     setNewAssigneeIndex()
   }, [members])
 
+  // Get members from the database
   const getMembers = async () => {
+    // Get the members list
     let membersDoc = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/members/members")
 
+    // Map the members into the correct format (object)
     let _members = membersDoc.list.map((member) => {
       return {uid: Object.keys(member)[0], 
               firstname: Object.values(member)[0].firstname, 
@@ -93,20 +104,26 @@ const Task = (props) => {
              }
     })
 
+    // Update state
     await setMembers(_members)
   }
 
+  // Update the assignee index
   const setNewAssigneeIndex = async () => {
+    // Initial index is 0
     let index = 0
+    // Loop over all members and check if the assignee id is equal to the member it
+    // Set index equal i+1 (as the select isnt 0-indexed)
     for (var i = 0; i < members.length; i++) {
       if(props.assignee && (members[i].uid == props.assignee.uid)) {
         index = i+1
       }
     }
-
+    // Update state
     await setAssigneeIndex(index)
   }
 
+  // Update the task status in the database
   const updateTaskStatus = () => {
     const data = {
       status: !checked ? "CLOSED" : "OPEN",
@@ -131,8 +148,10 @@ const Task = (props) => {
   }
 
   const handleSelectChange = (e) => {
+     // if the target is 0, then it's the palceholder so set the assignee to null
      if(e.target.value == 0) {
        updateTaskAssignee(null)
+     // else get the members info from the members list and update the state
      } else {
       updateTaskAssignee({
         firstname: members[e.target.value-1].firstname,
@@ -143,6 +162,7 @@ const Task = (props) => {
      }
   }
 
+  // Update assignee in the database
   const updateTaskAssignee = (assignee) => {
     return UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + props.issueId + "/tasks/" + props.taskId, {assignee: assignee})
   }

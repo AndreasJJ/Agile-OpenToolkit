@@ -6,7 +6,6 @@ import LogoSrc from '../../assets/Logo.png'
 
 import styled, { keyframes } from 'styled-components';
 
-import BackgroundImage from '../../assets/splash/background.gif'
 import welcomeImage from '../../assets/splash/welcome.svg'
 import backlogImage from '../../assets/splash/backlog.svg'
 import PlanningPokerImage from '../../assets/splash/PlanningPoker.svg'
@@ -158,13 +157,16 @@ const Image = styled.img`
   height: 100%;
 `
 
+// React fullpage license key
 const LICENSEKEY = "***REMOVED***"
 
 const HomePage = (props) => {
-
+  // Previous props
   const prevProps = useRef(props)
 
+  // Constructor
   useEffect(() => {
+    // If they got the cookie redirect them to login
     if(getCookie("visited")) {
       history.push('/login');
     }
@@ -174,12 +176,14 @@ const HomePage = (props) => {
     props.finishLoading()
   })
 
+  // Redirect to register
   const toRegister = (e) => {
     e.preventDefault();
 
     history.push('/register');
   }
 
+  // Get cookie
   const getCookie = (name) => {
       let nameEQ = name + "=";
       let ca = document.cookie.split(';');

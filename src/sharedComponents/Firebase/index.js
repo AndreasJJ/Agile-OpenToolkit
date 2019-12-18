@@ -9,8 +9,10 @@ import UpdateDocument from './UpdateDocument';
 import AddDocument from './AddDocument';
 import DeleteDocument from './DeleteDocument';
 
+// Export the firebase object
 export default Firebase;
 
+// Export the firestore functions
 export {
   FirebaseContext,
   withFirebase,

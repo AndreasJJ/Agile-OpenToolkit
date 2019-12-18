@@ -66,8 +66,10 @@ const Option = styled.option`
 `
 
 const Sidebar = (props) => {
+  // Previous props
   const prevProps = useRef(props)
 
+  // State
   const [editingSection, setEditingSection] = useState([])
   const [sprints, setSprints] = useState([])
   const [labels, setLabels] = useState([])
@@ -77,17 +79,23 @@ const Sidebar = (props) => {
   const [dueDate, setDueDate] = useState(props.dueDate)
   const [estimate, setEstimate] = useState(null)
 
+  // Constructor
   useEffect(() => {
     if(props.sprints) {
+      // Get index of the selected sprint
       let index = props.sprints.map(sprint => sprint.id).indexOf(props.selectedSprint)
+      // If there's no selected sprint set selected index to 0 else set it to index+1
       index = index === -1 ? 0 : index+1
 
+      // Update state
       setSprints(props.sprints)
       setSelectedSprint(index)
     }
   }, [])
 
+  // On component rerender
   useEffect(() => {
+    // Update estimate if its different
     if(props.estimate !== prevProps.current.estimate) {
       let estimate = props.estimate ? props.estimate : ""
       setEstimate(estimate)
@@ -95,12 +103,14 @@ const Sidebar = (props) => {
       prevProps.current = props
     }
 
+    // Update due date if its different
     if (props.dueDate !== prevProps.current.dueDate) {
       setDueDate(props.dueDate)
 
       prevProps.current = props
     }
 
+    // Update sprints if they are different
     if(props.sprints !== prevProps.current.sprints) {
       if(props.sprints) {
         let index = props.sprints.map(sprint => sprint.id).indexOf(props.selectedSprint)
@@ -113,6 +123,7 @@ const Sidebar = (props) => {
       prevProps.current = props
     }
 
+    // Update selecetd sprint if they are different
     if(props.selectedSprint !== prevProps.current.selectedSprint) {
       let index = sprints.map(sprint => sprint.id).indexOf(props.selectedSprint)
       index = index === -1 ? 0 : index+1
@@ -122,12 +133,16 @@ const Sidebar = (props) => {
       prevProps.current = props
     }
 
+    // Update selected labels and labels if either of them are different
     if (props.selectedLabels !== prevProps.current.selectedLabels || props.labels !== prevProps.current.labels) {
       let selectedLabels = props.selectedLabels ? props.selectedLabels : []
 
       let tempArray = []
+      // Loop over all selected labels 
       for (let i = 0; i < props.selectedLabels.length; i++) {
+        // Loop over all albels
         for (let j = 0; j < props.labels.length; j++) {
+          // If a label title is equal to a selected label title add it to the temp array
           if(props.labels[j][0] == props.selectedLabels[i][0]) {
             tempArray.push(i)
             break
@@ -135,6 +150,7 @@ const Sidebar = (props) => {
         }
       }
 
+      // Update state
       setLabels(props.labels)
       setOriginalSelectedLabels(selectedLabels)
       setSelectedLabels(tempArray)
@@ -164,7 +180,9 @@ const Sidebar = (props) => {
     setEstimate(e.target.value)
   }
 
+  // Update edited sprint
   const saveSprint = () => {
+    // If it isnt index 0 then get the actual id from the sprints with the help of the index
     let sprint = parseInt(selectedSprint) === 0 ? null : sprints[selectedSprint-1].id
 
     if(props.selectedSprint === sprint) {
@@ -174,6 +192,7 @@ const Sidebar = (props) => {
     props.updateSprint(sprint);
   }
 
+  // Update edited due date
   const saveDueDate = () => {
     if(props.dueDate === dueDate) {
       return
@@ -182,36 +201,44 @@ const Sidebar = (props) => {
     props.updateDueDate(dueDate);
   }
 
+  // Update edited labels
   const saveLabels = () => {
-    let selectedLabels = selectedLabels.map((i) => labels[i])
+    // Get the full label objects from the index array selectedLabels
+    let _selectedLabels = selectedLabels.map((i) => labels[i])
     if(!originalSelectedLabels) {
       return
     }
+    // sort and join with ';' to easily compare the arrays
     if(originalSelectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
       return
     }
-    selectedLabels = Object.fromEntries(selectedLabels)
-
-    props.updateLabels(selectedLabels);
+    // Make objects
+    _selectedLabels = Object.fromEntries(selectedLabels)
+    // Update state
+    props.updateLabels(_selectedLabels);
   }
 
+  // Update estimate
   const saveEstimate = () => {
-    let props = props.estimate
     let state = estimate
 
     if(state === "") {
       state = null
     }
 
-    if(props === state) {
+    // Check the estimated is actually changed
+    if(props.estimate === state) {
       return
     }
 
+    // Set estimate to null
     let estimate = null
+    // Set estimate to the value from the input if its a number
     if(state && state !== "" && !isNaN(state)) {
       estimate = Number(state)
     }
 
+    // Update state
     props.updateEstimate(estimate)
   }
 

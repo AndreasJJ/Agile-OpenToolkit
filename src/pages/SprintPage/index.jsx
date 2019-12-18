@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 `;
 
 const SprintPage = ({finishLoading}) => {
-
+  // Constructor
   useEffect(() => {
     finishLoading()
   }, [])

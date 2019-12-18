@@ -3,6 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 
 import { Authenticated } from './Authenticated';
 
+// Route only accessible for non-authenticated user
 const OpenRoute = ({ component: Component, finishLoading: FinishLoading, ...rest }) => (
   <Route {...rest} render={(props) => (
     <Authenticated is={<Redirect 

@@ -22,7 +22,7 @@ const Wrapper = styled.div`
 const Name = styled.span`
   padding: 4px 8px;
   line-height: 16px;
-  border-radius: 100px;
+  border-radius: ${props => props.skeleton ? "0px" : "100px"};
   text-align: center;
   white-space: nowrap;
   color: ${props => props.skeleton ? "transparent" : "#ffffff" };

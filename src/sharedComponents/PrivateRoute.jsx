@@ -3,6 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 
 import { Authenticated } from './Authenticated';
 
+// Route only accessible for authenticated user
 const PrivateRoute = ({ component: Component, content: Content, finishLoading: FinishLoading, ...rest }) => (
   <Route {...rest} render={(props) => (
   	<Authenticated is={<Component 

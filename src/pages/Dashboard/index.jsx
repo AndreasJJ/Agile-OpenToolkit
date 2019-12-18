@@ -34,29 +34,38 @@ const Content = styled.div`
 `;
 
 const Dashboard = (props) => {
+  // Props from previous render
   const prevProps = useRef(props)
 
+  // Redux Dispatch 
   const dispatch = useDispatch()
   
+  // State
   const [hidden, setHidden] = useState(false)
   const [width, setWidth] = useState(null)
   const [height, setHeight] = useState(null)
 
+  // Redux state
   const firstname = useSelector(state => state.authentication.user.firstname)
   const lastname = useSelector(state => state.authentication.user.lastname)
   const photoURL = useSelector(state => state.authentication.user.photoURL)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
   const products = useSelector(state => state.product.products)
         
+  // Constructor and destructor
   useEffect(() => {
+    // Update window dimensions
     updateWindowDimensions();
+    // Add resize eventlinstener to window
     window.addEventListener('resize', updateWindowDimensions);
 
+    // Remove eventlistener at unmount
     return () => {
       window.removeEventListener('resize', updateWindowDimensions);
     }
   }, [])
 
+  // At update change GUI to handle a small screen at less than 800px
   useEffect(() => {
     if (prevProps.current !== props) {
       if(width < 800) {
@@ -68,17 +77,20 @@ const Dashboard = (props) => {
     }
   })
 
+  // Update width and height state
   const updateWindowDimensions = () => {
     setWidth(window.innerWidth)
     setHeight(window.innerHeight)
   }
 
+  // Hide or unhide sidebar
   const collapseSideBar = (e) => {
     e.preventDefault()
     e.stopPropagation()
     setHidden(!hidden)
   }
-
+  
+  // Update redux state with new product index
   const selectProduct = (index) => {
     dispatch(productActions.selectProduct(index))
   }

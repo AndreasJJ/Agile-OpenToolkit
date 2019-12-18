@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { Switch, Route, Router } from 'react-router-dom';
-import { compose } from 'recompose';
 import { FirebaseContext } from './sharedComponents/Firebase';
 
 import { history } from './state/helpers/history';
@@ -47,12 +46,13 @@ const App = (props) => {
     let listener = null
 
     useEffect(() => {
+		// clear alert on location change
         history.listen((location, action) => {
-            // clear alert on location change
             setIsLoading(true)
             removeAlert();
         });
 
+		// Dispatch setUser on auth change
         listener = firebase.onAuthUserListener(
           authUser => {
             dispatch(userActions.setUser(authUser));
@@ -67,10 +67,12 @@ const App = (props) => {
         }
     }, [])
 
+	// callback to finish loader
     const finishLoading = () => {
         setIsLoading(false)
     }
 
+	// callback to remove alert
     const removeAlert = () => {
     	dispatch(alertActions.clear());
     }
@@ -111,4 +113,4 @@ const App = (props) => {
 		)
 }
 
-export { App }; 
+export {App}; 

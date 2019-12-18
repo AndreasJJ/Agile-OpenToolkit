@@ -108,8 +108,8 @@ const Cancel = styled.button`
 `
 
 const CreateLabel = (props) => {
+  // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
   const getRandomColor = (numOfSteps = 40, step = (Math.floor(Math.random() * 40)+1)) => {
-    // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
     // Adam Cole, 2011-Sept-14
     // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
     let r, g, b;
@@ -129,11 +129,14 @@ const CreateLabel = (props) => {
     return (c);
   }
 
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux state
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // State
   const [submitDisabled, setSubmitDisabled] = useState(submitDisabled)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -152,14 +155,18 @@ const CreateLabel = (props) => {
     setColor(e.target.value)
   }
 
+  // Add label
   const sendLabel = async () => {
+    // New label
     let label = {
       ["list." + title] : {
         color: color,
         description: description
       }
     }
+    // Add label to database
     await UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list", label)
+    // Execute finished and exit functions
     props.finished()
     props.exit()
   }

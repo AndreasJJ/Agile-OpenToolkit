@@ -55,6 +55,7 @@ const AddStoryButton = styled.button`
     margin-right: 5px;
 `;
 
+// Outdated component. Kept for legacy reasons
 const NewListButton = (props) => {
   const [showAddList, setShowAddList] = useState(false)
   const [listName, setListName] = useState("")

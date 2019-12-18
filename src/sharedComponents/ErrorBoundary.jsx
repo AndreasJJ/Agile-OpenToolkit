@@ -67,6 +67,7 @@ class ErrorBoundary extends React.Component {
   }
 
   resetState() {
+    // Clear redux state and reload application
     localStorage.clear();
     window.location.href = '/';
   }

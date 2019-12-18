@@ -184,19 +184,25 @@ const Input = styled.input`
 `;
 
 const Login = (props) => {
+  // Redux dispatch
   const dispatch = useDispatch()
 
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // State
   const [showModal, setShowModal] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
+  // Constructor
   useEffect(() => {
+    // Set cookie visited to true such that the splash page isnt shown again
     setCookie("visited", true)
     props.finishLoading()
   }, [])
 
+  // Cookie setter function
   const setCookie = (name,value,days) =>  {
       let expires = "";
       if (days) {
@@ -207,18 +213,23 @@ const Login = (props) => {
       document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
 
+  // Login function
   const login = async (e) => {
     e.preventDefault();
 
+    // If both email and password isnt null then try to firebase log in
     if (email && password) {
       try {
+        // firebase log in
         let user = await firebase.doSignInWithEmailAndPassword(email, password)
       }catch (err) {
+        // Dispatch error
         dispatch(alertActions.error(err.message));
       }
     }
   }
 
+  // Redirect to registration
   const toRegister = (e) => {
     e.preventDefault();
 

@@ -48,19 +48,24 @@ const Story = styled.h2`
 `
 
 const Game = (props) => {
+  // State
   const [numbers, setNumbers] = useState([0,0.5,1,2,3,5,8,13,20,40,100,'?', "☕"])
   const [cards, setCards] = useState([])
   const [selectedCardIndex, setSelectedCardIndex] = useState(null)
   const [currentStory, setCurrentStory] = useState("This is a test story")
 
+  // Constructor
   useEffect(() => {
+    // Create the deck
     MakeDeck()
   }, [])
 
+  // Create the deck when selected card is changed
   useEffect(() => {
     MakeDeck()
   }, [selectedCardIndex])
 
+  // Creates dec by making an array of cards with the given numbers
   const MakeDeck = () => {
     let temp = []
     for (let i =  0; i < numbers.length; i++) {
@@ -69,6 +74,7 @@ const Game = (props) => {
     setCards(temp)
   }
 
+  // User select card
   const clickedCard = (e) => {
     let newIndex = parseInt(e.target.dataset.index)
     if(newIndex === selectedCardIndex) {

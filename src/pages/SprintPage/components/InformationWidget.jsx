@@ -111,31 +111,39 @@ const DateText = styled.span`
 `
 
 const InformationWidget = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // History and params (id)
   const {id} = useParams()
   const history = useHistory()
 
+  // Redux state
   const uid = useSelector(state => state.authentication.user.uid)
   const firstname = useSelector(state => state.authentication.user.firstname)
   const lastname = useSelector(state => state.authentication.user.lastname)
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)  
 
+  // State
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [startDate, setStartDate] = useState(new Date())
   const [dueDate, setDueDate] = useState(new Date())
+  // Original state
   const [originalTitle, setOriginalTitle] = useState("")
   const [originalDescription, setOriginalDescription] = useState("")
   const [originalStartDate, setOriginalStartDate] = useState(new Date())
   const [originalDueDate, setOriginalDueDate] = useState(new Date())
 
+  // Constructor
   useEffect(() => {
+    // Get sprint data
     getSprint()
   }, [])
 
+  // Get sprint date and update state
   const getSprint = async () => {
     let sprint = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/" + id)
 
@@ -151,7 +159,9 @@ const InformationWidget = (props) => {
     }
   }
 
+  // Update sprint
   const saveSprint = async () => {
+    // If all the data is the same, exit.
     if(title === originalTitle && 
       description === originalDescription &&
       startDate.getTime() === originalStartDate.getTime() &&
@@ -160,6 +170,7 @@ const InformationWidget = (props) => {
       return
     }
 
+    // Updated sprint data
     let data = {
       title: title,
       description: description,
@@ -173,9 +184,11 @@ const InformationWidget = (props) => {
       }
     }
 
+    // Update sprint
     await UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/" + id, data)
   }
 
+  // Delete sprint
   const deleteSprint = async () => {
     await DeleteDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/" + id)
 

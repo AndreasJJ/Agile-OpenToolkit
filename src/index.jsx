@@ -23,6 +23,7 @@ render(
 	document.getElementById("app")
 );
 
+// Enable hot reload on development build
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 	module.hot.accept();
 }

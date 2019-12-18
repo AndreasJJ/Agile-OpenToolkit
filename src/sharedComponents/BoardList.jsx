@@ -89,6 +89,7 @@ const AddStoryButton = styled.button`
     margin-right: 5px;
 `;
 
+// Outdated component. Kept for legacy reasons
 const BoardList = (props) => {
   const [inputingStory, setInputingStory] = useState(false)
   const [storyName, setStoryName] = useState("")

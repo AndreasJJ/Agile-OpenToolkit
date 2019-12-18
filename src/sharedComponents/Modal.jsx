@@ -35,8 +35,12 @@ const Content = styled.div `
         min-width: 100%;
     }
 `
-
+// Modal (pop-up) component
 const Modal = (props) => {
+    /* 
+     * Makes it possible to click the modal without triggering the action that happens
+     * when you click the background (which usually is to close the modal)
+     */
     const stopBackgroundCall = (e) => {
         e.stopPropagation();
     }

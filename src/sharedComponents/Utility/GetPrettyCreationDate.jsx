@@ -1,3 +1,4 @@
+// Takes in a date object and returns a readable string how how long ago the date was compared to now
 export default function getPrettyCreationDate(date) {
 	let deltaTime = ((new Date()).getTime() - date.getTime())
 	// less than 1 second

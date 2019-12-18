@@ -99,19 +99,25 @@ const TasksOpen = styled.div`
 `
 
 const Issue = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // State
   const [taskVisible, setTaskVisible] = useState(false)
   const [tasks, setTasks] = useState([])
   const [loadedTasks, setLoadedTasks] = useState(false)
 
+  // Get tasks and update state
   const showTasks = async () => {
     if(!loadedTasks) {
+      // Get tasks
       let tasks = await GetDocuments(firebase, "products/" + props.productId + "/stories/" + props.issueId + "/tasks", null, [["title"]])
+      // Update state
       setTasks(tasks)
       setLoadedTasks(true)
       setTaskVisible(true)
     } else {
+      // Change visibility
       setTaskVisible(!taskVisible)
     }
   }

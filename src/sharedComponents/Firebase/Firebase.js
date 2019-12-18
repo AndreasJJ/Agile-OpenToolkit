@@ -2,6 +2,7 @@ import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 
+// Config data for firebase project
 const config = {
   apiKey: '***REMOVED***',
   authDomain: '***REMOVED***',
@@ -14,32 +15,39 @@ const config = {
 
 class Firebase {
   constructor () {
+    // Initialize firebase app
     app.initializeApp(config);
 
     this.auth = app.auth();
     this.db = app.firestore();
   }
 
-  // *** Auth API ***
-
+  // Registration function with email and password
   doCreateUserWithEmailAndPassword = (email, password) =>
     this.auth.createUserWithEmailAndPassword(email, password);
 
+  // Login function with email and password
   doSignInWithEmailAndPassword = (email, password) =>
     this.auth.signInWithEmailAndPassword(email, password);
 
+  // Signout function
   doSignOut = () => this.auth.signOut();
 
+  // Reset function
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
 
+  // Password update function with new password
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
+  // Get Id token function (forceRefresh => true or false)
   doGetIdToken = forceRefresh => this.auth.currentUser.getIdToken(forceRefresh)
 
+  // Auth listener. Fires function on auth change
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
       if (authUser) {
+        // Get user document
         this.user(authUser.uid)
           .get()
           .then(doc => {
@@ -67,6 +75,7 @@ class Firebase {
       }
     });
 
+  // User document ref
   user = uid => this.db.collection(`users`).doc(uid);
 }
 

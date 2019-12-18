@@ -110,8 +110,10 @@ const Body = styled.div`
 `
 
 const Backlog = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // State
   const [loading, setLoading] = useState(true)
   const [labels, setLabels] = useState([])
   const [selectedLabel, setSelectedLabel] = useState(0)
@@ -120,15 +122,20 @@ const Backlog = (props) => {
   const [activeTab, setActiveTab] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
+  // Redux state
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
+      // Stop the loading bar
       await props.finishLoading()
 
+      // Get labels
       let docSnapshot = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
 
+      // Format labels data into state format and update state
       if(docSnapshot) {
         let tempArray = []
         for (const [key, value] of Object.entries(docSnapshot.list)) {
@@ -144,37 +151,48 @@ const Backlog = (props) => {
     init()
   }, [])
 
+  // Update stories on activeTab change
   useEffect(() => {
     const inner = async () => {
       let querySnapshot;
+      // Open stories
       if(activeTab === 0) {
         querySnapshot = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", [["status", "==", "OPEN"]], [["timestamp"]])
+      // Closed stories
       }else if(activeTab === 1) {
         querySnapshot = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", [["status", "==", "CLOSED"]], [["timestamp"]])
+      // All stories
       } else if (activeTab === 2) {
         querySnapshot = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", null, [["timestamp"]])
+      // Don't do anything
       } else {
         return
       }
+      // Update originalIssues with issues
       let newIssues = querySnapshot.filter((doc) => doc.id != "--STATS--")
       await setOriginalIssues(newIssues)
     }
     inner()
   },[activeTab])
 
+  // Run filter function on originalIssues or selectedLabel change
   useEffect(() => {
     filterIssues()
   }, [originalIssues, selectedLabel])
 
+  // Set loading false when issues state is changed
   useEffect(() => {
     if(issues) {
       setLoading(false)
     }
   }, [issues])
 
+  // Issues filter function
   const filterIssues = async () => {
+    // If the selectedLabel is the placeholder then set issues equal to originalIssues
     if(selectedLabel == 0) {
       await setIssues(originalIssues)
+    // Else filter over originalIssues and keep the ones that includes any of the selected labels
     } else {
       let filtered = originalIssues.filter((issue) => {
         if(!issue.labels) { return }

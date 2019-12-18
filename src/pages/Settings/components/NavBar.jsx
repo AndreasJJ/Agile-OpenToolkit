@@ -64,9 +64,10 @@ const Item = styled.div`
 `
 
 const NavBar = (props) => {
-
+    // History object
     const history = useHistory()
 
+    // Add hash to location on navigation click
     const onclick = (e) => {
         switch(e.target.dataset.name) {
             case "Integration": {

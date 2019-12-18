@@ -6,6 +6,7 @@ export const userActions = {
   setUser
 };
 
+// Sets a user in the store
 function setUser (user) {
   return dispatch => {
     dispatch(request(user));

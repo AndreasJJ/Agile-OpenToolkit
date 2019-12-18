@@ -154,16 +154,17 @@ const SideBarGrid = styled.div`
 `
 
 const SideBar = (props) => {
-  const [selectedIndex, setSelectedIndex] = useState(
-    props.selectedIndex
-  );
+  // State
+  const [selectedIndex, setSelectedIndex] = useState(props.selectedIndex);
 
+  // update selected product at change in select
   useEffect(() => {
     if(selectedIndex !== props.selectedIndex) {
       props.selectProduct(selectedIndex)
     }
   }, [selectedIndex])
 
+  // update selected index state
   const selectChange = async (e) => {
     await setSelectedIndex(e.target.value)
   }

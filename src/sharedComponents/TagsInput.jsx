@@ -33,19 +33,24 @@ const TagsInput = (props) => {
   const [tagsInputValue, setTagsInputValue] = useState("")
   const [tags, setTags] = useState([])
   
+  // Adds tag to state
   const addTag = (tag) => {
+    // If tag is empty then end
     if (tag == '') return;
 
+    // Remove whitespace
     tag = tag.trim();
 
+    // If it the tag doesnt already exist then concat it with the existing tags and add it
     if(!(tags.indexOf(tag) > -1)) {
       let _tags = tags.concat([tag]);
-      updateTags(_tags);
+      setTags(_tags);
     }
 
     updateTagValue('');
   }
 
+  // Updates current input tag value
   const updateTagValue = (value) => {
     if(value == ' ') {
       return;
@@ -54,15 +59,14 @@ const TagsInput = (props) => {
     setTagsInputValue(value)
   }
 
+  // Removes tag from state
   const removeTag = (removeTag) => {
     let tags = tags.filter((tag) => tag !== removeTag);
-    updateTags(tags);
+    setTags(tags);
   }
 
-  const updateTags = (tags) => {
-    setTags(tags)
-  }
-
+  // Handles space keypress
+  // Adds member tag to state
   const handleKeyPress = (e) => {
     if(e.key === ' '){
       addTag(e.target.value)

@@ -14,8 +14,6 @@ import {User} from 'styled-icons/fa-solid/User';
 import {UnlockAlt} from 'styled-icons/fa-solid/UnlockAlt';
 import {Envelope} from 'styled-icons/boxicons-regular/Envelope';
 
-import bg from '../../assets/bg.png'
-
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -258,21 +256,27 @@ const ConfirmPasswordInput = styled.input`
 `
 
 const Register = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux dispatch
   const dispatch = useDispatch()
 
+  // State
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [firstname, setFirstname] = useState("")
   const [lastname, setLastname] = useState("")
 
+  // Constructor
   useEffect(() => {
-    props.finishLoading()
+    // Set cookie visited to true such that the splash page isnt shown again
     setCookie("visited", true)
+    props.finishLoading()
   },[])
 
+  // Cookie setter function
   const setCookie = (name,value,days) => {
       let expires = "";
       if (days) {
@@ -283,35 +287,43 @@ const Register = (props) => {
       document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
 
+  // Registration function
   const register = async (e) => {
     e.preventDefault();
 
+    // Dispatch error if email is empty or not valid
     if(!validateEmail(email) || email == "") {
       dispatch(alertActions.error('Please provide a valid email'));
       return
     }
 
+    // Dispatch error if firstname or lastname is shorter than 2 letters
     if(firstname.length < 2 || lastname.length < 2) {
       dispatch(alertActions.error('Names need to be 2 characters or longer'));
       return
     }
 
+    // Dispatch error if firstname or lastname isnt valid names
     if(!validateName(firstname) || !validateName(lastname)) {
       dispatch(alertActions.error('Names can only contain letters'));
       return
     }
 
+    // Dispatch error if the password and confirm password arent equal
     if(password != confirmPassword) {
       dispatch(alertActions.error('Your password doesnt match your confirmation password'));
       return
     }
 
+    // Dispatch error if the password is less than 6 characters long
     if(password.length < 6 || confirmPassword.length < 6) {
       dispatch(alertActions.error('The password must be at least 6 characters long'));
       return
     }
     try {
+      // Firebase registration function
       let user = await firebase.doCreateUserWithEmailAndPassword(email, password)
+      // Add userinfo to database
       firebase.db.collection("users").doc(user.user.uid).set({
           email: user.user.email,
           firstname: firstname,
@@ -322,11 +334,13 @@ const Register = (props) => {
     }
   }
 
+  // Validate email with regex
   const validateEmail = (email) => {
     let re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
     return re.test(email);
   }
 
+  // Validate name (only letters between a-z or A-Z)
   const validateName = (name) => {
     let re = /^[a-zA-Z]+$/;
     return re.test(name);
@@ -346,6 +360,7 @@ const Register = (props) => {
     }
   }
 
+  // Redirect to login
   const toLogin = (e) => {
     e.preventDefault();
 

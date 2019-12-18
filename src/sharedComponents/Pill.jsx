@@ -37,7 +37,7 @@ const X = styled.div`
           user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 `
-
+// Simple pill component (like the type you swallow)
 const Pill = ({text, onClear}) => {
   return (
     <Wrapper>

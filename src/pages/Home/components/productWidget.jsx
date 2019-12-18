@@ -77,10 +77,13 @@ const AddProductButton = styled.button`
 `
 
 const ProductWidget = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux dispatch
   const dispatch = useDispatch()
 
+  // Redux state
   const Guid = useSelector(state => state.authentication.user.uid)
   const Gemail = useSelector(state => state.authentication.user.email)
   const Gfirstname = useSelector(state => state.authentication.user.firstname)
@@ -88,7 +91,7 @@ const ProductWidget = (props) => {
   const Gproducts = useSelector(state => state.product.products)
   const GselectedProduct = useSelector(state => state.product.selectedProduct)
 
-  const [firstProductLoad, setFirstProductLoad] = useState(true)
+  // State
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState([])
   const [showModal, setShowModal] = useState(false)
@@ -97,17 +100,22 @@ const ProductWidget = (props) => {
 
   let productListener;
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
+      // On change function
       const onSnapshot = async (querySnapshot) => {
+        // Loop over all documents, get their data and id
         let tempArray = querySnapshot.docs
                                      .map((doc) => {
                                         let obj = doc.data()
                                         obj.id = doc.id
                                         return obj
                                       })
+        // Set the globally selected product
         let globalSelectedProduct = Gproducts[GselectedProduct]
         
+        // Set the new globally selected product index
         let newGlobalSelectedProductIndex;
         if(globalSelectedProduct) {
           newGlobalSelectedProductIndex = tempArray.findIndex(product => product.id === globalSelectedProduct.id).toString()
@@ -115,21 +123,29 @@ const ProductWidget = (props) => {
           newGlobalSelectedProductIndex = 0
         }
 
+        // If theres more of the newly retrived documents then the state products length
+        // and this is not the constructor call (first time it gets called) then
+        // clear alerts and dispatch success alert
         if(tempArray.length > products.length && !loading) {
           dispatch(alertActions.clear())
           dispatch(alertActions.success('Product successfully added'))
         }
 
+        // Set product and loading state
         await setProducts(tempArray)
         await setLoading(false)
 
+        // Dispatch the newly retrived products
         dispatch(productActions.getProducts(tempArray))
 
+        // If the globally selected product is not the same as the new globally selected product index
+        // then dispatch the newly selected product index
         if(GselectedProduct !== newGlobalSelectedProductIndex) {
           dispatch(productActions.selectProductRecalibration(newGlobalSelectedProductIndex))
         }
       }
 
+      // set the product linstener so that it can be unmounted at unmount
       productListener = await ListenToDocuments(firebase, onSnapshot, "users/" + Guid + '/products')
     }
     init()
@@ -139,6 +155,7 @@ const ProductWidget = (props) => {
     }
   }, [])
 
+  // Function to add product to database
   const createProduct = (product) => {
     let batch = []
 
@@ -173,6 +190,7 @@ const ProductWidget = (props) => {
     }
     batch.push([memberPath, memberData])
 
+    // Start batch write
     BatchWrite(firebase, batch, () => {
         dispatch(alertActions.info('Please wait while we create your new product'))
     })
@@ -183,11 +201,13 @@ const ProductWidget = (props) => {
     setModalContent("productCreation")
   }
 
+  // Function to get the member list of a product
   const getMembers = async (productId) => {
     let doc = await GetDocument(firebase, "products/" + productId + "/members/members")
     return doc.list
   }
 
+  // Function to show members on a product
   const showMembersButtonClicked = (e) => {
     if(e.target.tagName == "path") {
       setSelectedProduct(e.target.parentNode.parentNode.parentNode.dataset.productindex)
@@ -200,12 +220,15 @@ const ProductWidget = (props) => {
     setModalContent("showMembers")
   }
 
+  // Function to close modal
   const closeModal = () => {
     setShowModal(false)
     setModalContent("")
   }
 
+  // Modal contant depends on what the state modalContent is.
   let modal = <Modal />
+  // For product creation
   if(modalContent == "productCreation") {
     modal = <Modal content={<Tabs tabNames={["Create New Product", "Join Product Team"]} 
                                   tabComponents={[<CreateNewProduct 
@@ -213,6 +236,7 @@ const ProductWidget = (props) => {
                                   onclick={closeModal} />, <JoinProductTeam />]} />
                             } 
                    exitModalCallback={closeModal} />
+  // For showing product members
   } else if (modalContent == "showMembers") {
     modal = <Modal content={<ProductMembers products={products} 
                                             productIndex={selectedProduct} 

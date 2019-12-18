@@ -210,6 +210,7 @@ const Slider = styled.div`
 `
 
 const DetailsWidget = (props) => {
+  // Redux state
   const Gfirstname = useSelector(state => state.authentication.user.firstname)
   const Glastname = useSelector(state => state.authentication.user.lastname)
   const Ggender = useSelector(state => state.authentication.user.gender)
@@ -217,12 +218,14 @@ const DetailsWidget = (props) => {
   const GphoneNumber = useSelector(state => state.authentication.user.phoneNumber)
   const GphotoURL = useSelector(state => state.authentication.user.photoURL)
 
-  const [profilePicture, setProfilePicture] = useState(GphotoURL)
+  // Original state
   const [originalGender, setOriginalGender] = useState(Ggender)
   const [originalFirstname, setOriginalFirstname] = useState(Gfirstname ? Gfirstname : "")
   const [originalLastname, setOriginalLastname] = useState(Glastname ? Glastname : "")
   const [originalMobile, setOriginalMobile] = useState(GphoneNumber ? GphoneNumber : "")
   const [originalEmail, setOriginalEmail] = useState(Gemail ? Gemail : "")
+  // Current state (mutable)
+  const [profilePicture, setProfilePicture] = useState(GphotoURL)
   const [gender, setGender] = useState(Ggender)
   const [firstname, setFirstname] = useState(Gfirstname ? Gfirstname : "")
   const [lastname, setLastname] = useState(Glastname ? Glastname : "")
@@ -230,59 +233,77 @@ const DetailsWidget = (props) => {
   const [email, setEmail] = useState(Gemail ? Gemail : "")
   const [saveDisabled, setSaveDisabled] = useState(true)
 
+  // Function to update gender state
   const changeGender = (e) => {
+    // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
     if(isOriginal(!gender)) {
       _saveDisabled = true
     }
 
+    // Update state
     setGender(!gender)
     setSaveDisabled(_saveDisabled)
   }
 
+  // Function to update firstname state
   const changeFirstname = (e) => {
+    // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
     if(isOriginal(null, e.target.value)) {
       _saveDisabled = true
     }
 
+    // Update state
     setFirstname(e.target.value)
     setSaveDisabled(_saveDisabled)
   }
 
+  // Function to update lastname state
   const changeLastname = (e) => {
+    // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
     if(isOriginal(null,null, e.target.value)) {
       _saveDisabled = true
     }
 
+    // Update state
     setLastname(e.target.value)
     setSaveDisabled(_saveDisabled)
   }
 
+  // Function to update mobile state
   const changeMobile = (e) => { 
+    // If the mobile number isnt a valid number (int) then set it equal to an empty string
     let value = parseInt(e.target.value) ? parseInt(e.target.value) : ""
     value = value != NaN ? value: ""
 
+    // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
     if(isOriginal(null, null, null, value)) {
       _saveDisabled = true
     }
 
+    // Update state
     setMobile(value)
     setSaveDisabled(_saveDisabled)
   }
 
+  // Function to update email state
   const changeEmail = (e) => {
+    // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
     if(isOriginal(null, null, null, null, e.target.value)) {
       _saveDisabled = true
     }
 
+    // Update state
     setEmail(e.target.value)
     setSaveDisabled(_saveDisabled)
   }
 
+  // Checks wether any of the user info (state) has been changed 
+  // (that the displayed state is not equal the original state)
   const isOriginal = (
               _gender = null,
               _firstname = null,

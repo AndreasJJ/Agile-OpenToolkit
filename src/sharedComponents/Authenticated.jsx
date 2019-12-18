@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+// Renders 'is' if the user is logged in (user object exists) or 'not' if they are nt
 const Authenticated = (props) => {
   return (props.user ? (props.is instanceof Function ? props.is() : props.is) : props.not)
 }

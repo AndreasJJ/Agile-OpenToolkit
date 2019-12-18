@@ -31,19 +31,24 @@ const Wrapper = styled.div`
 
 
 const IssuePage = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // History and params
   const {id} = useParams()
   const history = useHistory()
 
+  // Previous id
   const prevId = useRef(id)
 
+  // Redux state
   const uid = useSelector(state => state.authentication.user.uid)
   const firstname = useSelector(state => state.authentication.user.firstname)
   const lastname = useSelector(state => state.authentication.user.lastname)
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // State
   const [showModal, setShowModal] = useState(false)
   const [modalContent, setModalContent] = useState(null)
   const [status, setStatus] = useState("OPEN")
@@ -64,11 +69,14 @@ const IssuePage = (props) => {
   const [originalTitle, setOriginalTitle] = useState("")
   const [originalDescription, setOriginalDescription] = useState("")
 
+  // Listeners
   let DataListener;
   let TasksListener;
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
+      // Get data, tasks, labels and sprints
       await getData()
       await getTasks()
       await getAllLables()
@@ -77,12 +85,14 @@ const IssuePage = (props) => {
     }
     init()
 
+    // Destructor => unmount listeners
     return () => {
       DataListener()
       TasksListener()
     }
   }, [])
 
+  // On update reset state if the url is different (different id => different story)
   useEffect(() => {
     if(prevId.current !== id) {
       setShowModal(false)
@@ -114,18 +124,23 @@ const IssuePage = (props) => {
     }
   })
 
+  // Get story data
   const getData = async () => {
+    // on initial request and on change callback
     const onSnapshot = (doc) => {
+      // reformat timestamps and dates into correct format
       let issue = doc.data()
       issue.creationTimestamp = issue.creationTimestamp == null ? new Date() : FsTsToDate(issue.timestamp)
       issue.lastUpdateTimestamp = issue.lastUpdateTimestamp == null ? new Date() : FsTsToDate(issue.lastUpdateTimestamp)
       issue.dueDate = issue.dueDate == null ? null : FsTsToDate(issue.dueDate)
+      // reformat all labels into correct format
       let tempArray = []
       for (const [key, value] of Object.entries(issue.labels)) {
         tempArray.push([key, value])
       }
       issue.labels = tempArray
 
+      // Update state
       setStatus(issue.status)
       setCreationTimestamp(issue.timestamp)
       setEditedTimestamp(issue.lastUpdateTimestamp)
@@ -140,10 +155,13 @@ const IssuePage = (props) => {
       setDueDate(issue.dueDate)
       setEstimate(issue.estimate)
     }
+    // Set listener
     DataListener = await ListenToDocument(firebase, onSnapshot, "products/" + products[selectedProduct].id + "/stories/" + id)
   }
 
+  // Get tasks
   const getTasks = async () => {
+    // on initial request and on change callback
     const onSnapshot = (querySnapshot) => {
       let tempArray = querySnapshot.docs
                                    .map((doc) => {
@@ -153,12 +171,16 @@ const IssuePage = (props) => {
                                     })
       setTasks(tempArray)
     }
+    // Set listener
     TasksListener = await ListenToDocuments(firebase, onSnapshot, "products/" + products[selectedProduct].id + "/stories/" + id + "/tasks", null, [["title"]])
   }
 
+  // Get labels
   const getAllLables = async () => {
+    // get labels list
     let list = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
 
+    // reformat labels into correct format and update state
     if(list) {
       let tempArray = []
       for (const [key, value] of Object.entries(list.list)) {
@@ -170,6 +192,7 @@ const IssuePage = (props) => {
     }
   }
 
+  // Get all sprints
   const getAllSprints = async () => {
     let sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [['dueDate','>',new Date()]])
 
@@ -190,13 +213,16 @@ const IssuePage = (props) => {
     setEditingIssue(true)
   }
 
+  // Save story edit
   const saveEdit = () => {
+    // If both the title and description is unchanged, exit.
     if(title == originalTitle && description == originalDescription) 
     {
       setEditingIssue(false)
       return
     }
 
+    // Update story
     let data = {
       title: title,
       description: description,
@@ -208,23 +234,28 @@ const IssuePage = (props) => {
       }
     }
 
+    // Success function
     let success = () => {
       setEditingIssue(false)
     }
 
+    // Failure functin
     let failure = () => {
       setEditingIssue(false)
       setTitle(originalTitle)
       setDescription(originalDescription)
     }
 
+    // Update story
     UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data, success, failure)
   }
 
+  // Update sprint
   const updateSprint = (sprintId) => {
+    // Updated story
     let data = {
       sprint: sprintId,
-      lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
       lastEditer: {
         uid: uid,
         firstname: firstname,
@@ -232,10 +263,13 @@ const IssuePage = (props) => {
       }
     }
 
+    // Update story
     UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
   }
 
+  // Update due date
   const updateDueDate = (dueDate) => {
+    // Updated story
     let data = {
       dueDate: new Date(dueDate),
       lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
@@ -246,13 +280,16 @@ const IssuePage = (props) => {
       }
     }
 
+    // Update story
     UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
   }
 
+   // Update labels
   const updateLabels = (labels) => {
+    // Updated story
     let data = {
       labels: labels,
-      lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
       lastEditer: {
         uid: uid,
         firstname: firstname,
@@ -260,13 +297,16 @@ const IssuePage = (props) => {
       }
     }
 
+    // Update story
     UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
   }
 
+  // Update estimate
   const updateEstimate = (estimate) => {
+    // Updated story
     let data = {
       estimate: estimate,
-      lastUpdateTimestamp: props.firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
+      lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
       lastEditer: {
         uid: uid,
         firstname: firstname,
@@ -274,9 +314,11 @@ const IssuePage = (props) => {
       }
     }
 
+    // Update story
     UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + id, data)
   }
 
+  // Discard edit => reset title and description to original
   const discardEdit = () => {
     setEditingIssue(false)
     setTitle(originalTitle)
@@ -299,6 +341,7 @@ const IssuePage = (props) => {
     history.push('/backlog/issue/'+issueId)
   }
 
+  // Sets modal content depending on the state modalContent
   let _modalContent;
   if(modalContent == "CreateIssue") {
     _modalContent = <CreateIssue exit={closeModal} finished={goToCreatedIssue} />

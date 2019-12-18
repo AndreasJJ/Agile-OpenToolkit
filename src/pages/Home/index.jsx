@@ -23,6 +23,7 @@ const Wrapper = styled.div`
 
 const Home = (props) => {
 
+  // Constructor
   useEffect(() => {
     props.finishLoading()
   }, [])

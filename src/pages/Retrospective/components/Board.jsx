@@ -67,6 +67,7 @@ const Board = (props) => {
   const [improvementCards, setImprovementCards] = useState([])
   const [actionCards, setActionCards] = useState([])
 
+  // Set the color of the card depending on which board it got added to
   const clickedAddButton = (e) => {
     switch(e.target.parentNode.parentNode.dataset.name) {
       case "well":

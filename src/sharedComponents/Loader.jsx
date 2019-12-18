@@ -34,6 +34,8 @@ const Container = styled.div`
 	transition: opacity ${props => props.animationDuration}ms linear;
 `
 
+// Loader component (at top of the webpage on pageload)
+// https://github.com/tanem/react-nprogress
 const Loader = (props) => {
     return (
 		<NProgress isAnimating={props.isLoading} key={props.location.key}>

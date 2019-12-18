@@ -1,3 +1,4 @@
+// Imports
 const firebase = require('@firebase/testing');
 const fs = require('fs');
 /*
@@ -32,14 +33,20 @@ beforeEach(async () => {
 });
 
 beforeAll(async () => {
+  // Load the database with rules
   await firebase.loadFirestoreRules({ projectId, rules });
 });
 
 afterAll(async () => {
+  // Delete the local firebase apps
   await Promise.all(firebase.apps().map(app => app.delete()));
   console.log(`View rule coverage information at ${coverageUrl}\n`); // eslint-disable-line no-console
 });
 
+/*
+ * Tests for security rules
+ * The description of each test can be read in the constructor of the test
+ */
 describe('Agile Toolkit', () => {
   test('require users to log in before viewing their own profile', async () => {
     const db = authedApp(null);

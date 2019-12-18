@@ -94,11 +94,14 @@ const Cancel = styled.button`
 `
 
 const CreateTask = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux state
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // State
   const [submitDisabled, setSubmitDisabled] = useState(true)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -112,14 +115,18 @@ const CreateTask = (props) => {
     setDescription(e.target.value)
   }
 
+  // Add task to story
   const sendTask = async () => {
+    // Task data
     let task = {
       title: title,
       description: description,
       status: "OPEN",
       timestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
     }
+    // Add task to database
     await AddDocument(firebase, "products/" + products[selectedProduct].id + "/stories/" + props.issueId + "/tasks", task)
+    // Call exit function
     props.exit()
   }
 

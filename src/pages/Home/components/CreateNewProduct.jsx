@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { alertActions } from '../../../state/actions/alert';
@@ -70,34 +70,38 @@ const SubmitButton = styled.button`
 `
 
 const CreateNewProduct = (props) => {
-  const [productName, setProductName] = useState(
-    ""
-  );
+  // Redux dispatch
+  const dispatch = useDispatch()
 
-  const [productDescription, setProductDescription] = useState(
-    ""
-  );
+  // State
+  const [productName, setProductName] = useState("");
+  const [productDescription, setProductDescription] = useState("");
 
+  // Add product to database
   const sendProduct = (e) => {
     e.preventDefault()
-    const { dispatch } = props;
 
+    // Trim data
     let name = productName.trim()
     let description = productDescription.trim()
 
+    // Check that name length is over 2 characters long else dispatch error
     if(name.length < 3 ) {
       dispatch(alertActions.error('The team name has to be at least 3 characters long'));
       return
     }
 
+    // Check that description length is over 2 characters long or is empty else dispatch error
     if(description.length < 3 && (description || description != "")) {
       dispatch(alertActions.error('The description has to either be 3 characters long or empty'));
       return
     }
+    // If description is empty set it eqal to null for firestore
     if(description == "") {
       description = null
     }
 
+    // Add to database
     props.sendProduct({name: name, description: description})
     props.onclick()
   }
@@ -143,5 +147,4 @@ CreateNewProduct.propTypes = {
   onclick: PropTypes.func.isRequired
 }
 
-const connectedCreateNewProduct = connect()(CreateNewProduct);
-export { connectedCreateNewProduct as CreateNewProduct }; 
+export { CreateNewProduct }; 

@@ -115,12 +115,14 @@ const Cancel = styled.button`
 `
 
 const CreateIssue = (props) => {
+  // State
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [startDate, setStartDate] = useState(DateToLocalString(new Date()))
   const [dueDate, setDueDate] = useState(DateToLocalString(new Date(new Date().setDate((new Date).getDate() + 1))))
   const [submitDisabled, setSubmitDisabled] = useState(true)
 
+  // On title change
   const onChangeTitle = (e) => {
     let isSubmitDisabled = false
 
@@ -132,10 +134,12 @@ const CreateIssue = (props) => {
     setSubmitDisabled(isSubmitDisabled)
   }
 
+  // On description change
   const onChangeDescription = (e) => {
     setDescription(e.target.value)
   }
 
+  // On start date change
   const onChangeStartDate = (e) => {
     if(new Date(e.target.value) >= new Date(dueDate)) {
       setDueDate(DateToLocalString(new Date(new Date().setDate((new Date(e.target.value)).getDate() + 1))))
@@ -144,17 +148,21 @@ const CreateIssue = (props) => {
     setStartDate(e.target.value)
   }
 
+  // On due date change
   const onChangeDueDate = (e) => {
     setDueDate(e.target.value)
   }
 
+  // Add sprint
   const sendSprint = async () => {
+    // Sprint data
     let sprint = {
       title: title,
       description: description,
       startDate: new Date(startDate),
       dueDate: new Date(dueDate)
     }
+    // Add sprint to database
     await props.createSprint(sprint)
     props.exit()
   }

@@ -34,18 +34,17 @@ const ListWrapper = styled.div`
 `;
 
 const Sprintboard = ({finishLoading}) => {
+  // State
   const [listData, setListData] = useState({})
   const [loading, setLoading] = useState(true)
   const counter = useSelector(state => state.counter)
 
+  // Constructor
   useEffect(() => {
     finishLoading()
   }, [])
 
-  const sendStory = (data) => {
-
-  }
-
+  // Function to add list to board
   const addList = (list) => {
     console.log(list)
   }
@@ -60,7 +59,6 @@ const Sprintboard = ({finishLoading}) => {
             return( 
               <ListWrapper>
                 <BoardList name={item.name} 
-                           sendStory={sendStory} 
                            list={item.stories} 
                            key={index} 
                 />

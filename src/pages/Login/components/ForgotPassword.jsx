@@ -21,17 +21,23 @@ const Form = styled.form`
 `
 
 const ForgotPassword = (props) => {
+    // Firebase
     const firebase = useContext(FirebaseContext)
+    // Redux dispatch
     const dispatch = useDispatch()
+    // State
     const [email, setEmail] = useState("")
 
+    // on submit do firebase password reset
     const onSubmit = async (e) => {
         e.preventDefault()
 
         try {
+            // firebase password reset
             await firebase.doPasswordReset(email)
             props.finished()
         } catch(e) {
+            // Dispatch error
             dispatch(alertActions.error(e.message));
         }
         

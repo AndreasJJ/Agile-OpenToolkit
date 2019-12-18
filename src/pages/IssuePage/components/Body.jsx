@@ -171,15 +171,19 @@ const SubmitButton = styled.button`
 `
 
 const Body = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Props
   const {status, editedTimestamp, lastEditer, 
          showNewIssueModal, showNewTaskModal, editingIssue, title, onChangeTitle, 
          saveEdit, discardEdit, changeToEditMode, description,
          issueId, productId, onChangeDescription, tasks,
          uid, firstname, lastname} = props
 
+  // Change story status
   const issueStatusChange = () => {
+    // Updated story
     let data = {
       status: status.toLowerCase() == "open" ? "CLOSED" : "OPEN",
       lastUpdateTimestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp(),
@@ -190,6 +194,7 @@ const Body = (props) => {
       }
     }
 
+    // Update story
     UpdateDocument(firebase, "products/" + productId + "/stories/" + issueId, data)
   }
 

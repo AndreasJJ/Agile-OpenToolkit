@@ -58,15 +58,18 @@ const SubPageContainer = styled.div`
 `
 
 const Settings = (props) => {
-
+  // History object
   const history = useHistory()
 
+  // Previous location keys
   const prevKey = useRef(history.location.key)
 
+  // Constructor
   useEffect(() => {
     props.finishLoading()
   }, [])
 
+  // Stop progressbar if the location key changes
   useEffect(() => {
     if(prevKey.current !== history.location.key) {
       props.finishLoading()
@@ -74,6 +77,7 @@ const Settings = (props) => {
     }
   })
 
+  // Set component depending on location hash
   let SubPage = <Integration />
   switch(history.location.hash) {
     case "#Github": {

@@ -33,27 +33,36 @@ const Content = styled.div`
 `
 
 const IssuesListsWidget = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // History params (id)
   const {id} = useParams()
 
+  // Redux state
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)      
 
+  // State
   const [unstartedIssues, setUnstartedIssues] = useState([])
   const [ongingIssues, setOngingIssues] = useState([])
   const [completedIssues, setCompletedIssues] = useState([])
 
+  // Constructor
   useEffect(() => {
+    // Get all stories in sprint
     getIssues()
   }, [])
 
+  // Get stories
   const getIssues = async () => {
+    // Get stories whoms sprint is equal to this sprint's id
     let documents = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/stories", [['sprint', '==', id]])
 
     let _unstartedIssues = []
     let _completedIssues = []
 
+    // Loop over the stories and sort depending on their status
     documents.forEach((doc) => {
       if(doc.status == "OPEN") {
         _unstartedIssues.push(doc)
@@ -62,6 +71,7 @@ const IssuesListsWidget = (props) => {
       }
     })
 
+    // Update state
     setUnstartedIssues(_unstartedIssues)
     setCompletedIssues(_completedIssues)
   }

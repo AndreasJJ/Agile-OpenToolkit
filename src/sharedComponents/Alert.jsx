@@ -86,8 +86,11 @@ const ProgressBar = styled.progress`
 `
 
 const Alert = ({alert, removeToast}) => {
+    // Progress bar value
     const [progress, setProgress] = useState(0)
     
+    // Progress counter set to 15s
+    // Updates every 10ms for 15000ms
     useEffect(() => {
         const id = setInterval(() => {
             setProgress(_progress => {
@@ -100,6 +103,7 @@ const Alert = ({alert, removeToast}) => {
             })
         }, 10);
 
+        // Stop the intervall on unmount
         return () => clearInterval(id)
     }, [])
 

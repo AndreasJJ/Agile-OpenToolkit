@@ -93,16 +93,20 @@ const Body = styled.div`
 `
 
 const Sprints = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux state
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // State
   const [loading, setLoading] = useState(true)
   const [activeTab, setActivetab] = useState(1)
   const [showModal, setShowModal] = useState(false)
   const [sprints, setSprints] = useState([])
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
       await props.finishLoading()
@@ -111,20 +115,26 @@ const Sprints = (props) => {
     init()
   }, [])
 
+  // Get the sprints if the active tab changes
   useEffect(() => {
     getSprints()
   }, [activeTab])
 
+  // Get sprints
   const getSprints = async () => {
     let sprints;
+    // Old sprints
     if(activeTab === 0) {
       sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [["dueDate", "<", new Date()]], [["dueDate", 'desc']])
+    // Current sprints
     }else if(activeTab === 1) {
       sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [["dueDate", ">=", new Date()]], [["dueDate", 'asc']])
+    // Future sprints
     } else {
       sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints", [["startDate", ">", new Date()]], [["startDate", 'asc']])
     }
 
+    // Not sure why this is done
     if(activeTab === 1) {
       sprints = sprints.filter((obj) => FsTsToDate(obj.startDate))
     } 
@@ -140,6 +150,7 @@ const Sprints = (props) => {
     setShowModal(false)
   }
 
+  // Create sprint
   const createSprint = async (sprint) => {
     await AddDocument(firebase, "products/" + products[selectedProduct].id + "/sprints/", sprint)
     getSprints()

@@ -8,6 +8,7 @@ export const productActions = {
   getProducts
 };
 
+// Set's the selected product index
 function selectProduct (index) {
   return dispatch => {
     productService.selectProduct(index)
@@ -27,6 +28,7 @@ function selectProduct (index) {
   function failure (error) { return { type: productConstants.PRODUCT_SELECT_FAILURE, error }; }
 }
 
+// Set's the selected product index (used for recalibration. Not really sure if i actually use it lol)
 function selectProductRecalibration (index) {
   return dispatch => {
     productService.selectProductRecalibration(index)
@@ -45,6 +47,7 @@ function selectProductRecalibration (index) {
   function failure (error) { return { type: productConstants.PRODUCT_SELECT_RECALIBRATION_FAILURE, error }; }
 }
 
+// Gets the products from the store
 function getProducts (products) {
   return dispatch => {
     productService.getProducts(products)

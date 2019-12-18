@@ -16,11 +16,11 @@ const Wrapper = styled.div`
 
 
 const Game = (props) => {
-
+  // State
   const [state, setState] = useState(0)
 
+  // Show component depending on which state the game is in (playing, roundresult, finished)
   let component;
-
   switch(state) {
     case 0:
       component = <Poker />

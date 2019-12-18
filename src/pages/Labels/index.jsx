@@ -92,20 +92,25 @@ const List = styled.div`
 `
 
 const Labels = (props) => {
+  // Firebase
   const firebase = useContext(FirebaseContext)
 
+  // Redux state
   const uid = useSelector(state => state.authentication.user.uid)
   const products = useSelector(state => state.product.products)
   const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+  // State
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState(0)
   const [labels, setLabels] = useState([])
   const [subscribedLabels, setSubscribedLabels] = useState([])
 
+  // Constructor
   useEffect(() => {
     const init = async () => {
+      // Get subscribed labels and all labels
       await getSubscribedLabels()
       await getLabels()
       props.finishLoading()
@@ -113,7 +118,9 @@ const Labels = (props) => {
     init()
   }, [])
 
+  // Get all labels
   const getLabels = async () => {
+    // Get labels from firestore
     let data;
     if(activeTab === 0) {
       data = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
@@ -121,6 +128,7 @@ const Labels = (props) => {
       data = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
     }
 
+    // Reformat lables into the correct format
     if(data) {
       let tempArray = []
       for (const [key, value] of Object.entries(data.list)) {
@@ -135,6 +143,7 @@ const Labels = (props) => {
     }
   }
 
+  // Get subscribed labels and update state
   const getSubscribedLabels = async () => {
     let memberInfo = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/members/" + uid)
 
@@ -149,7 +158,9 @@ const Labels = (props) => {
     setShowModal(false)
   }
 
+  // Delete label and get all labels again
   const deleteLabel = async (name) => {
+    // Set the array element equal to fieldvalue delete to delete only the given element
     let data = {
       ["list." + name] : firebase.db.app.firebase_.firestore.FieldValue.delete()
     }
@@ -158,26 +169,34 @@ const Labels = (props) => {
     getLabels()
   }
 
+  // Subscribe to given label (given by name)
   const subscribeToLabel = async (name) => {
+    // label to subscribe to
     let data = {
       subscribedLabels: firebase.db.app.firebase_.firestore.FieldValue.arrayUnion(name)
     }
+    // Update subscribed labels
     await UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/members/" + uid, data)
 
     getSubscribedLabels()
   }
 
+  // Unsubscribe to given label (given by name)
   const unsubscribeToLabel = async (name) => {
+    // Label to unsubscribe
     let data = {
       subscribedLabels: firebase.db.app.firebase_.firestore.FieldValue.arrayRemove(name)
     }
+    // Update subscribed labels
     await UpdateDocument(firebase, "products/" + products[selectedProduct].id + "/members/" + uid, data)
 
     getSubscribedLabels()
   }
 
+  // Set labels depending on which tab is active
   let _labels = labels
   if(activeTab == 1) {
+     // Filter labels to only contain subscribed labels
     _labels = labels.filter((label) => subscribedLabels.indexOf(label[0]) > -1)
   }
 

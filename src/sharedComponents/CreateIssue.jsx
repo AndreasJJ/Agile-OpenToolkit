@@ -268,21 +268,28 @@ const CreateIssue = (props) => {
   const [labels, setLabels] = useState([])
   const [sprints, setSprints] = useState([])
 
+  // Get labels and sprints on mount
   useEffect(() => {
     getLabels()
     getSprints()
   }, [])
 
+  // Get sprints from firestore
   const getSprints = async () => {
     let _sprints = await GetDocuments(firebase, "products/" + products[selectedProduct].id + "/sprints/", [['dueDate','>',new Date()]])
-
     setSprints(_sprints)
   }
 
+  // Get labels from firestore
   const getLabels = async () => {
+    /*
+     * The document is a map of labels such that each key is the label name and
+     * the value is a new map with color and description key value pairs
+    */
     let document = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/labels/list")
 
     if(document) {
+      // Loop over all labels and push an array on the form ['labelName', 'color'] to the temp array
       let tempArray = []
       for (const [key, value] of Object.entries(document.list)) {
         tempArray.push([key, value])
@@ -312,9 +319,12 @@ const CreateIssue = (props) => {
   }
 
   const onChangeLabelsSelect = (e) => {
+    // Newly selected labels
     let newVal = event.target.value
+    // Old selected labels
     let stateVal = selectedLabels
 
+    // Filter the labels to get the selected labels and map the values
     let selectedValue = [...e.target.options].filter(o => o.selected).map(o => o.value)
 
     setSelectedLabels(selectedValue)
@@ -329,6 +339,7 @@ const CreateIssue = (props) => {
   }
 
   const sendIssue = async () => {
+    // New issue object
     let issue = {
       title: title,
       description: description,
@@ -349,28 +360,32 @@ const CreateIssue = (props) => {
       }
     }
 
+    // Check if the estimate is a number or not
     if(estimate && estimate !== "" && !isNaN(estimate)) {
       issue.estimate = Number(estimate)
     }
 
+    // Check if any labels are selected
     if(labels.length > 0) {
       let labels = selectedLabels.map(i => labels[i])
       issue.labels = Object.fromEntries(labels)
     }
 
     try {
+      // Increment the counter (amount of stories) in the stats document
       let incrementValue = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/stories/--STATS--")
-
       incrementValue = incrementValue ? incrementValue.count : 0
-
       issue.number = incrementValue
 
+      // add issue to the database
       let snapshot = await AddDocument(firebase, "products/" + products[selectedProduct].id + "/stories", issue)
 
       console.log("Issue transmittion successfully committed!");
+      // Run success function and exit
       props.finished(snapshot.id)
       props.exit()
     } catch(err) {
+      // Log and dispatch error alert
       console.log("Issue transmittion failed: ", err);
       dispatch(alertActions.error("Something went wrong. We were unable to save the issue. Please try again!"));
     }

@@ -35,16 +35,21 @@ const ShowWrapper = styled.div`
 `
 
 const SecretKey = (props) => {
+    // Redux dispatch
     const dispatch = useDispatch()
 
+    // Firebase
     const firebase = useContext(FirebaseContext)
 
+    // Redux state
     const products = useSelector(state => state.product.products)
     const selectedProduct = useSelector(state => state.product.selectedProduct)
 
+    // State
     const [showingKey, setShowingKey] = useState(false)
     const [key, setKey] = useState(null)
 
+    // Get secret key from database
     const getSecretKey = async () => {
         let secret = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/config/secret")
         if(secret) {
@@ -53,15 +58,19 @@ const SecretKey = (props) => {
         return null
     }
 
+    // Get new secret key
     const resetSecretKey = async () => {
         try {
+            // Data consist of which product to give new secret key and to which 3rd party app
             const data = {
                 productId: products[selectedProduct].id,
                 type: props.type
             }
 
+            // Get firebase id token for request authentication
             let firebaseIdToken = await firebase.doGetIdToken(true)
 
+            // Fetch post request
             const response = await fetch("https://agiletoolkit.io/api/secret-key", {
                 method: 'POST',
                 mode: 'cors',
@@ -76,14 +85,17 @@ const SecretKey = (props) => {
                 body: JSON.stringify(data)
             })
 
+            // parse key and update state
             let newKey = await response.json()
             setKey(newKey.key)
             setShowingKey(true)
         } catch(err) {
+            // Dispatch alert on error
             dispatch(alertActions.error(err.message))
         }
     }
 
+    // Copy secret key to clipboard
     const copySecretKey = async () => {
         let _key = key
         if(!key) {
@@ -91,6 +103,8 @@ const SecretKey = (props) => {
             _key = _key ? _key : ""
             //TODO handle if no key => tell user to generate key
         }
+        // Create input element that is invisible for user and
+        // copy key to clipboard
         const dummy = document.createElement("input")
         dummy.setAttribute('value', _key)
         dummy.style.width = "10px"
@@ -103,13 +117,18 @@ const SecretKey = (props) => {
         document.body.removeChild(dummy)
     }
 
+    // Show the secret key
     const showSecretKey = async () => {
+        // Get secret key
         let key = await getSecretKey()
+        // Update secret key state
         setKey(key ? key : " ")
         setShowingKey(true)
     }
 
+    // Hide secret key
     const hideSecretKey = () => {
+        // Remove secret key from state for security reasons
         setKey(null)
         setShowingKey(false)
     }

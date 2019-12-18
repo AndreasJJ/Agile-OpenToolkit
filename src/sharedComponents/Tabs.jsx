@@ -97,6 +97,7 @@ const Tabs = (props) => {
     <Wrapper>
       <TabMenu>
         {
+          // Render all tabs in the menu
           props.tabNames.map((item, index) => {
             if (index === activeTabIndex) {
               return (<Tab indexNumber={activeTabIndex + 1} key={index}>{item}</Tab>)
@@ -114,6 +115,7 @@ const Tabs = (props) => {
       </TabMenu>
       <ActiveTabComponent>
         {
+          // Render the tab that is specified by the activeTabIndex
           props.tabComponents[activeTabIndex]
         }
       </ActiveTabComponent>
