@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 import { useHistory } from 'react-router-dom';
 
@@ -64,6 +65,10 @@ const Settings = (props) => {
   // Previous location keys
   const prevKey = useRef(history.location.key)
 
+  // Redux state
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
+
   // Constructor
   useEffect(() => {
     props.finishLoading()
@@ -81,11 +86,11 @@ const Settings = (props) => {
   let SubPage = <Integration />
   switch(history.location.hash) {
     case "#Github": {
-        SubPage = <Github />
+        SubPage = <Github productId={products[selectedProduct].id} />
         break
     }
     case "#GitLab": {
-        SubPage = <GitLab />
+        SubPage = <GitLab productId={products[selectedProduct].id} />
         break
     }
     case "#Roles": {

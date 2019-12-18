@@ -27,6 +27,10 @@ const GitLab = (props) => {
           importance="critical"
         />
         <div>
+          <h3>Webook url</h3>
+          <a href={"https://agiletoolkit.io/api/endpoint-gitlab?productId=" + props.productId}>https://agiletoolkit.io/api/endpoint-gitlab?productId={props.productId}</a>
+        </div>
+        <div>
           <h3>Config</h3>
           <SecretKey type="gitlab" />
         </div>
