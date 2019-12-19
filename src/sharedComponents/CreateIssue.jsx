@@ -372,11 +372,6 @@ const CreateIssue = (props) => {
     }
 
     try {
-      // Increment the counter (amount of stories) in the stats document
-      let incrementValue = await GetDocument(firebase, "products/" + products[selectedProduct].id + "/stories/--STATS--")
-      incrementValue = incrementValue ? incrementValue.count : 0
-      issue.number = incrementValue
-
       // add issue to the database
       let snapshot = await AddDocument(firebase, "products/" + products[selectedProduct].id + "/stories", issue)
 

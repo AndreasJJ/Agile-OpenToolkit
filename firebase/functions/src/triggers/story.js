@@ -1,6 +1,6 @@
 const functions = require('firebase-functions');
 
-const admin = require('./src/admin.js');
+const admin = require('../admin.js');
 const db = admin.db;
 const FieldValue = admin.FieldValue;
 
@@ -171,28 +171,16 @@ const updateSprintEstimate = async (change, context) => {
 }
 
 // Listen for changes in all doucments in the 'products/{story}/stories' collection and updates the --STATS-- document.
-const updateStoriesStats = async (change, context) => {
+/*const updateStoriesStats = async (change, context) => {
     // If the document is '--STATS--' then end as it doenst need to be updated
     if(context.params.story === "--STATS--") {
         return "Stats document doesnt need to be updated"
     }
-    // Creation of story
-    // Increment 'count' in --STATS--
-    if(!change.before.exists) {
-        let statsRef = db.collection('products').doc(context.params.product).collection('stories').doc("--STATS--")
-        return statsRef.update({count: FieldValue.increment(1)}, {merge: true})
-    }
-    // Deletion of story
-    // Decrement 'count' in --STATS--
-    if(!change.after.exists) {
-        let statsRef = db.collection('products').doc(context.params.product).collection('stories').doc("--STATS--")
-        return statsRef.update({count: FieldValue.increment(-1)}, {merge: true})
-    }
     return null
-}
+}*/
 
 module.exports = {
     updateSprints: updateSprints,
-    updateSprintEstimate: updateSprintEstimate,
-    updateStoriesStats: updateStoriesStats
+    updateSprintEstimate: updateSprintEstimate
+    //updateStoriesStats: updateStoriesStats
 }

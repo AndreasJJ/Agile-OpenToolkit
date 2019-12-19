@@ -1,4 +1,4 @@
-const admin = require('./src/admin.js');
+const admin = require('../admin.js');
 const db = admin.db;
 
 // Listen for deletes in all doucments in the 'products/{sprint}/sprints' collection and deletes the sprint from all stories who has

@@ -1,4 +1,4 @@
-const admin = require('./src/admin.js');
+const admin = require('../admin.js');
 const db = admin.db;
 const FieldValue = admin.FieldValue;
 

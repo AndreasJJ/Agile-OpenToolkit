@@ -133,8 +133,6 @@ const Issue = (props) => {
               </ReactLink>
             </div>
             <MetaInfo>
-              <span>#{props.number}</span>
-              <span> · </span>
               <span>Created {props.creationDate} by {props.creator}</span>
             </MetaInfo>
           </Left>

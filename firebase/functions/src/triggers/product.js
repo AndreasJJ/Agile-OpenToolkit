@@ -1,4 +1,4 @@
-const admin = require('./src/admin.js');
+const admin = require('../admin.js');
 const db = admin.db;
 
 // Listen for updates in all documents in the 'products' collection and updates the all the users who has it in their product list
