@@ -25,6 +25,7 @@ const TaskInfo = styled.div`
 const TaskHeader = styled.div`
   display: flex;
   flex-direction: column;
+  margin-right: 5px;
 `
 
 const TaskTitle = styled.h3`
@@ -181,13 +182,10 @@ const Task = (props) => {
           <TaskTitle>
             {props.title}
           </TaskTitle>
-          <span>
-            {props.assignee ? "Assigned: " + props.assignee.firstname.charAt(0).toUpperCase() + props.assignee.firstname.slice(1) + " " + props.assignee.lastname : ""}
-          </span>
+          <div>
+            {props.description}
+          </div>
         </TaskHeader>
-        <div>
-          {props.description}
-        </div>
         <TaskAssignation>
           <Select list={members} value={assigneeIndex} onChange={handleSelectChange} keyName={"uid"} textName={"name"} />
         </TaskAssignation>
