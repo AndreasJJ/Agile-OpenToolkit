@@ -132,119 +132,26 @@ const SaveButton = styled.button`
   }
 `
 
-
-const Switch = styled.label`
-  position: relative;
-  display: inline-block;
-  width: 110px;
-  height: 34px;
-`
-
-const ToggleButton = styled.input`
-  display:none;
-
-  &:checked {
-
-  }
-
-  &:focus {
-
-  }
-`
-
-const Slider = styled.div`
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #FFC0CB;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 34px;
-
-  &:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-    border-radius: 50%;
-  }
-
-  ${ToggleButton}:checked + & {
-    background-color: #89CFF0;
-  }
-
-  ${ToggleButton}:focus + & {
-    box-shadow: 0 0 1px #2196F3;
-  }
-
-  ${ToggleButton}:checked + &:before {
-    -webkit-transform: translateX(75px);
-    -ms-transform: translateX(75px);
-    transform: translateX(75px);
-  }
-
-  &:after {
-   content:'Female';
-   color: white;
-   display: block;
-   position: absolute;
-   transform: translate(-50%,-50%);
-   top: 50%;
-   left: 50%;
-   font-size: 10px;
-   font-family: Verdana, sans-serif;
-  }
-
-  ${ToggleButton}:checked + &:after
-  {  
-    content:'Male';
-  }
-`
-
 const DetailsWidget = (props) => {
   // Redux state
   const Gfirstname = useSelector(state => state.authentication.user.firstname)
   const Glastname = useSelector(state => state.authentication.user.lastname)
-  const Ggender = useSelector(state => state.authentication.user.gender)
   const Gemail = useSelector(state => state.authentication.user.email)
   const GphoneNumber = useSelector(state => state.authentication.user.phoneNumber)
   const GphotoURL = useSelector(state => state.authentication.user.photoURL)
 
   // Original state
-  const [originalGender, setOriginalGender] = useState(Ggender)
   const [originalFirstname, setOriginalFirstname] = useState(Gfirstname ? Gfirstname : "")
   const [originalLastname, setOriginalLastname] = useState(Glastname ? Glastname : "")
   const [originalMobile, setOriginalMobile] = useState(GphoneNumber ? GphoneNumber : "")
   const [originalEmail, setOriginalEmail] = useState(Gemail ? Gemail : "")
   // Current state (mutable)
   const [profilePicture, setProfilePicture] = useState(GphotoURL)
-  const [gender, setGender] = useState(Ggender)
   const [firstname, setFirstname] = useState(Gfirstname ? Gfirstname : "")
   const [lastname, setLastname] = useState(Glastname ? Glastname : "")
   const [mobile, setMobile] = useState(GphoneNumber ? GphoneNumber : "")
   const [email, setEmail] = useState(Gemail ? Gemail : "")
   const [saveDisabled, setSaveDisabled] = useState(true)
-
-  // Function to update gender state
-  const changeGender = (e) => {
-    // Enable save button if current state isnt equal to original state
-    let _saveDisabled = false
-    if(isOriginal(!gender)) {
-      _saveDisabled = true
-    }
-
-    // Update state
-    setGender(!gender)
-    setSaveDisabled(_saveDisabled)
-  }
 
   // Function to update firstname state
   const changeFirstname = (e) => {
@@ -305,21 +212,18 @@ const DetailsWidget = (props) => {
   // Checks wether any of the user info (state) has been changed 
   // (that the displayed state is not equal the original state)
   const isOriginal = (
-              _gender = null,
               _firstname = null,
               _lastname = null,
               _mobile = null,
               _email = null
             ) =>
   {
-    _gender = _gender != null ? _gender : gender
     _firstname = _firstname != null ? _firstname : firstname
     _lastname = _lastname != null  ? _lastname : lastname
     _mobile = _mobile != null ? _mobile : mobile
     _email = _email != null ? _email : email
     
-    if(originalGender === _gender && 
-       originalFirstname === _firstname && 
+    if(originalFirstname === _firstname && 
        originalLastname === _lastname && 
        originalMobile === _mobile && 
        originalEmail === _email) 
@@ -339,12 +243,7 @@ const DetailsWidget = (props) => {
         <WidgetBody>
           <Inputs>
             <FirstRow>
-              <ProfilePicture src={profilePicture ? profilePicture : BlankProfilePicture}>
-              </ProfilePicture>
-              <Switch>
-                <ToggleButton type="checkbox" defaultChecked={gender} onChange={changeGender} />
-                <Slider></Slider>
-              </Switch>
+              <ProfilePicture src={profilePicture ? profilePicture : BlankProfilePicture} />
             </FirstRow>
             <Name>
               <Firstname>
