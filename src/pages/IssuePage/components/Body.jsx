@@ -8,6 +8,7 @@ import { getPrettyCreationDate } from '../../../sharedComponents/Utility'
 import styled from 'styled-components';
 
 import { Task } from './Task';
+import { Comments } from './Comments';
 
 import { EditAlt } from 'styled-icons/boxicons-regular/EditAlt';
 
@@ -23,6 +24,10 @@ const Issue = styled.div`
   padding: 50px;
   box-sizing: border-box;
 
+  @media only screen and (min-width: 800px) {
+    overflow: auto;
+  }
+
   @media only screen and (max-width: 800px) {
     padding: 0;
   }
@@ -32,10 +37,9 @@ const IssueContent = styled.div`
   -webkit-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
   -moz-box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
   box-shadow: 0 0.0625em 0.125em rgba(0,0,0,0.15);
-  border-radius: 5px;
+  border-radius: 5px 5px 0px 0px;
   background-color: #ffffff;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
 `
@@ -145,29 +149,6 @@ const TasksHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-`
-
-const Comment = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 5px;
-  flex-grow: 1;
-`
-
-const TextArea = styled.textarea`
-  resize: none;
-  width: 100%;
-  min-height: 140px;
-  flex-grow: 1;
-`
-
-const SubmitButton = styled.button`
-  padding: 6px 10px 6px 10px;
-  color: #ffffff;
-  border-radius: 3px;
-  background-color: #1aaa55;
-  margin-top: 5px;
-  width: fit-content;
 `
 
 const Body = (props) => {
@@ -280,11 +261,8 @@ const Body = (props) => {
             }
           </Tasks>
         </TasksWrapper>
-        <Comment>
-          <TextArea />
-          <SubmitButton>Comment</SubmitButton>
-        </Comment>
       </IssueContent>
+      <Comments productId={productId} storyId={issueId} />
     </Issue>
   )
 }

@@ -127,6 +127,21 @@ service cloud.firestore {
           							&& (resource.data.status == "OPEN" || (request.resource.data.keys().hasAll(["status", "lastUpdateTimestamp", "lastEditer"]) && request.resource.data.status == "OPEN"));
           allow delete: if false;
       	}
+
+        match /comments/{comment} {
+          allow read: if memberOfProduct(product);
+          allow create: if memberOfProduct(product)
+                           && request.resource.data.keys().hasOnly(["creator", "text", "timestamp"])
+                      	   && request.resource.data.keys().hasAll(["creator", "text", "timestamp"])
+                           && request.resource.data.creator.keys().hasOnly(["uid", "firstname", "lastname"])
+                           && request.resource.data.creator.keys().hasAll(["uid", "firstname", "lastname"]);
+          allow update: if memberOfProduct(product)
+                           && request.resource.data.keys().hasOnly(["creator", "text", "timestamp", "lastUpdateTimestamp", "lastEditer"])
+                      	   && request.resource.data.keys().hasAll(["creator", "text", "timestamp", "lastUpdateTimestamp", "lastEditer"])
+                           && request.resource.data.creator.keys().hasOnly(["uid", "firstname", "lastname"])
+                           && request.resource.data.creator.keys().hasAll(["uid", "firstname", "lastname"]);
+          allow delete: if false;
+        }
       }
       
       match /labels/list {
