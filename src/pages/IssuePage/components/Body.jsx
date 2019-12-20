@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { FirebaseContext, UpdateDocument } from '../../../sharedComponents/Firebase';
 
-import { getPrettyCreationDate } from '../../../sharedComponents/Utility'
+import { getPrettyCreationDate } from '../../../sharedComponents/Utility';
 
 import styled from 'styled-components';
 

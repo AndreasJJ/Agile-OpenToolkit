@@ -99,7 +99,7 @@ const Comments = ({productId, storyId}) => {
         <CommentSection>
             {
                 comments && comments.map((comment, index) => 
-                    <Comment creator={comment.creator} text={comment.text} />
+                    <Comment creator={comment.creator} text={comment.text} timestamp={comment.timestamp} />
                 )
             }
             <NewComment>

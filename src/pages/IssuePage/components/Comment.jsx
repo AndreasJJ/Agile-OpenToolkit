@@ -1,6 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 
+import { FsTsToDate, getPrettyCreationDate } from '../../../sharedComponents/Utility';
+
 import styled from 'styled-components';
 
 import {DotsHorizontalRounded} from 'styled-icons/boxicons-regular/DotsHorizontalRounded';
@@ -36,19 +38,29 @@ const Commenter = styled.div`
     padding: 10px;
 `
 
+const CommenterName = styled.span`
+    font-weight: bold;
+`
+
 const CommentText = styled.div`
     padding: 10px;
 `
 
-const Comment = ({creator, text}) => {
+const Comment = ({creator, text, timestamp}) => {
     return (
         <CommentContainer>
             <Commenter>
-                {creator.firstname.substring(0,1).toUpperCase() + 
-                    creator.firstname.substring(1) + 
-                    " " + 
-                    creator.lastname
-                }
+                <CommenterName>
+                    {creator.firstname.substring(0,1).toUpperCase() + 
+                        creator.firstname.substring(1) + 
+                        " " + 
+                        creator.lastname
+                    }
+                </CommenterName>
+                <span>
+                    &nbsp;commented&nbsp;
+                    {getPrettyCreationDate(FsTsToDate(timestamp))}
+                </span>
             </Commenter>
             <CommentText>
                 {text}
