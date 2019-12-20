@@ -32,7 +32,7 @@ service cloud.firestore {
       allow write: if (request.auth.uid == userID) && 
                       (request.resource.data.firstname.matches('[A-Za-z]{3,}')) &&
                       (request.resource.data.lastname.matches('[A-Za-z]{3,}')) &&
-                      (request.resource.data.keys().hasOnly(["email", "firstname", "lastname"])) &&
+                      (request.resource.data.keys().hasOnly(["email", "firstname", "lastname", "mobile"])) &&
                       (request.resource.data.keys().hasAll(["email", "firstname", "lastname"]));
 
     	match /products/{product} {

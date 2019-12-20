@@ -20,6 +20,8 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.firestore();
+    
+    this.EmailAuthProvider = app.auth.EmailAuthProvider;
   }
 
   // Registration function with email and password
@@ -29,9 +31,22 @@ class Firebase {
   // Login function with email and password
   doSignInWithEmailAndPassword = (email, password) =>
     this.auth.signInWithEmailAndPassword(email, password);
+  
+  // ReAuthenticate user with email and password
+  doReauthenticateWithCredential = (credentials) =>
+    this.auth.currentUser.reauthenticateWithCredential(credentials);
+
+  // Create email credentials
+  doCreateEmailAuthCredentials = (email, password) => this.EmailAuthProvider.credential(
+    email, 
+    password
+  );
 
   // Signout function
   doSignOut = () => this.auth.signOut();
+
+  // Email update function
+  doUpdateEmail = email => this.auth.currentUser.updateEmail(email);
 
   // Reset function
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);

@@ -1,6 +1,13 @@
-import React, {useState, useEffect} from 'react';
-import { useSelector } from 'react-redux';
+import React, {useState, useEffect, useContext} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+
+import { alertActions } from '../../../state/actions/alert';
+import { userActions } from '../../../state/actions/user';
+
+import { FirebaseContext, UpdateDocument } from '../../../sharedComponents/Firebase';
+import Modal from '../../../sharedComponents/Modal';
+import {ReAuthenticate} from '../../../sharedComponents/ReAuthenticate';
 
 import styled from 'styled-components';
 
@@ -133,12 +140,20 @@ const SaveButton = styled.button`
 `
 
 const DetailsWidget = (props) => {
+  // Firebase
+  const firebase = useContext(FirebaseContext)
+
+  // Redux dispatch
+  const dispatch = useDispatch()
+
   // Redux state
+  const user = useSelector(state => state.authentication.user)
   const Gfirstname = useSelector(state => state.authentication.user.firstname)
   const Glastname = useSelector(state => state.authentication.user.lastname)
   const Gemail = useSelector(state => state.authentication.user.email)
   const GphoneNumber = useSelector(state => state.authentication.user.phoneNumber)
   const GphotoURL = useSelector(state => state.authentication.user.photoURL)
+  const uid = useSelector(state => state.authentication.user.uid)
 
   // Original state
   const [originalFirstname, setOriginalFirstname] = useState(Gfirstname ? Gfirstname : "")
@@ -152,12 +167,55 @@ const DetailsWidget = (props) => {
   const [mobile, setMobile] = useState(GphoneNumber ? GphoneNumber : "")
   const [email, setEmail] = useState(Gemail ? Gemail : "")
   const [saveDisabled, setSaveDisabled] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+
+  // Function to save account details to database and update auth object
+  const saveDetails = async () => {
+    try {
+      // Update firebase authentication user's email
+      if(email !== originalEmail) {
+        await firebase.doUpdateEmail(email)
+      }
+      // New try catch do dispaly error instead of modal on error
+      try {
+        // Updated user details
+        let userDetails = {
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+          mobile: mobile
+        }
+        // Update firestore database user object
+        await UpdateDocument(firebase, "/users/" + uid, userDetails)
+        // Dispatch alert to tell user that it was successful
+        dispatch(alertActions.success("User details successfully updated."))
+
+        // Update state to reflect the new user details
+        setOriginalFirstname(firstname)
+        setOriginalLastname(lastname)
+        setOriginalEmail(email)
+        setOriginalMobile(mobile)
+        setSaveDisabled(true)
+
+        // Update Redux
+        user.firstname = firstname
+        user.lastname = lastname
+        user.email = email
+        user.mobile = mobile
+        dispatch(userActions.setUser(user))
+      } catch(err) {
+        dispatch(alertActions.error(err.message))
+      }
+    } catch(err) {
+      setShowModal(true)
+    }
+  }
 
   // Function to update firstname state
   const changeFirstname = (e) => {
     // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
-    if(isOriginal(null, e.target.value)) {
+    if(isOriginal(e.target.value)) {
       _saveDisabled = true
     }
 
@@ -170,7 +228,7 @@ const DetailsWidget = (props) => {
   const changeLastname = (e) => {
     // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
-    if(isOriginal(null,null, e.target.value)) {
+    if(isOriginal(null, e.target.value)) {
       _saveDisabled = true
     }
 
@@ -187,7 +245,7 @@ const DetailsWidget = (props) => {
 
     // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
-    if(isOriginal(null, null, null, value)) {
+    if(isOriginal(null, null, value)) {
       _saveDisabled = true
     }
 
@@ -200,13 +258,17 @@ const DetailsWidget = (props) => {
   const changeEmail = (e) => {
     // Enable save button if current state isnt equal to original state
     let _saveDisabled = false
-    if(isOriginal(null, null, null, null, e.target.value)) {
+    if(isOriginal(null, null, null, e.target.value)) {
       _saveDisabled = true
     }
 
     // Update state
     setEmail(e.target.value)
     setSaveDisabled(_saveDisabled)
+  }
+
+  const closeModal = () => {
+    setShowModal(false)
   }
 
   // Checks wether any of the user info (state) has been changed 
@@ -236,6 +298,17 @@ const DetailsWidget = (props) => {
 
   return(
     <Widget>
+      {
+        showModal
+        ?
+          <Modal content={<ReAuthenticate finished={closeModal} />} 
+                 minWidth={"400px"} 
+                 maxWidth={"600px"}
+                 exitModalCallback={closeModal}
+          />
+        :
+          null
+      }
       <Content>
         <WidgetHeader>
           Account Details
@@ -266,7 +339,7 @@ const DetailsWidget = (props) => {
               </Email>
             </Contact>
           </Inputs>
-          <SaveButton disabled={saveDisabled}> Save </SaveButton>
+          <SaveButton disabled={saveDisabled} onClick={saveDetails}> Save </SaveButton>
         </WidgetBody>
       </Content>
     </Widget>
