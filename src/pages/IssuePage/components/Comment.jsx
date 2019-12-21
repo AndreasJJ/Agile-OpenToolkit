@@ -21,9 +21,8 @@ const CommentContainer = styled.div`
         margin-top: 10px;
     }
 
-    &::before {
+    &::after {
         position: absolute;
-        bottom: -10;
         left: 20px;
         display: block;
         width: 3px;

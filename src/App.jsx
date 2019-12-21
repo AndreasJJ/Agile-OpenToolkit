@@ -35,6 +35,12 @@ import PrivateRoute from './sharedComponents/PrivateRoute';
 import OpenRoute from './sharedComponents/OpenRoute';
 
 import GlobalStyle from './global-styles';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+	height: 100%;
+	width: 100%;
+`
 
 const App = (props) => {
     const firebase = useContext(FirebaseContext)
@@ -78,7 +84,7 @@ const App = (props) => {
     }
 
 	return (
-		<div>
+		<Wrapper>
 			{alert.type ? <Alert alert={alert} removeToast={removeAlert} /> : null}
 			<Router history={history}>
 				<Route
@@ -109,7 +115,7 @@ const App = (props) => {
 			    
 		    </Router>
 		    <GlobalStyle />
-	    </div>
+	    </Wrapper>
 		)
 }
 
