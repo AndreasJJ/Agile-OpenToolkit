@@ -5,6 +5,7 @@ import GetDocuments from './GetDocuments';
 import ListenToDocuments from './ListenToDocuments';
 import ListenToDocument from './ListenToDocument';
 import BatchWrite from './BatchWrite';
+import BatchUpdate from './BatchUpdate';
 import UpdateDocument from './UpdateDocument';
 import AddDocument from './AddDocument';
 import DeleteDocument from './DeleteDocument';
@@ -21,6 +22,7 @@ export {
   ListenToDocuments,
   ListenToDocument,
   BatchWrite,
+  BatchUpdate,
   UpdateDocument,
   AddDocument,
   DeleteDocument

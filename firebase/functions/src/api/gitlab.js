@@ -1,10 +1,7 @@
 const crypto = require('crypto')
 
-const functions = require('firebase-functions');
-
 const admin = require('../admin.js');
 const db = admin.db;
-const FieldValue = admin.FieldValue;
 
 // Firebase http cloud function - Gitlab webhook
 const gitlab_webhook = async (req, res) => {

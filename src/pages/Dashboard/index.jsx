@@ -17,7 +17,7 @@ const Grid = styled.div`
     height: 100%;
 
     @media only screen and (max-width: 800px) {
-      grid-template-columns: ${props => props.hidden ? "1fr 0px" : "0px 1fr"};
+      grid-template-columns: ${props => props.hidden ? "100% 0px" : "0px 100%"};
     }
 `
 

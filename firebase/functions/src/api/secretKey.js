@@ -1,7 +1,5 @@
 const crypto = require('crypto')
 
-const functions = require('firebase-functions');
-
 const admin = require('../admin.js');
 const db = admin.db;
 

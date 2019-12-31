@@ -20,7 +20,7 @@ class Firebase {
 
     this.auth = app.auth();
     this.db = app.firestore();
-    
+
     this.EmailAuthProvider = app.auth.EmailAuthProvider;
   }
 
@@ -31,14 +31,14 @@ class Firebase {
   // Login function with email and password
   doSignInWithEmailAndPassword = (email, password) =>
     this.auth.signInWithEmailAndPassword(email, password);
-  
+
   // ReAuthenticate user with email and password
   doReauthenticateWithCredential = (credentials) =>
     this.auth.currentUser.reauthenticateWithCredential(credentials);
 
   // Create email credentials
   doCreateEmailAuthCredentials = (email, password) => this.EmailAuthProvider.credential(
-    email, 
+    email,
     password
   );
 

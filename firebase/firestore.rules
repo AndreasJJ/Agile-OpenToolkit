@@ -167,6 +167,28 @@ service cloud.firestore {
                       && request.resource.data.lastEditer.uid == request.auth.uid
                       && request.resource.data.lastUpdateTimestamp == request.time;
         allow delete: if memberOfProduct(product);
+        
+        match /stories/{story} {
+        	allow read: if memberOfProduct(product);
+          allow write: if false;
+        }
+        
+        match /lists/{list} {
+        	allow read: if memberOfProduct(product);
+          allow write: if memberOfProduct(product)
+                       && request.resource.data.keys().hasOnly(["title", "position", "stories"])
+                       && request.resource.data.keys().hasAll(["title", "stories"])
+                       && (request.resource.data.title.trim()).upper() != "OPEN"
+                       && (request.resource.data.title.trim()).upper() != "CLOSED";
+          allow update: if memberOfProduct(product)
+                        && request.resource.data.keys().hasOnly(["title", "position", "stories"])
+                        && request.resource.data.keys().hasAll(["title", "stories"])
+                        && request.resource.data.title == resource.data.title
+                        && (math.isNaN(request.resource.data.position) == false || request.resource.data.position == null);
+          allow delete: if memberOfProduct(product)
+                        && (resource.data.title.trim()).upper() != "OPEN"
+                        && (resource.data.title.trim()).upper() != "CLOSED";
+        }
       }
       
       match /sprintBoards/{board} {

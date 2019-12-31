@@ -201,7 +201,7 @@ const Body = (props) => {
           <TitleWrapper>
             { editingIssue 
               ? 
-                <TitleEdit value={title} onChange={(e) => onChangeTitle()} /> 
+                <TitleEdit value={title} onChange={(e) => onChangeTitle(e)} /> 
               : 
                 <Title>{title}</Title>
             }

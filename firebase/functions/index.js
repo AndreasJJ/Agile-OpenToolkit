@@ -24,22 +24,28 @@ exports.updateStoriesOnSprintDelete = functions.firestore
     .document('products/{product}/sprints/{sprint}')
     .onDelete(sprint.updateStoriesOnSprintDelete);
 
+// Listen for creation in the 'products/{sprint}/sprints' collection and adds the 'OPEN' and 'CLOSED' lists
+exports.sprintBoardListCreation = functions.firestore
+    .document('products/{product}/sprints/{sprint}')
+    .onCreate(sprint.sprintBoardListCreation);
+
+// Listen for writes in all doucments in the 'products/{story}/stories' collection and update the stories collection in the sprint
+// that the story is assigneed to
+exports.updateSprintIssueData = functions.firestore
+    .document('products/{product}/stories/{story}')
+    .onWrite(story.updateSprintIssueData)
+
 // Listen for changes in all doucments in the 'products/{story}/stories' collection and updates the 'totalIssues' and 'finishedIssues' fields in sprints
 // who the story belongs to
-exports.updateSprints = functions.firestore
+exports.updateSprintIssueCounters = functions.firestore
 	.document('products/{product}/stories/{story}')
-    .onWrite(story.updateSprints);
+    .onWrite(story.updateSprintIssueCounters);
 
 // Listen for changes in all doucments in the 'products/{story}/stories' collection and updates the 'totalEstimate' field in sprints
 // who the story belongs to
 exports.updateSprintEstimate = functions.firestore
     .document('products/{product}/stories/{story}')
     .onWrite(story.updateSprintEstimate);
-
-// Listen for changes in all doucments in the 'products/{story}/stories' collection and updates the --STATS-- document.
-exports.updateStoriesStats = functions.firestore
-    .document('products/{product}/stories/{story}')
-    .onWrite(story.updateStoriesStats);
 
 // API endpoint functions
 exports.github_webhook_endpoint = functions.https.onRequest(github.webhook);

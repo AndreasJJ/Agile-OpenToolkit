@@ -1,7 +1,5 @@
 const crypto = require('crypto')
 
-const functions = require('firebase-functions');
-
 const admin = require('../admin.js');
 const db = admin.db;
 const FieldValue = admin.FieldValue;
@@ -394,7 +392,7 @@ const webhook_label = async (productId, req) => {
                 // This form is needed to do an union operator on the existing array named list in firestore
                 let label = {
                     ["list." + req.body.label.name]: {
-                        color: req.body.label.color
+                        color: "#" + req.body.label.color
                     }
                 }
                 // Add label
@@ -410,7 +408,7 @@ const webhook_label = async (productId, req) => {
           let labelName = req.body.changes.name ? req.body.changes.name.from : req.body.label.name
           // Old label body
           let labelBody = {
-                color: req.body.changes.color ? req.body.changes.color.from : req.body.label.color
+                color: req.body.changes.color ? "#" + req.body.changes.color.from : "#" + req.body.label.color
           }
           // Check if the old label exists
           let oldLabelExists = await get_external_label(productId, labelName, labelBody, 'github')
@@ -431,7 +429,7 @@ const webhook_label = async (productId, req) => {
               // This form is needed to do an union operator on the existing array named list in firestore
               let label = {
                   ["list." + req.body.label.name]: {
-                      color: req.body.label.color
+                      color: "#" + req.body.label.color
                   }
               }
 

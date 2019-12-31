@@ -26,6 +26,31 @@ const updateStoriesOnSprintDelete = async (change, context) => {
     });
 }
 
+const sprintBoardListCreation = async (change, context) => {
+    let batch = db.batch();
+    let list1 = db.collection('products').doc(context.params.product).collection('sprints').doc(context.params.sprint).collection("lists").doc()
+    let list2 = db.collection('products').doc(context.params.product).collection('sprints').doc(context.params.sprint).collection("lists").doc()
+    
+    let list1Data = {
+        title: "OPEN",
+        stories: []
+    }
+
+    let list2Data = {
+        title: "CLOSED",
+        stories: []
+    }
+
+    batch.set(list1, list1Data)
+    batch.set(list2, list2Data)
+
+    return batch.commit().catch((error) => {
+        console.error("Error adding lists: ", error);
+    });
+    
+}
+
 module.exports = {
-    updateStoriesOnSprintDelete: updateStoriesOnSprintDelete
+    updateStoriesOnSprintDelete: updateStoriesOnSprintDelete,
+    sprintBoardListCreation: sprintBoardListCreation
 }

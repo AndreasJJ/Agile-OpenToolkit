@@ -9,6 +9,8 @@ const ButtonWrapper = styled.div`
   background-color: #40B558;
   border-radius: 3px;
   color: white;
+  height: fit-content;
+  min-width: fit-content;
 
   &:hover {
     background-color: #2e8440;
@@ -28,21 +30,21 @@ const ButtonInner = styled.div`
 
 const AddStoryInputWrapper = styled.div`
   margin: 0 4px 4px;
-  padding: 0 4px 4px;
 `;
 
-const AddStoryTextArea = styled.textarea`
+const AddStoryInput = styled.input`
   width: 100%;
-  height: 50px;
-  resize: vertical;
+  height: 30px;
+  box-sizing: border-box;
 `;
 
 const AddStoryControlsWrapper = styled.div`
   display: flex;
   flex-direction: horizontal;
   margin-top: 5px;
-  justify-content: end;
+  justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
 `;
 
 const AddStoryButton = styled.button`
@@ -55,25 +57,29 @@ const AddStoryButton = styled.button`
     margin-right: 5px;
 `;
 
-// Outdated component. Kept for legacy reasons
 const NewListButton = (props) => {
+  // State
   const [showAddList, setShowAddList] = useState(false)
   const [listName, setListName] = useState("")
 
+  // Show the form
   const clickShowAddList = () => {
     setShowAddList(true)
   }
 
+  // Add the list and clear the input
   const clickAddList = () => {
     props.addList(listName)
 
     setListName("")
   }
 
+  // Hide the form
   const clickCloseAddList = () => {
     setShowAddList(false)
   }
 
+  // On change function
   const changeInputValue = (value) => {
     setListName(value)
   }
@@ -84,7 +90,7 @@ const NewListButton = (props) => {
     <ButtonWrapper>
       <ButtonInner>
         <AddStoryInputWrapper>
-          <AddStoryTextArea value={listName} onChange={e => changeInputValue(e.target.value)} />
+          <AddStoryInput value={listName} onChange={e => changeInputValue(e.target.value)} />
           <AddStoryControlsWrapper>
             <AddStoryButton onClick={clickAddList}>Add List</AddStoryButton>
             <Times size="1.5em" onClick={clickCloseAddList} />

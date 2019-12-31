@@ -209,11 +209,11 @@ const Sidebar = (props) => {
       return
     }
     // sort and join with ';' to easily compare the arrays
-    if(originalSelectedLabels.sort().join(';') === selectedLabels.sort().join(';')) {
+    if(originalSelectedLabels.sort().join(';') === _selectedLabels.sort().join(';')) {
       return
     }
     // Make objects
-    _selectedLabels = Object.fromEntries(selectedLabels)
+    _selectedLabels = Object.fromEntries(_selectedLabels)
     // Update state
     props.updateLabels(_selectedLabels);
   }

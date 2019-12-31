@@ -1,12 +1,105 @@
-const functions = require('firebase-functions');
-
 const admin = require('../admin.js');
 const db = admin.db;
 const FieldValue = admin.FieldValue;
 
+const updateSprintIssueData = async(change, context) => {
+    // Delete issue from sprint stories collection and remove it from sprintboard list
+    // if the story is deleted or the sprint in the story is changed
+    if(!change.after.exists || !change.after.data().sprint) {
+        return db.runTransaction((transaction) => {
+            // Ref to list that contains the story
+            let listsRef = db.collection('products')
+                             .doc(context.params.product)
+                             .collection('sprints')
+                             .doc(change.before.data().sprint)
+                             .collection('lists')
+                             .where('stories', 'array-contains', context.params.story)
+            
+            // Ref to the story copy inside the sprint stories collection
+            let oldStoryRef = db.collection('products')
+                                .doc(context.params.product)
+                                .collection('sprints')
+                                .doc(change.before.data().sprint)
+                                .collection('stories')
+                                .doc(context.params.story)
+
+            // Transaction to get the lists that contain the story, remove it from the list and delete the story copy
+            return transaction.get(listsRef).then((snapshot) => {
+                // If a list contain the story, remove the story from it.
+                if (snapshot.docs && snapshot.docs.length > 0) {
+                    for(let doc of snapshot.docs) {
+                        transaction.update(doc.ref , {stories: FieldValue.arrayRemove(context.params.story)}, {merge: true})
+                    }
+                }
+
+                // Delete the story copy
+                return transaction.delete(oldStoryRef)
+            });
+        }).catch((error) => {
+            // Log and return error
+            console.log("Transaction failed: ", error);
+            return error
+        });
+    }
+
+    // If the story is updated (not deleted or sprint removed) then update the story copy in the sprint
+    // stories collection and if the story isnt in a sprintboard list then add it to the correct list
+    return db.runTransaction((transaction) => {
+        // Ref to the list that corresponds to its status
+        let statusListsRef = db.collection('products')
+                               .doc(context.params.product)
+                               .collection('sprints')
+                               .doc(change.after.data().sprint)
+                               .collection('lists')
+                               .where('title', '==', change.after.data().status.toUpperCase())
+        
+        // Ref to the list that the story is in
+        let storyInListRef = db.collection('products')
+                               .doc(context.params.product)
+                               .collection('sprints')
+                               .doc(change.after.data().sprint)
+                               .collection('lists')
+                               .where('stories', 'array-contains', context.params.story)
+        
+        // Ref to the story copy that is in the sprint collection
+        let storyDataInSprintRef = db.collection('products')
+                                     .doc(context.params.product)
+                                     .collection('sprints')
+                                     .doc(change.after.data().sprint)
+                                     .collection('stories')
+                                     .doc(context.params.story)
+
+        // Get both the lists and update the correct list and update the sprint copy data
+        return Promise.all([transaction.get(statusListsRef), transaction.get(storyInListRef)]).then((snapshots) => {
+            // Status list snapshot
+            let snapshot1 = snapshots[0]
+            // The list the story is in snapshot
+            let snapshot2 = snapshots[1]
+
+            // If the story isnt in a list
+            if (!snapshot2.docs || (snapshot2.docs && !(snapshot2.docs.length > 0))) {
+                // If the status list exists
+                if (snapshot1.docs && (snapshot1.docs.length > 0)) {
+                    // Add the story to the status list
+                    transaction.update(snapshot1.docs[0].ref, {
+                        stories: FieldValue.arrayUnion(context.params.story)
+                    })
+                }
+            }
+
+            // Update the story copy
+            return transaction.set(storyDataInSprintRef, change.after.data())
+        })
+    }).catch((error) => {
+        // Log and return error
+        console.log("Transaction failed: ", error);
+        return error
+    });
+}
+
 // Listen for changes in all doucments in the 'products/{story}/stories' collection and updates the 'totalIssues' and 'finishedIssues' fields in sprints
 // who the story belongs to
-const updateSprints = async (change, context) => {
+const updateSprintIssueCounters = async (change, context) => {
     // If the story didnt exist and the status is closed then increment 'finishedIssues'
     if(!change.before.exists && change.after.data().status.toLowerCase() === "closed") {
         db.collection('products').doc(context.params.product).collection('sprints').doc(change.after.data().sprint).update({finishedIssues: FieldValue.increment(1)}, {merge: true})
@@ -33,9 +126,6 @@ const updateSprints = async (change, context) => {
     if(!change.before.exists && change.after.data().sprint !== null) {
         let batch = db.batch();
 
-        let storyRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.after.data().sprint).collection('stories').doc(context.params.story)
-        batch.set(storyRef, change.after.data());
-
         let sprintRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.after.data().sprint)
         batch.update(sprintRef, {totalIssues: FieldValue.increment(1)}, {merge: true})
 
@@ -53,7 +143,7 @@ const updateSprints = async (change, context) => {
 
     // If the issue is deleted or the sprint was changed from a value to null then
     // 1. delete the story from the sprints stories collection
-    // 2. defrement totalIssues
+    // 2. decrement totalIssues
     if(!change.after.exists || (change.after.data().sprint === null && change.before.data().sprint !== null)) {
         let storyRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint).collection('stories').doc(context.params.story)
         let countRef = db.collection('products').doc(context.params.product).collection('sprints').doc(change.before.data().sprint)
@@ -170,17 +260,8 @@ const updateSprintEstimate = async (change, context) => {
     return null
 }
 
-// Listen for changes in all doucments in the 'products/{story}/stories' collection and updates the --STATS-- document.
-/*const updateStoriesStats = async (change, context) => {
-    // If the document is '--STATS--' then end as it doenst need to be updated
-    if(context.params.story === "--STATS--") {
-        return "Stats document doesnt need to be updated"
-    }
-    return null
-}*/
-
 module.exports = {
-    updateSprints: updateSprints,
+    updateSprintIssueData: updateSprintIssueData,
+    updateSprintIssueCounters: updateSprintIssueCounters,
     updateSprintEstimate: updateSprintEstimate
-    //updateStoriesStats: updateStoriesStats
 }

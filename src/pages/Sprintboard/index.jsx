@@ -1,9 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import BoardList from './../../sharedComponents/BoardList';
-import NewListButton from './../../sharedComponents/NewListButton';
+import { FirebaseContext, GetDocuments } from '../../sharedComponents/Firebase';
+
+import { Board } from './components/Board';
+import { InfoPage } from './components/InfoPage';
 
 import styled from 'styled-components';
 
@@ -11,15 +13,6 @@ const Wrapper = styled.div`
   height: 100%;
   width: 100%;
   display: flex;
-`;
-
-const Board = styled.div`
-  height: 100%;
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  display: flex;
-  overflow: auto;
 `;
 
 const ListWrapper = styled.div`
@@ -34,49 +27,68 @@ const ListWrapper = styled.div`
 `;
 
 const Sprintboard = ({finishLoading}) => {
+  // Firebase
+  const firebase = useContext(FirebaseContext)
+
   // State
-  const [listData, setListData] = useState({})
   const [loading, setLoading] = useState(true)
-  const counter = useSelector(state => state.counter)
+  const [sprint, setSprint] = useState(null)
+  const [showSprint, setShowSprint] = useState(true)
+
+  // Redux state
+  const products = useSelector(state => state.product.products)
+  const selectedProduct = useSelector(state => state.product.selectedProduct)
 
   // Constructor
   useEffect(() => {
-    finishLoading()
+    const init = async () => {
+      await getCurrentSprint()
+      await setLoading(false)
+      await finishLoading()
+    }
+    init()
   }, [])
 
-  // Function to add list to board
-  const addList = (list) => {
-    console.log(list)
+  // Get most current sprint
+  const getCurrentSprint = async () => {
+    // Get the sprint with the earliest startDate, but while the dueDate is later than NOW
+    let sprint = await GetDocuments(firebase, 
+                                    "/products/" + products[selectedProduct].id + "/sprints", 
+                                    [['dueDate', '>=', new Date()]], 
+                                    [['dueDate', 'asc'], ['startDate', 'asc']], null, null, null, null, 1)
+    // If a sprint that follows the constrains exists then update the state with it
+    if(sprint.length > 0) {
+      sprint = sprint[0]
+      setSprint(sprint.id)
+    } else {
+      setShowSprint(false)
+    }
+    // Else if it doesnt exist then TODO              
+  }
+
+  const getAndShowSelectedSprint = async (sprintId) => {
+    setSprint(sprintId)
+    setShowSprint(true)
+  }
+
+  // Function to toggle if the info page or sprintpage should be shown
+  const toggleInfoPage = () => {
+    setShowSprint(!showSprint)
   }
 
   return (
     <Wrapper>
-      <Board>
-        {
-          "lists" in listData
+      {
+        !loading
+        ?
+          sprint && showSprint
           ?
-          listData["lists"].map((item, index) => {
-            return( 
-              <ListWrapper>
-                <BoardList name={item.name} 
-                           list={item.stories} 
-                           key={index} 
-                />
-              </ListWrapper>
-            )
-          })
+            <Board productId={products[selectedProduct].id} sprintId={sprint} toggleInfoPage={toggleInfoPage} />
           :
-            loading 
-            ? <ListWrapper>
-                <BoardList name="loading" list={[]} /> 
-              </ListWrapper>
-            : 
-              null
-        }
-        <ListWrapper>
-          <NewListButton addList={addList} />
-        </ListWrapper>
-      </Board>
+            <InfoPage getAndShowSelectedSprint={getAndShowSelectedSprint} />
+        :
+          null
+      }
     </Wrapper>
   );
 }
