@@ -123,7 +123,6 @@ const InfoPage = ({getAndShowSelectedSprint}) => {
     }, [])
 
     const getSprints = async () => {
-        console.log("/products/" + products[selectedProduct].id + "/sprints")
         let _sprints = await GetDocuments(firebase, "/products/" + products[selectedProduct].id + "/sprints", null, [["startDate", "desc"]])
         setSprints(_sprints)
     }
