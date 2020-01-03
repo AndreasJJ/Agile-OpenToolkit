@@ -76,6 +76,7 @@ const CreateNewProduct = (props) => {
   // State
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
+  const [members, setMembers] = useState([])
 
   // Add product to database
   const sendProduct = (e) => {
@@ -102,7 +103,7 @@ const CreateNewProduct = (props) => {
     }
 
     // Add to database
-    props.sendProduct({name: name, description: description})
+    props.sendProduct({name: name, description: description}, members)
     props.onclick()
   }
 
@@ -112,6 +113,10 @@ const CreateNewProduct = (props) => {
 
   const changeproductDescription = (e) => {
     setProductDescription(e.target.value)
+  }
+
+  const changeTags = (tags) => {
+    setMembers(tags)
   }
 
   return(
@@ -130,7 +135,7 @@ const CreateNewProduct = (props) => {
                   value={productDescription} 
                   onChange={changeproductDescription} />
            <label>Add Members</label>
-           <TagsInput />
+           <TagsInput tags={members} setTags={changeTags} />
          </InputWrapper>
          <ButtonWrapper>
           <SubmitButton onClick={sendProduct}> 

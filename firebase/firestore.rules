@@ -56,6 +56,11 @@ service cloud.firestore {
       
       allow write: if false;
     }
+
+    match /invites/{invite} {
+      allow read: if false;
+      allow write: if false;
+    }
     
     match /products/{product} {
     	allow read: if memberOfProduct(product);
@@ -68,6 +73,17 @@ service cloud.firestore {
     	
       match /teams/{team} {
       	allow read, write: if false;
+      }
+
+      match /invites/{invite} {
+        allow read: if memberOfProduct(product);
+        allow create: if (getRole(product) > 0
+        								|| getAfter(/databases/$(database)/documents/products/$(product)).data.owner.uid == request.auth.uid)
+                        && request.resource.data.keys().hasOnly(["email", "inviter", "timestamp"])
+                        && request.resource.data.keys().hasAll(["email", "inviter", "timestamp"])
+                        && request.resource.data.inviter.keys().hasOnly(["uid", "firstname", "lastname"])
+                        && request.resource.data.inviter.keys().hasAll(["uid", "firstname", "lastname"])
+                        && request.resource.data.inviter.uid == request.auth.uid;
       }
       
       match /members/{member} {

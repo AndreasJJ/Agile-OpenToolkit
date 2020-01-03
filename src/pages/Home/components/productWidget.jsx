@@ -8,7 +8,7 @@ import { productActions } from '../../../state/actions/product';
 import { userActions } from '../../../state/actions/user';
 import { alertActions } from '../../../state/actions/alert';
 
-import JoinProductTeam from './JoinProductTeam';
+import JoinProduct from './JoinProduct';
 import { CreateNewProduct } from './CreateNewProduct';
 import ProductMembers from './ProductMembers';
 import Product from './Product'
@@ -156,7 +156,7 @@ const ProductWidget = (props) => {
   }, [])
 
   // Function to add product to database
-  const createProduct = (product) => {
+  const createProduct = (product, members) => {
     let batch = []
 
     let productId = (firebase.db.collection("products").doc()).id
@@ -190,10 +190,89 @@ const ProductWidget = (props) => {
     }
     batch.push([memberPath, memberData])
 
+    // Add all members to the invites collection
+    for (let i = 0; i < members.length; i++) {
+      // member
+      const member = members[i]
+      // Generate document id
+      const id = (firebase.db.collection("invites").doc()).id
+      // Path
+      const path = "products/" + productId + "/invites/" + id
+      // Data
+      const data = {
+        email: member,
+        inviter: {
+          uid: Guid,
+          firstname: Gfirstname,
+          lastname: Glastname
+        },
+        timestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
+      }
+      // Add invite document to batch
+      batch.push([path, data])
+    }
+
     // Start batch write
     BatchWrite(firebase, batch, () => {
         dispatch(alertActions.info('Please wait while we create your new product'))
-    })
+    }) 
+  }
+  
+  // Add member invitation to database
+  const addMember = async (productId, email) => {
+    email = email.trim()
+    try {
+      firebase.db.collection("products").doc(productId).collection("invites").add({
+        email: email,
+        inviter: {
+          uid: Guid,
+          firstname: Gfirstname,
+          lastname: Glastname
+        },
+        timestamp: firebase.db.app.firebase_.firestore.FieldValue.serverTimestamp()
+      })
+      dispatch(alertActions.success('Invitation sent.'))
+    } catch(error) {
+      dispatch(alertActions.error('Failed to invite user.'))
+    }
+  }
+
+  // Function to join product
+  const joinProduct = async (invitationCode) => {
+    // Get auth token
+    let firebaseIdToken = await firebase.doGetIdToken(true)
+    // Send fetch post request with auth headeer and invitation code in body
+    try {
+      let response = await fetch("https://agiletoolkit.io/api/invite", {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + firebaseIdToken
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify({
+          invitationCode: invitationCode
+        })
+      });
+      
+      // Throw error depending on http status
+      if(response.status === 403) {
+        throw {message: "Invalid code or you are not authorized to use the invitation code"}
+      } else if(response.status === 500) {
+        throw {message: "Internal server error, please try again later"}
+      } else if(response.status !== 200) {
+        throw {message: "Unknow error, please try again or contact support"}
+      }
+      // Dispatch success message
+      dispatch(alertActions.info("Invitation code accepted. Please wait while you get added to the product."))
+    } catch(error) {
+      // Dispatch error
+      dispatch(alertActions.error(error.message))
+    }
   }
 
   const AddProductButtonClicked = () => {
@@ -231,16 +310,26 @@ const ProductWidget = (props) => {
   // For product creation
   if(modalContent == "productCreation") {
     modal = <Modal content={<Tabs tabNames={["Create New Product", "Join Product Team"]} 
-                                  tabComponents={[<CreateNewProduct 
-                                  sendProduct={createProduct} 
-                                  onclick={closeModal} />, <JoinProductTeam />]} />
+                                  tabComponents={[
+                                                  <CreateNewProduct 
+                                                    sendProduct={createProduct} 
+                                                    onclick={closeModal} 
+                                                  />, 
+                                                  <JoinProduct 
+                                                    joinProduct={joinProduct}
+                                                    success={closeModal}
+                                                  />
+                                                ]
+                                  } 
+                            />
                             } 
                    exitModalCallback={closeModal} />
   // For showing product members
   } else if (modalContent == "showMembers") {
     modal = <Modal content={<ProductMembers products={products} 
                                             productIndex={selectedProduct} 
-                                            getMembers={getMembers} /> 
+                                            getMembers={getMembers}
+                                            addMember={addMember} /> 
                             } 
                   minWidth={"400px"} 
                   maxWidth={"400px"} 

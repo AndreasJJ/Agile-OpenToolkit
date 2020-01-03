@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
@@ -52,7 +52,23 @@ const Message = styled.div`
   padding-bottom: 20px;
 `
 
-const JoinProductTeam = (props) => {
+const JoinProduct = ({joinProduct, success}) => {
+  // State
+  const [invitationCode, setInvitationCode] = useState("")
+
+  // On change funcntion to update state
+  const onInputChange = (e) => {
+    setInvitationCode(e.target.value)
+  }
+
+  // Try to join product with invitation code
+  const onClick = async (e) => {
+    e.preventDefault()
+    await joinProduct(invitationCode)
+    // Call success callback
+    success()
+  }
+
   return(
     <Wrapper>
        <Header>
@@ -61,18 +77,23 @@ const JoinProductTeam = (props) => {
        <Body>
          <Info>
            <Envelope size="2em" />
-           <Message>To join a team please write in the invitation code that was sent to you through mail. 
+           <Message>To join a product please write in the invitation code that was sent to you through mail. 
                     If you haven't recived it then please make sure to check your spam folder or 
                     ask your invitor to invite you once more.
             </Message>
          </Info>
          <div>
-           <Input placeholder="Enter invitation code" />
-           <SubmitButton>Join Team</SubmitButton>
+           <Input placeholder="Enter invitation code" value={invitationCode} onChange={onInputChange} />
+           <SubmitButton onClick={onClick}>Join Product</SubmitButton>
          </div>
        </Body>
     </Wrapper>
   )
 }
 
-export default JoinProductTeam
+JoinProduct.propTypes = {
+  joinProduct: PropTypes.func.isRequired,
+  success: PropTypes.func.isRequired
+}
+
+export default JoinProduct

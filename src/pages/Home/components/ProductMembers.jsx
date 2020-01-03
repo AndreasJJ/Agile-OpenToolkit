@@ -27,6 +27,24 @@ const ButtonWrapper = styled.div`
   padding: 5px 20px 5px 20px;
 `
 
+const AddMemberForm = styled.form`
+  display: flex;
+  height: 30px;
+`
+
+const Input = styled.input`
+  flex 1;
+  margin-right 5px;
+`
+
+const CancelButton = styled.button`
+  margin-right: 5px;
+`
+
+const Button = styled.button`
+
+`
+
 const AddMember = styled.button`
   border: 2px solid #F4F4F4;
   width 100%;
@@ -44,6 +62,8 @@ const Body = styled.div`
 const ProductMembers = (props) => {
   // State
   const [members, setMembers] = useState([])
+  const [showInput, setShowInput] = useState(false)
+  const [memberInput, setMemberInput] = useState("")
 
   // Constructor
   useEffect(() => {
@@ -55,6 +75,28 @@ const ProductMembers = (props) => {
     init()
   }, [])
 
+  // On change for input
+  const onInputChange = (e) => {
+    setMemberInput(e.target.value)
+  }
+
+  // On click for add members button to show input
+  const onAddMemberClick = () => {
+    setShowInput(true)
+  }
+
+  // on click for cancel member input
+  const onAddMemberCancel = () => {
+    setShowInput(false)
+  }
+
+  // On submit for adding member
+  const onAddMemberSubmit = async (e) => {
+    e.preventDefault()
+    await props.addMember(props.products[props.productIndex].id, memberInput)
+    setShowInput(false)
+  }
+
   return(
     <Wrapper>
       <div>
@@ -64,9 +106,20 @@ const ProductMembers = (props) => {
           </TopBar>
         </TopBarPadding>
         <ButtonWrapper>
-          <AddMember>
-            <PersonAdd size="1em" /> Add member
-          </AddMember>
+          {
+            showInput
+            ?
+              <AddMemberForm onSubmit={onAddMemberSubmit}>
+                <Input value={memberInput} onChange={onInputChange} />
+                <CancelButton type="button" onClick={onAddMemberCancel}>Cancel</CancelButton>
+                <Button type="submit">Add member</Button>
+              </AddMemberForm>
+            :
+            <AddMember onClick={onAddMemberClick}>
+              <PersonAdd size="1em" /> Add member
+            </AddMember>
+          }
+          
         </ButtonWrapper>
       </div>
       <Body>

@@ -47,7 +47,7 @@ const Member = (props) => (
              <ProfilePicture src={props.profilePicture ? props.profilePicture : BlankProfilePicture} />
              <Name>
                {
-                 props.firstname.charAt(0).toUpperCase() + props.firstname.slice(1) + " " + props.lastname
+                 (props.firstname ? props.firstname.charAt(0).toUpperCase() + props.firstname.slice(1) + " " : null) + (props.lastname ? props.lastname : null)
                }
               </Name>
            </Left>

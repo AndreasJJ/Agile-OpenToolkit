@@ -29,9 +29,8 @@ const ValuesContainer = styled.div`
   flex-wrap: wrap;
 `
 
-const TagsInput = (props) => {
+const TagsInput = ({tags, setTags}) => {
   const [tagsInputValue, setTagsInputValue] = useState("")
-  const [tags, setTags] = useState([])
   
   // Adds tag to state
   const addTag = (tag) => {
@@ -61,8 +60,8 @@ const TagsInput = (props) => {
 
   // Removes tag from state
   const removeTag = (removeTag) => {
-    let tags = tags.filter((tag) => tag !== removeTag);
-    setTags(tags);
+    let _tags = tags.filter((tag) => tag !== removeTag);
+    setTags(_tags);
   }
 
   // Handles space keypress
@@ -88,7 +87,8 @@ const TagsInput = (props) => {
 }
 
 TagsInput.proptypes = {
-  
+  tags: PropTypes.array.isRequired,
+  setTags: PropTypes.func.isRequired
 }
 
 export default TagsInput
