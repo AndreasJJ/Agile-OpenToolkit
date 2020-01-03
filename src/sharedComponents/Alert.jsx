@@ -15,6 +15,8 @@ const Wrapper = styled.div`
     top: 50px;
     left: 0;
     right: 0;
+    display: flex;
+    flex-direction: column;
     z-index: 10000;
     width: fit-content;
     background-color: #ffffff;

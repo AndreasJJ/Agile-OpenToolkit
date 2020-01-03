@@ -40,8 +40,9 @@ const TopBar = styled.div`
 `
 
 const ProfileCard = styled.div`
-    display: -webkit-inline-box;
+    display: flex;
     align-items: center;
+    justify-content: center;
     background-color: #ffffff;
     -webkit-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
     -moz-box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
@@ -54,6 +55,7 @@ const ProfileImage = styled.img`
     width: 50px;
     height: 50px;
     margin-right: 10px;
+    border-radius: 4px 0px 0px 4px;
 `
 
 const ProfileInfo = styled.div`
