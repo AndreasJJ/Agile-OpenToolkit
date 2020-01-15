@@ -4,19 +4,12 @@ Frontend system for Agile Toolkit
 ## Tech used
 
 ### Frontend
- * React
- * Redux
- * react-fullpage
- * react-nprogress
- * chart.js
- * Styled-components
- * ...
+The front end is a ReactJs (hooks) && Redux stack with styled-components for css. 
+
+Babel and webpack is used for compiling and development builds/hosting.
 
 ### Backend
- * Firebase
-   * Authentication
-   * Firestore
-   * Cloud functions
+The backend is a full firebase stack w/ firestore. It should however be possible to change it to another service rather easily.
 
 ## Linting and Testing
 Both linting and testing will run precommit and prepush (with husky) to make sure the code is of satisfactory quality.
@@ -26,7 +19,7 @@ Both linting and testing will run precommit and prepush (with husky) to make sur
 * Linting and testing will run pre-push
 
 ### Linting
-We use eslint AirBnB.
+Eslint - AirBnB.
 
 ### Testing
 The underlying test engine is Jest for all testing.
