@@ -158,7 +158,7 @@ const Image = styled.img`
 `
 
 // React fullpage license key
-const LICENSEKEY = "***REMOVED***"
+const LICENSEKEY = '***REMOVED***'
 
 const HomePage = (props) => {
   // Previous props
