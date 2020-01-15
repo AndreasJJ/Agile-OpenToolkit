@@ -50,3 +50,6 @@ Please note we have a code of conduct, and follow it in all your interactions wi
 
 ## Code of Conduct
 This project and everyone participating in it is governed by the Code of Conduct expected to uphold this code.
+
+## License
+This project is licensed under the GNU Affero General Public License v3.0.
