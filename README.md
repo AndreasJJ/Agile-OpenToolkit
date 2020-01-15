@@ -29,7 +29,7 @@ Testing RectJs and Redux:
 Testing Firebase:
 * Firebase's proprietary test SDK 
 
-# Features
+## Features
 * Login/Registration system
 * Account details widget
 * Products creation
@@ -42,7 +42,7 @@ Testing Firebase:
   * Github webhook
   * Gitlab webhook
 
-# Future Features
+## Future Features
 * Retrospective board
 * Planning poker
 * Product overview page
@@ -55,7 +55,7 @@ Testing Firebase:
 * Teams (possibility to have multiple teams for a product with their own backlog and sprintboard)
 * Payment/subscription integration (Make it possible to add paid subscription tiers which decides how many products a user might have, teams a product might have, etc.)
 
-# Contribute
+## Contribute
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
 
