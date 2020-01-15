@@ -52,4 +52,4 @@ Please note we have a code of conduct, and follow it in all your interactions wi
 This project and everyone participating in it is governed by the Code of Conduct expected to uphold this code.
 
 ## License
-This project is licensed under the GNU Affero General Public License v3.0.
+This project is licensed under the [GNU Affero General Public License v3.0](https://github.com/AndreasJJ/Agile-Open-Toolkit/blob/master/LICENSE).
