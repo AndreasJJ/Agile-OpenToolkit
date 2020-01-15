@@ -55,6 +55,81 @@ Testing Firebase:
 * Teams (possibility to have multiple teams for a product with their own backlog and sprintboard)
 * Payment/subscription integration (Make it possible to add paid subscription tiers which decides how many products a user might have, teams a product might have, etc.)
 
+## How to install
+As this is purely frontend based w/ firebase as a backend it is fairly easy to host. It can be hosted from pretty much anywhere, but I really would suggest using firebase's static hosting option as to only use one backend provider. 
+
+### Firebase project creation
+You will of course need a firebase project, check out the firebase documentation on how to do it (it's pretty easy) [link](https://firebase.google.com/docs/web/setup?authuser=0#create-firebase-project)
+
+### Firebase Config Details
+_All file paths are written with a base in the root of the repo_
+
+#### src/sharedComponents/Firebase/Firebase.js
+You will need to change the config object with your project config details. You can read more about it [here](https://firebase.google.com/docs/web/setup#config-object)
+``` javascript
+const config = {
+  apiKey: '***',
+  authDomain: '***',
+  databaseURL: '***',
+  projectId: '***',
+  storageBucket: '***',
+  messagingSenderId: '***',
+  appId: '***'
+};
+```
+
+**You will need to replace the config object with your config details**.
+
+#### firebase.json
+This is the config file is the config for Firebase functions, Firebase hosting, Firebase firestore, and Firebase emulators (for testing)
+
+- Firebase Functions: This allows you to change what's ran predeployment for firebsae functions.
+- Firebase Hosting: This allows you to specify the public directory, ignored files, and rewrites.
+- Firebase Firestore: This allows you to specify (if wanted) which files contains the rules and indexes for firestore.
+- Firebase Emulators: This allows you to config the emulator used under testing.
+
+**You do generally not need to change anything here unless you want to change some functionality**.
+
+#### .firebaserc
+This is where you specify which firebase project that this project directory should point to. 
+
+**You will need to replace the projet name with your firebase project name**.
+
+#### firebase/firestore.rules
+The firebase firestore rules. These can also be changed in the firebase web console. 
+
+**You do generally not need to change anything here unless you want to change some functionality**.
+
+#### firebase/firestore.indexes.json
+The firebase firestore indexes. These can also be changed in the firebase web console. 
+
+**You do generally not need to change anything here unless you want to change some functionality**.
+
+#### firebase/functions
+The firebase functions directory. This is where all code and related files for the firebase functions are located. 
+
+**You do generally not need to change anything here unless you want to change some functionality**.
+
+### Project Structure
+The folders **/public** (used for development hosting) and **/firebase/public** (used for production) contains the same **index.html** file which is the base of the website. They are not connected, so if you edit one you will have to edit the other one to not have discrepancies. 
+
+**firebase/public/images** However is automatically created and updated during the compilation process
+
+### Compiling
+_Be sure to be in the root of the project_.
+
+You will first have to install the npm modules with the command:
+* ```npm install``` 
+
+Then you can run the compiling command:
+* ```npm run production```
+
+The bundle.js should now be located in **/firebase/public**
+
+### Deployment
+To deploy to firebase you will first have to download the [firebase CLI](https://firebase.google.com/docs/web/setup?authuser=0#install-cli-deploy). After you've logged in and connected your firebase project to the git repo/project, simply run the command: 
+* ```firebase deploy``
+
 ## Contribute
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
