@@ -1,5 +1,5 @@
 # Agile Toolkit
-Frontend system for Agile Toolkit
+Open-source Agile development website that contains all the tools needed to easily follow agile development methodology such as scrum. 
 
 ## Tech used
 
