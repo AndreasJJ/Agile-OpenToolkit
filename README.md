@@ -14,7 +14,7 @@ The backend is a full firebase stack w/ firestore. It should however be possible
 ## Linting and Testing
 Both linting and testing will run precommit and prepush (with husky) to make sure the code is of satisfactory quality.
 
-## Pre-commit and Pre-push
+### Pre-commit and Pre-push
 * Linting will run pre-commit
 * Linting and testing will run pre-push
 
