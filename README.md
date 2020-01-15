@@ -127,8 +127,8 @@ Then you can run the compiling command:
 The bundle.js should now be located in **/firebase/public**
 
 ### Deployment
-To deploy to firebase you will first have to download the [firebase CLI](https://firebase.google.com/docs/web/setup?authuser=0#install-cli-deploy). After you've logged in and connected your firebase project to the git repo/project, simply run the command: 
-* ```firebase deploy``
+To deploy to firebase you will first have to download the [firebase CLI](https://firebase.google.com/docs/web/setup?authuser=0#install-cli-deploy). After you've logged in and connected your firebase project to the git repo/project folder, simply run the command: 
+* ```firebase deploy```
 
 ## Contribute
 When contributing to this repository, please first discuss the change you wish to make via issue,
