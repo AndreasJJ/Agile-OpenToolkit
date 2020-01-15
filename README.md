@@ -58,6 +58,11 @@ Testing Firebase:
 ## How to install
 As this is purely frontend based w/ firebase as a backend it is fairly easy to host. It can be hosted from pretty much anywhere, but I really would suggest using firebase's static hosting option as to only use one backend provider. 
 
+### Splash page license key
+We use react [fullpage.js](https://github.com/alvarotrigo/fullPage.js) for the splash page, either remove the splash page or get a license key and edit it in **/src/pages/Splash/index.jsx**:
+
+```const LICENSEKEY = ***```
+
 ### Firebase project creation
 You will of course need a firebase project, check out the firebase documentation on how to do it (it's pretty easy) [link](https://firebase.google.com/docs/web/setup?authuser=0#create-firebase-project)
 
