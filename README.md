@@ -63,6 +63,9 @@ We use react [fullpage.js](https://github.com/alvarotrigo/fullPage.js) for the s
 
 ```const LICENSEKEY = ***```
 
+### Various urls in fetch calls
+
+
 ### Firebase project creation
 You will of course need a firebase project, check out the firebase documentation on how to do it (it's pretty easy) [link](https://firebase.google.com/docs/web/setup?authuser=0#create-firebase-project)
 
